@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name = 'turbocharge',
-    version = '3.0.2',
+    version = '3.0.4',
     description= 'Turbocharged Way To Install All The Packages You Love!',
     url="https://github.com/TheBossProSniper/TurboCharge",
     author = 'TheBossProSniper',

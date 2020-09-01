@@ -6,7 +6,7 @@ A turbocharged way of installing all the packages you would ever want! Turbochar
 
 Turbocharge can be installed using PyPI:
 ```
-pip3 install turbocharge==3.0.2
+pip3 install turbocharge==3.0.4
 ```
 
 Warning: The below line of code is deprecated, and is not recommended:
@@ -27,4 +27,28 @@ Install a package with TurboCharge using
 turbocharge install <package_name>
 ```
 
-Work in progress...
+Uninstall a package with TurboCharge using
+```
+turbocharge remove <package_name>
+```
+
+Install multiple packages with TurboCharge using
+```
+turbocharge install <package1,package2,package3>
+```
+Note: Make sure that there is no space between each of the package names after the comma.
+
+List all installable packages with TurboCharge using
+```
+turbocharge list
+```
+
+Clean unnecesarry data from packages using TurboCharge with
+```
+turbocharge clean
+```
+
+
+
+
+

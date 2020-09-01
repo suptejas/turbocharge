@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: turbocharge
-Version: 3.0.2
+Version: 3.0.3
 Summary: Turbocharged Way To Install All The Packages You Love!
 Home-page: https://github.com/TheBossProSniper/TurboCharge
 Author: TheBossProSniper
@@ -14,7 +14,7 @@ Description: # TurboCharge
         
         Turbocharge can be installed using PyPI:
         ```
-        pip3 install turbocharge==3.0.2
+        pip3 install turbocharge==3.0.3
         ```
         
         Warning: The below line of code is deprecated, and is not recommended:
@@ -35,7 +35,31 @@ Description: # TurboCharge
         turbocharge install <package_name>
         ```
         
-        Work in progress...
+        Uninstall a package with TurboCharge using
+        ```
+        turbocharge remove <package_name>
+        ```
+        
+        Install multiple packages with TurboCharge using
+        ```
+        turbocharge install <package1,package2,package3>
+        ```
+        Note: Make sure that there is no space between each of the package names after the comma.
+        
+        List all installable packages with TurboCharge using
+        ```
+        turbocharge list
+        ```
+        
+        Clean unnecesarry data from packages using TurboCharge with
+        ```
+        turbocharge clean
+        ```
+        
+        
+        
+        
+        
         
 Platform: UNKNOWN
 Classifier: License :: OSI Approved :: MIT License
