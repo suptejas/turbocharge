@@ -6,8 +6,37 @@ from getpass import getpass
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 import time
-import pexpect
 from subprocess import Popen, PIPE, DEVNULL
+
+applications = {
+        'android-studio': 'Android Studio',
+        'atom' : 'Atom',
+        'blender' : 'Blender',
+        'discord' : 'Discord',
+        'libreoffice' : 'Libre Office',
+        'opera' : 'Opera',
+        'pycharm': 'Pycharm Community',
+        'sublime-text': 'Sublime Text',
+        'vscode' : 'Visual Stuio Code',
+        'vscode-insiders' : 'Visual Studio Code Insiders',  
+    }
+
+devpackages = {
+        'git' : 'Git',
+        'curl' : 'Curl',
+        'npm' : 'Npm',
+        'zsh' : 'Zsh',
+        'vim' : 'Vim',
+        'htop' : 'Htop',
+        'tldr' : 'Tldr',
+        'jq' : 'JQ',
+        'ncdu' : 'Ncdu',
+        'taskwarrior' : 'Task Warrior',
+        'tmux' : 'Tmux',
+        'patchelf' : 'Patchelf',
+        'golang' : 'Go-Lang',
+        'rust' : 'Rust',
+    }
 
 class Installer:
     def install_task(self, package_name : str, script : str, password : str, test_script : str, tests_passed):
@@ -98,43 +127,14 @@ def version():
     '''
     Current Turbocharged Version You Have
     '''
-    print('Version: 3.0.3 \nDistribution: Stable x86-64')
+    print('Version: 3.0.4 \nDistribution: Stable x86-64')
 
 @cli.command()
-@click.argument('package_list', required=True, )
+@click.argument('package_list', required=True)
 def install(package_list):
     '''
     Install A Specified Package
     '''
-    applications = {
-        'android-studio': 'Android Studio',
-        'atom' : 'Atom',
-        'blender' : 'Blender',
-        'discord' : 'Discord',
-        'libreoffice' : 'Libre Office',
-        'opera' : 'Opera',
-        'pycharm': 'Pycharm Community',
-        'sublime-text': 'Sublime Text',
-        'vscode' : 'Visual Stuio Code',
-        'vscode-insiders' : 'Visual Studio Code Insiders',  
-    }
-
-    devpackages = {
-        'git' : 'Git',
-        'curl' : 'Curl',
-        'npm' : 'Npm',
-        'zsh' : 'Zsh',
-        'vim' : 'Vim',
-        'htop' : 'Htop',
-        'tldr' : 'Tldr',
-        'jq' : 'JQ',
-        'ncdu' : 'Ncdu',
-        'taskwarrior' : 'Task Warrior',
-        'tmux' : 'Tmux',
-        'patchelf' : 'Patchelf',
-        'golang' : 'Go-Lang',
-        'rust' : 'Rust',
-    }
 
     password = getpass('Enter your password: ')
     packages = package_list.split(',')
@@ -204,21 +204,13 @@ def remove(package_list):
     password = getpass('Enter your password: ')
     packages = package_list.split(',')
     for package in packages:
-        if package == 'git':
-            uninstaller.uninstall('sudo -S apt-get remove -y git', password, package_name='Git')
+        if package in devpackages:
+            print(f'{package} is in devpackages')
+            uninstaller.uninstall(f'sudo -S apt-get remove -y {devpackages[package]}', password, package_name=devpackages[package])
         
-        if package == 'curl':
-            uninstaller.uninstall('sudo -S apt-get remove -y curl', password, package_name='Curl')
+        if package in applications:        
+            uninstaller.uninstall(f'sudo snap remove {package}', password, package_name=applications[package])
         
-        if package == 'npm':
-            uninstaller.uninstall('sudo -S apt-get remove -y npm', password, package_name='Npm')
-        
-        if package == 'zsh':
-            uninstaller.uninstall('sudo -S apt-get remove -y zsh', password, package_name='Git')
-
-        if package == 'vim':
-            uninstaller.uninstall('sudo -S apt-get remove -y vim', password, package_name='Vim')
-    
 @cli.command()
 def clean():
     '''
