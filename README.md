@@ -17,13 +17,13 @@ Turbocharge is as easy to install as it is to use!
 
 Using Pip3 (Python3):
 
-```pip3 install turbocharge==3.0.2```
+```pip3 install turbocharge==3.0.3```
 
 Using Pip (Python2):
 
 Warning: pip is deprecated and I highly suggest using pip3.
 
-```pip install turbocharge==3.0.2```
+```pip install turbocharge==3.0.3```
 
 Next, run this command, replacing the ```{username}``` with your name:
 
