@@ -27,16 +27,23 @@ Install a package with TurboCharge using
 turbocharge install <package_name>
 ```
 
+Install multiple packages with TurboCharge using
+```
+turbocharge install <package1,package2,package3>
+```
+
 Uninstall a package with TurboCharge using
 ```
 turbocharge remove <package_name>
 ```
 
-Install multiple packages with TurboCharge using
+Uninstall multiple packages with TurboCharge using
 ```
-turbocharge install <package1,package2,package3>
+turbocharge remove <package1,package2,package3>
 ```
-Note: Make sure that there is no space between each of the package names after the comma.
+
+
+Note: Make sure that there is no space between each of the package names after and before the ```,```.
 
 List all installable packages with TurboCharge using
 ```

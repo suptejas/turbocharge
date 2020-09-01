@@ -17,8 +17,8 @@ applications = {
         'opera' : 'Opera',
         'pycharm': 'Pycharm Community',
         'sublime-text': 'Sublime Text',
-        'vscode' : 'Visual Stuio Code',
-        'vscode-insiders' : 'Visual Studio Code Insiders',  
+        'code' : 'Visual Stuio Code',
+        'code-insiders' : 'Visual Studio Code Insiders',  
     }
 
 devpackages = {
@@ -112,7 +112,7 @@ class Uninstaller:
             click.echo(e.output)
             click.echo('An Error Occured During Installation...', err = True)
 
-def showfind(finding_bar):
+def show_progress(finding_bar):
     for _ in range(1, 2):
         time.sleep(0.01)
         finding_bar.next()
@@ -149,15 +149,15 @@ def install(package_list):
             finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
 
             if package_name in devpackages:
-                showfind(finding_bar)
+                show_progress(finding_bar)
                 turbocharge.install_task(devpackages[package_name], f'sudo -S apt-get install -y {package_name}', password, f'{package_name} --version', [f'{devpackages[package_name]} Version'])
 
             if package_name in applications:
-                showfind(finding_bar)
+                show_progress(finding_bar)
                 turbocharge.install_task(applications[package_name], f'sudo -S snap install --classic {package_name}', password, '', [])
 
             if package_name == 'chrome':
-                showfind(finding_bar)
+                show_progress(finding_bar)
                 try:    
                     click.echo('\n')
                     password = getpass("Enter your password: ")
