@@ -71,32 +71,40 @@ def install(package_name):
     Install A Specified Package
     '''
     turbocharge = Installer()
+    packages = {
+        'git' : 'Git',
+        'curl' : 'Curl',
+        'npm' : 'Npm',
+        'zsh' : 'Zsh',
+        'vim' : 'Vim',
+        'opera' : 'Opera',
+        'vscode' : 'Visual Stuio Code',
+        'vscode-insiders' : 'Visual Studio Code Insiders',
+        'wikit' : 'Wikit',
+        'htop' : 'Htop',
+        'tldr' : 'Tldr',
+        'jq' : 'JQ',
+        'ncdu' : 'Ncdu',
+        'taskwarrior' : 'Task Warrior',
+        'tmux' : 'Tmux',
+        'patchelf' : 'Patchelf',
+        'discord' : 'Discord',
+        'libreoffice' : 'Libre Office',
+        'golang' : 'Go-Lang',
+        'rust' : 'Rust',
+        'typescript' : 'Typescript',
+        'blender' :'Blender',
+    }
     os_bar = IncrementalBar('Getting Operating System...', max = 1)
     if platform == 'linux':
         os_bar.next()
         click.echo('\n')
         finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
 
-        if package_name == 'git':
+        if package_name in packages:
             password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Git', 'sudo -S apt-get install -y git', password, 'git --version', ['Git Version'])
-
-        if package_name == 'curl': 
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Curl', 'sudo -S apt-get install -y curl', password, 'curl --version', ['Curl Version'])
-
-        if package_name == 'npm':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Npm', 'sudo -S apt-get install -y npm', password, 'npm --version', ['Npm Version'])
-
-        if package_name == 'zsh':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Zsh', 'sudo -S apt-get install -y zsh', password, 'zsh --version', ['Zsh Version'])
-
-        if package_name == 'vim':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Vim', 'sudo -S apt-get install -y vim', password, 'vim --version', ['Vim Version'])
-
+            turbocharge.install_task(packages[package_name], f'sudo -S apt-get install -y {package_name}', password, f'{package_name} --version', [f'{packages[package_name]} Version'])
+        
         if package_name == 'chrome':
             for _ in range(1, 2):
                 time.sleep(0.03)
@@ -136,74 +144,7 @@ def install(package_name):
                 click.echo(e.output)
                 click.echo('An Error Occured During Installation...', err = True)
         
-        if package_name == 'opera':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Opera', 'sudo -S snap install opera', password, '', [])
-
-        if package_name == 'vscode':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Visual Studio Code', 'sudo -S snap install --classic code', password, 'code --version', ['Visual Studio Code Version'])
-
-        if package_name == 'vscode-insiders':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Visual Studio Code Insiders', 'sudo -S snap install --classic code-insiders', password, '', [])
         
-        if package_name == 'wikit':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Wikit', 'sudo -S npm install wikit -g', password, 'wikit --version', ['Wikit Version'])
-
-        if package_name == 'htop':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Htop', 'sudo -S apt-get install -y htop', password, 'htop --version', ['Htop Version'])
-
-        if package_name == 'tldr':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Tldr', 'sudo -S npm install -g tldr', password, 'tldr --version', ['Tldr Version'])
-
-        if package_name == 'jq':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('JQ', 'sudo -S apt-get install -y jq', password, 'jq --version', ['Jq Version'])
-
-        if package_name == 'ncdu':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Ncdu', 'sudo -S apt-get install -y ncdu', password, 'ncdu --version', ['Ncdu Version'])
-
-        if package_name == 'taskwarrior':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Task Warrior', 'sudo -S apt-get install -y taskwarrior', password, 'taskwarrior --version', ['Taskwarrior Version'])
-
-        if package_name == 'tmux':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Tmux', 'sudo -S apt-get install -y tmux', password, 'tmux --version', ['Tmux Version'])
-       
-        if package_name == 'patchelf':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Patchelf', 'sudo -S apt-get install -y patchelf', password, 'patchelf --version', ['Patchelf Version'])
-    
-        if package_name == 'discord':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Discord', 'sudo -S snap install discord', password, '', [])
-
-        if package_name == 'libreoffice':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Libre Office', 'sudo -S apt-get install -y libreoffice', password, '', [])
-
-        if package_name == 'golang':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Go-Lang', 'sudo -S apt-get install -y golang-go', password, 'go version', ['Go Version'])
-
-        if package_name == 'rust':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Rust', 'sudo -S apt-get install -y rustc', password, 'rustc -V', ['Rust Version'])
-
-        if package_name == 'typescript':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Typescript', 'sudo -S apt-get install -y node-typescript', password, 'tsc -v', ['Typescript Version'])
-
-        if package_name == 'blender':
-            password = turbocharge.init_install(finding_bar)
-            turbocharge.install_task('Blender', 'sudo -S snap install --classic blender', password, '', [])
-
     
 
 @cli.command()
