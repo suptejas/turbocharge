@@ -54,6 +54,27 @@ devpackages = {
         'zlib' : 'Z-Lib',
     }
 
+def is_password_valid(password : str):
+    proc = subprocess.Popen('sudo -k -S -l'.split(), stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
+    output = proc.communicate(password.encode())
+    if 'incorrect password' in output[1].decode():
+        return 1
+    else:
+        return 0
+
+
+
+class Debugger:
+    def debug(self, password : str, error : bytes):
+        error = error.decode('utf-8')
+        if 'sudo: 1 incorrect password attempt' in error:
+            click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
+            click.echo(click.style(f'Cause: Wrong Password Entered. Code: 001', fg='yellow', bold=True, blink=True))
+            return
+        
+        else:
+            click.echo(click.style(':( Failed To Debug... :(', fg='red'))
+            return
 class Installer:
     def install_task(self, package_name : str, script : str, password : str, test_script : str, tests_passed):
         try:    
@@ -62,11 +83,38 @@ class Installer:
             for _ in range(1, 75):
                 time.sleep(0.01)
                 installer_progress.next()
+            
             proc = Popen(script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
             # Popen only accepts byte-arrays so you must encode the string
-            proc.communicate(password.encode())
-            # stdoutput = (output)[0].decode('utf-8')
-            click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n'))
+            output, error = proc.communicate(password.encode())
+            if proc.returncode != 0:
+                click.echo(click.style('❎ Installation Failed... ❎', fg='red', blink=True, bold=True))
+                debug = click.prompt('Would you like us to debug the failed installation?[y/n]')
+                if debug == 'y':
+                    debugger = Debugger()
+                    debugger.debug(password, error)
+                    logs = click.prompt('Would you like to see the logs?[y/n]', type=str)
+                    if logs == 'y':
+                        final_output = error.decode('utf-8')
+                        if final_output == '':
+                            click.echo('There were no logs found...')
+                            return
+                        else:
+                            click.echo(final_output)
+                            return
+                    return
+                else:
+                    logs = click.prompt('Would you like to see the logs?[y/n]', type=str)
+                    if logs == 'y':
+                        final_output = output.decode('utf-8')
+                        if final_output == '':
+                            click.echo('There were no logs found...')
+                            return
+                        else:
+                            click.echo(final_output)
+                            return
+                    return
+            click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n', fg='green', bold=True))
             # Testing the successful installation of the package
             testing_bar = IncrementalBar('Testing package...', max = 100)
             if tests_passed == [] and test_script == '':
@@ -80,7 +128,7 @@ class Installer:
             for _ in range(21, 60):
                 time.sleep(0.002)
                 testing_bar.next()
-            subprocess.run(test_script.split(), stdout=subprocess.DEVNULL)
+            proc = Popen(test_script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
             for _ in range(60, 101):
                 time.sleep(0.002)
                 testing_bar.next()
@@ -143,7 +191,7 @@ def version():
     '''
     Current Turbocharged Version You Have
     '''
-    print('Version: 3.0.5 \nDistribution: Stable x86-64')
+    print('Version: 3.0.6 \nDistribution: Stable x86-64')
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -238,7 +286,33 @@ def install(package_list):
                     click.echo('An Error Occured During Installation...', err = True)
 
             if package_name == 'miniconda':
-                pass
+                show_progress(finding_bar)
+                username = getuser()
+                try:    
+                    installer_progress = Spinner(message=f'Installing {package_name}...', max=100)
+                    # sudo requires the flag '-S' in order to take input from stdin
+                    for _ in range(1, 35):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    os.system("wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh -O ~/miniconda.sh")
+                    for _ in range(35, 61):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    os.system('bash ~/anaconda.sh -b -p $HOME/anaconda3')
+                    for _ in range(61, 91):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    os.system(f'echo "export PATH="/home/{username}/anaconda3/bin:$PATH"" >> ~/.bashrc')
+                    # Popen only accepts byte-arrays so you must encode the string
+                    proc.communicate(password.encode())
+                    for _ in range(90, 101):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    # stdoutput = (output)[0].decode('utf-8')
+                    click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n'))
+                except  subprocess.CalledProcessError as e:
+                    click.echo(e.output)
+                    click.echo('An Error Occured During Installation...', err = True)
 
             elif package_name not in devpackages and package_name not in applications and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
@@ -305,6 +379,7 @@ __________________________________________
 ________________
 | Package      |
 ----------------    
+|  anaconda    |
 |  curl        |
 |  docker      |
 |  emacs       |
@@ -313,6 +388,7 @@ ________________
 |  htop        |
 |  jq          |
 |  kotlin      |
+|  miniconda   |
 |  ncdu        |
 |  neovim      |
 |  npm         |

@@ -2,7 +2,7 @@ import click
 import os
 import subprocess
 from sys import platform
-from getpass import getpass
+from getpass import getpass, getuser
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 import time
@@ -12,22 +12,37 @@ applications = {
         'android-studio': 'Android Studio',
         'atom' : 'Atom',
         'blender' : 'Blender',
+        'brackets' : 'Brackets',
+        'clion' : 'C Lion',
         'discord' : 'Discord',
+        'datagrip' : 'Data Grip',
         'libreoffice' : 'Libre Office',
+        'librepcb' : 'Libre PCB',
         'opera' : 'Opera',
+        'webstorm' : 'Web Storm',
         'pycharm': 'Pycharm Community',
         'sublime-text': 'Sublime Text',
-        'vscode' : 'Visual Stuio Code',
-        'vscode-insiders' : 'Visual Studio Code Insiders',  
+        'code' : 'Visual Stuio Code',
+        'code-insiders' : 'Visual Studio Code Insiders',  
+        'eclipse' : 'Eclipse',
+        'powershell' : 'Powershell',
+        'kotlin' : 'Kotlin',
+        'goland' : 'Go Land',
+        'rubymine' : 'RubyMine',
+        'figma-linux' : 'Figma',
     }
 
 devpackages = {
         'git' : 'Git',
         'curl' : 'Curl',
+        'docker' : 'Docker',
         'npm' : 'Npm',
         'zsh' : 'Zsh',
+        'emacs' : 'Emacs',
+        'neovim' : 'Neo Vim',
         'vim' : 'Vim',
         'htop' : 'Htop',
+        'sqlite' : 'Sqlite',
         'tldr' : 'Tldr',
         'jq' : 'JQ',
         'ncdu' : 'Ncdu',
@@ -36,6 +51,7 @@ devpackages = {
         'patchelf' : 'Patchelf',
         'golang' : 'Go-Lang',
         'rust' : 'Rust',
+        'zlib' : 'Z-Lib',
     }
 
 class Installer:
@@ -71,10 +87,10 @@ class Installer:
             click.echo('\n')
             for test in tests_passed:
                 click.echo(click.style(f'Test Passed: {test} ✅\n', fg='green'))
+            return
         except  subprocess.CalledProcessError as e:
             click.echo(e.output)
             click.echo('An Error Occured During Installation...', err = True)
-
 class Uninstaller:
     def uninstall(self, script : str, password : str, package_name : str):
         try:    
@@ -112,7 +128,7 @@ class Uninstaller:
             click.echo(e.output)
             click.echo('An Error Occured During Installation...', err = True)
 
-def showfind(finding_bar):
+def show_progress(finding_bar):
     for _ in range(1, 2):
         time.sleep(0.01)
         finding_bar.next()
@@ -127,15 +143,14 @@ def version():
     '''
     Current Turbocharged Version You Have
     '''
-    print('Version: 3.0.4 \nDistribution: Stable x86-64')
+    print('Version: 3.0.5 \nDistribution: Stable x86-64')
 
 @cli.command()
 @click.argument('package_list', required=True)
 def install(package_list):
     '''
-    Install A Specified Package
+    Install A Specified Package(s)
     '''
-
     password = getpass('Enter your password: ')
     packages = package_list.split(',')
     turbocharge = Installer()
@@ -149,15 +164,15 @@ def install(package_list):
             finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
 
             if package_name in devpackages:
-                showfind(finding_bar)
+                show_progress(finding_bar)
                 turbocharge.install_task(devpackages[package_name], f'sudo -S apt-get install -y {package_name}', password, f'{package_name} --version', [f'{devpackages[package_name]} Version'])
 
             if package_name in applications:
-                showfind(finding_bar)
+                show_progress(finding_bar)
                 turbocharge.install_task(applications[package_name], f'sudo -S snap install --classic {package_name}', password, '', [])
 
             if package_name == 'chrome':
-                showfind(finding_bar)
+                show_progress(finding_bar)
                 try:    
                     click.echo('\n')
                     password = getpass("Enter your password: ")
@@ -193,6 +208,42 @@ def install(package_list):
                     click.echo(e.output)
                     click.echo('An Error Occured During Installation...', err = True)
        
+            if package_name == 'anaconda':
+                show_progress(finding_bar)
+                username = getuser()
+                try:    
+                    installer_progress = Spinner(message=f'Installing {package_name}...', max=100)
+                    # sudo requires the flag '-S' in order to take input from stdin
+                    for _ in range(1, 35):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    os.system("wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh -O ~/anaconda.sh")
+                    for _ in range(35, 61):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    os.system('bash ~/anaconda.sh -b -p $HOME/anaconda3')
+                    for _ in range(61, 91):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    os.system(f'echo "export PATH="/home/{username}/anaconda3/bin:$PATH"" >> ~/.bashrc')
+                    # Popen only accepts byte-arrays so you must encode the string
+                    proc.communicate(password.encode())
+                    for _ in range(90, 101):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    # stdoutput = (output)[0].decode('utf-8')
+                    click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n'))
+                except  subprocess.CalledProcessError as e:
+                    click.echo(e.output)
+                    click.echo('An Error Occured During Installation...', err = True)
+
+            if package_name == 'miniconda':
+                pass
+
+            elif package_name not in devpackages and package_name not in applications and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
+                click.echo('\n')
+                click.echo(click.style(':( Package Not Found! :(', fg='red'))
+
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -205,8 +256,7 @@ def remove(package_list):
     packages = package_list.split(',')
     for package in packages:
         if package in devpackages:
-            print(f'{package} is in devpackages')
-            uninstaller.uninstall(f'sudo -S apt-get remove -y {devpackages[package]}', password, package_name=devpackages[package])
+            uninstaller.uninstall(f'sudo -S apt-get remove -y {package}', password, package_name=devpackages[package])
         
         if package in applications:        
             uninstaller.uninstall(f'sudo snap remove {package}', password, package_name=applications[package])
@@ -234,12 +284,21 @@ __________________________________________
 | android-studio    |   5m   || 840.0 MB |
 | atom              |   2m   || 224.8 MB |
 | blender           |   2m   || 187.7 MB |
-| chrome            |   3m   || 70.2  MB |
+| brackets          |   1m   || 109.6 MB |
+| clion             |   3m   || 502.0 MB |
+| chrome            |   2m   || 70.2  MB |
+| datagrip          |   2m   || 356.8 MB |
 | discord           |   1m   || 60.1  MB |
+| eclipse           |   2m   || 220.3 MB |
+| figma-linux       |   2m   || 96.4  MB |
 | libreoffice       |   1m   || 25.0  MB |
+| librepcb          |   1m   || 98.8  MB |
 | opera             |   1m   || 64.2 MB  |
 | pycharm           |   3m   || 372.1 MB |
+| powershell        |   1m   || 62.5  MB |
+| rubymine          |   3m   || 363.2 MB |
 | sublime-text      |   1m   || 70.8 MB  |
+| webstorm          |   3m   || 343.8 MB |
 | vscode            |   2m   || 162.5 MB |
 | vscode-insiders   |   2m   || 153.3 MB |
 ------------------------------------------
@@ -247,28 +306,30 @@ ________________
 | Package      |
 ----------------    
 |  curl        |
+|  docker      |
+|  emacs       |
 |  git         |
 |  golang      |
 |  htop        |
 |  jq          |
+|  kotlin      |
 |  ncdu        |
+|  neovim      |
 |  npm         |
 |  patchelf    |
 |  rust        |
+|  sqlite      |
 |  taskwarrior |
 |  tldr        |
 |  tmux        |
 |  vim         |
 |  zsh         |
+|  zlib        |
 ----------------        
         ''',
         fg='white',
     ),
 )
-    
-    
-    
-    
 
 # if platform == 'darwin':
     #     os_bar.next()
