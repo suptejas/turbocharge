@@ -335,6 +335,69 @@ def remove(package_list):
         if package in applications:        
             uninstaller.uninstall(f'sudo snap remove {package}', password, package_name=applications[package])
         
+                if package == 'anaconda':
+            try:
+                installer_progress = Spinner(
+                    message=f'Uninstalling Anaconda...', max=100)
+                # sudo requires the flag '-S' in order to take input from stdin
+                for _ in range(1, 75):
+                    time.sleep(0.007)
+                    installer_progress.next()
+                os.system('rm -rf ~/anaconda3 ~/.continuum ~/.conda')
+                os.system('rm ~/anaconda.sh')
+                with open('.bashrc', 'r') as file:
+                    lines = file.read()
+
+                with open('.bashrc', 'w') as file:
+                    for line in lines:
+                        if 'anaconda' in line or 'miniconda' in line:
+                            return
+                        else:
+                            file.write(line)
+                # Popen only accepts byte-arrays so you must encode the string
+                proc.communicate(password.encode())
+                # stdoutput = (output)[0].decode('utf-8')
+                for _ in range(1, 26):
+                    time.sleep(0.01)
+                    installer_progress.next()
+                click.echo(click.style(
+                    f'\n\n 🎉 Successfully Uninstalled Anaconda! 🎉 \n', fg='green'))
+            except CalledProcessError as e:
+                click.echo(e.output)
+                click.echo('An Error Occured During Uninstallation...', err=True)
+
+        if package == 'miniconda':
+            try:
+                installer_progress = Spinner(
+                    message=f'Uninstalling Miniconda...', max=100)
+                # sudo requires the flag '-S' in order to take input from stdin
+                for _ in range(1, 75):
+                    time.sleep(0.007)
+                    installer_progress.next()
+                os.system('rm -rf ~/miniconda ~/.continuum ~/.conda ~/.condarc')
+                os.system('rm ~/miniconda.sh')
+                with open('.bashrc', 'r') as file:
+                    lines = file.read()
+
+                with open('.bashrc', 'w') as file:
+                    for line in lines:
+                        if 'anaconda' in line or 'miniconda' in line:
+                            return
+                        else:
+                            file.write(line)
+                # Popen only accepts byte-arrays so you must encode the string
+                proc.communicate(password.encode())
+                # stdoutput = (output)[0].decode('utf-8')
+                for _ in range(1, 26):
+                    time.sleep(0.01)
+                    installer_progress.next()
+                click.echo(click.style(
+                    f'\n\n 🎉 Successfully Uninstalled Miniconda! 🎉 \n', fg='green'))
+            except CalledProcessError as e:
+                click.echo(e.output)
+                click.echo('An Error Occured During Uninstallation...', err=True)
+
+        
 @cli.command()
 def clean():
     '''
