@@ -175,6 +175,52 @@ class Uninstaller:
         except  subprocess.CalledProcessError as e:
             click.echo(e.output)
             click.echo('An Error Occured During Installation...', err = True)
+               
+       
+class Updater:
+    def updatepack(self, package_name: str, password: str):
+        try:
+            installer_progress = Spinner(
+                message=f'Updating {package_name}...', max=100)
+            # sudo requires the flag '-S' in order to take input from stdin
+            for _ in range(1, 75):
+                time.sleep(0.007)
+                installer_progress.next()
+            proc = Popen(
+                f'sudo -S apt-get install --only-upgrade -y {package_name}'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            # Popen only accepts byte-arrays so you must encode the string
+            proc.communicate(password.encode())
+            # stdoutput = (output)[0].decode('utf-8')
+            for _ in range(1, 26):
+                time.sleep(0.01)
+                installer_progress.next()
+            click.echo(click.style(
+                f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n', fg='green'))
+        except CalledProcessError as e:
+            click.echo(e.output)
+            click.echo('An Error Occured During Updating..', err=True)
+
+    def updateapp(self, package_name: str, password: str):
+        try:
+            installer_progress = Spinner(
+                message=f'Updating {package_name}...', max=100)
+            # sudo requires the flag '-S' in order to take input from stdin
+            for _ in range(1, 75):
+                time.sleep(0.007)
+                installer_progress.next()
+            proc = Popen(
+                f'sudo -S snap refresh -y {package_name}'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            # Popen only accepts byte-arrays so you must encode the string
+            proc.communicate(password.encode())
+            # stdoutput = (output)[0].decode('utf-8')
+            for _ in range(1, 26):
+                time.sleep(0.01)
+                installer_progress.next()
+            click.echo(click.style(
+                f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n', fg='green'))
+        except CalledProcessError as e:
+            click.echo(e.output)
+            click.echo('An Error Occured During Updating..', err=True)
 
 def show_progress(finding_bar):
     for _ in range(1, 2):
@@ -397,6 +443,27 @@ def remove(package_list):
                 click.echo(e.output)
                 click.echo('An Error Occured During Uninstallation...', err=True)
 
+                
+@cli.command()
+@cli.argument('package_list', required=True)
+def update():
+    '''
+    Updates Applications And Packages
+    '''
+    updater = Updater()
+    password = getpass('Enter your password: ')
+    packages = package_list.split(',')
+    for package in packages:
+        if package in devpackages:
+            updater.updatepack(package, password)
+
+        if package in applications:
+            updater.updateapp(package, password)
+
+        else:
+            return
+
+# Need To Install Large Packs Of Packages Example : Graphics Pack Installs Blender And Other Software
         
 @cli.command()
 def clean():
