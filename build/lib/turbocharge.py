@@ -163,14 +163,6 @@ def install(package_list):
             click.echo('\n')
             finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
 
-            if package_name in devpackages:
-                show_progress(finding_bar)
-                turbocharge.install_task(devpackages[package_name], f'sudo -S apt-get install -y {package_name}', password, f'{package_name} --version', [f'{devpackages[package_name]} Version'])
-
-            if package_name in applications:
-                show_progress(finding_bar)
-                turbocharge.install_task(applications[package_name], f'sudo -S snap install --classic {package_name}', password, '', [])
-
             if package_name == 'chrome':
                 show_progress(finding_bar)
                 try:    
@@ -186,6 +178,8 @@ def install(package_list):
                     proc.wait()
                     second = Popen("sudo -S apt-get install -y ./google-chrome-stable_current_amd64.deb".split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     # Popen only accepts byte-arrays so you must encode the string
+                    pro_id = os.getpid()
+                    loading_bar(pro_id)
                     second.communicate(password.encode())
                     
                     # stdoutput = (output)[0].decode('utf-8') 
@@ -239,10 +233,19 @@ def install(package_list):
 
             if package_name == 'miniconda':
                 pass
+            
+            if package_name in devpackages:
+                show_progress(finding_bar)
+                turbocharge.install_task(devpackages[package_name], f'sudo -S apt-get install -y {package_name}', password, f'{package_name} --version', [f'{devpackages[package_name]} Version'])
 
-            elif package_name not in devpackages and package_name not in applications and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
+            if package_name in applications:
+                show_progress(finding_bar)
+                turbocharge.install_task(applications[package_name], f'sudo -S snap install --classic {package_name}', password, '', [])
+
+
+            if package_name not in devpackages and package_name not in applications and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
-                click.echo(click.style(':( Package Not Found! :(', fg='red'))
+                click.echo(click.style(':( Package Not Found! If you would like this package to be added, then please email it to us at : turbochargedev@gmail.com  :(', fg='red'))
 
 
 @cli.command()
@@ -270,6 +273,22 @@ def clean():
 
     password = getpass('Enter your password: ')
     uninstaller.clean(password)
+
+def loading_bar(pro_id):
+    spin = ["-", "\\", "|", "/",]
+    click.echo("Working ${spin[0]}")
+    command = '''
+    echo -n "Working ${spin[0]}"
+    while [ kill -0 $pid ]
+    do
+        for i in "${spin[@]}"
+        do
+            echo -ne "\b$i"
+            sleep 0.1
+        done
+    done
+    '''
+    click.echo(command)
     
 @cli.command()
 def list():
