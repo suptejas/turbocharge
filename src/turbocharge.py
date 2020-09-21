@@ -381,7 +381,7 @@ def remove(package_list):
         if package in applications:        
             uninstaller.uninstall(f'sudo snap remove {package}', password, package_name=applications[package])
         
-                if package == 'anaconda':
+        if package == 'anaconda':
             try:
                 installer_progress = Spinner(
                     message=f'Uninstalling Anaconda...', max=100)
@@ -403,7 +403,7 @@ def remove(package_list):
                 # Popen only accepts byte-arrays so you must encode the string
                 proc.communicate(password.encode())
                 # stdoutput = (output)[0].decode('utf-8')
-                for _ in range(1, 26):
+                for _ in range(75, 101):
                     time.sleep(0.01)
                     installer_progress.next()
                 click.echo(click.style(
@@ -434,7 +434,7 @@ def remove(package_list):
                 # Popen only accepts byte-arrays so you must encode the string
                 proc.communicate(password.encode())
                 # stdoutput = (output)[0].decode('utf-8')
-                for _ in range(1, 26):
+                for _ in range(1, 101):
                     time.sleep(0.01)
                     installer_progress.next()
                 click.echo(click.style(
