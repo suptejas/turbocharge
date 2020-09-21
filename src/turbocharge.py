@@ -54,6 +54,11 @@ devpackages = {
         'zlib' : 'Z-Lib',
     }
 
+hyperpkgs = {
+    'essential' : HyperPack('git,curl,npm,zsh,vim', 'code'),
+} 
+
+
 def is_password_valid(password : str):
     proc = subprocess.Popen('sudo -k -S -l'.split(), stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
     output = proc.communicate(password.encode())
@@ -181,9 +186,7 @@ class Uninstaller:
             click.echo(click.style('🎉 Successfully Cleaned Turbocharge! 🎉', fg='green'))
         except  subprocess.CalledProcessError as e:
             click.echo(e.output)
-            click.echo('An Error Occured During Installation...', err = True)
-               
-       
+            click.echo('An Error Occured During Installation...', err = True) 
 class Updater:
     def updatepack(self, package_name: str, password: str):
         try:
@@ -228,6 +231,10 @@ class Updater:
         except CalledProcessError as e:
             click.echo(e.output)
             click.echo('An Error Occured During Updating..', err=True)
+class HyperPack:
+    def __init__(self, packages, applications):
+        self.packages = packages
+        self.applications = applications
 
 def show_progress(finding_bar):
     for _ in range(1, 2):
@@ -471,7 +478,38 @@ def update():
             return
 
 # Need To Install Large Packs Of Packages Example : Graphics Pack Installs Blender And Other Software
-        
+@cli.command()
+@cli.argument('hyperpack_list', required=True)
+def hyperpack(hyperpack_list):
+    '''
+    Install Large Packs Of Applications And Packages
+    '''   
+    password = getpass('Enter your password: ')
+    click.echo('\n')
+    password_bar = IncrementalBar('Verifying Password...', max = 1)
+    exitcode = is_password_valid(password)
+    if exitcode == 1:
+        click.echo('Wrong Password Entered... Aborting Installation')
+        return
+    password_bar.next()
+    os_bar = IncrementalBar('Getting Operating System...', max = 1)
+    os_bar.next()
+    if platform == 'linux':
+        turbocharge = Installer()
+        updater = Updater()
+        cleaner = Uninstaller()
+        hyperpacks = hyperpack_list.split(',')
+        for hyperpack in hyperpacks:
+            hyper_pack = hyperpkgs[hyperpack]
+            packages = hyper_pack.packages.split(',')
+            apps = hyper_pack.applications.split(',')
+            for package in packages:
+                turbocharge.install_task(devpackages[package], f'sudo -S apt-get install -y {package}', password, f'{package} --version', [f'{devpackages[package]} Version'])
+            for app in apps:
+                turbocharge.install_task(applications[package], f'sudo -S snap install --classic {package}', password, '', [])
+                
+
+
 @cli.command()
 def clean():
     '''
@@ -543,82 +581,3 @@ ________________
         fg='white',
     ),
 )
-
-# if platform == 'darwin':
-    #     os_bar.next()
-    #     click.echo('\n')
-    #     finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
-    #     if package_name == 'brew':
-    #         for _ in range(1, 2):
-    #             time.sleep(0.03)
-    #             finding_bar.next()
-    #         try:    
-    #             click.echo('\n')
-    #             password = getpass("Enter your password: ")
-    #             installer_progress = Spinner(message='Installing Homebrew...', max=100)
-    #             # sudo requires the flag '-S' in order to take input from stdin
-    #             for _ in range(1, 75):
-    #                 time.sleep(0.03)
-    #                 installer_progress.next()
-    #             proc = pexpect.spawn('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"')
-    #             proc.sendline(password)
-    #             proc.sendline('\n')
-    #             click.echo(click.style('\n\n 🎉 Successfully Installed Homebrew! 🎉 \n'))
-    #             # Testing the successful installation of the package
-    #             testing_bar = IncrementalBar('Testing package...', max = 100)
-    #             for _ in range(1, 21):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             os.system('cd --')
-    #             for _ in range(21, 60):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             for _ in range(60, 101):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             subprocess.run(['brew','--version'])
-    #             click.echo('\n')
-    #             click.echo(click.style('Test Passed: Brew Version ✅\n', fg='green'))
-    #         except  subprocess.CalledProcessError as e:
-    #             click.echo(e.output)
-    #             click.echo('An Error Occured During Installation...', err = True)
-    #     if package_name == 'xcode-tools':
-    #         for _ in range(1, 2):
-    #             time.sleep(0.03)
-    #             finding_bar.next()
-    #         try:    
-    #             click.echo('\n')
-    #             password = getpass("Enter your password: ")
-    #             installer_progress = Spinner(message='Installing Xcode-Command-Line-Tools...', max=100)
-    #             # sudo requires the flag '-S' in order to take input from stdin
-    #             for _ in range(1, 75):
-    #                 time.sleep(0.03)
-    #                 installer_progress.next()
-    #             proc = pexpect.spawn('xcode-select --install')
-    #             click.echo(click.style('\n\n 🎉 Successfully Installed Xcode-Command-Line-Tools! 🎉 \n'))
-    #             # Testing the successful installation of the package
-    #             testing_bar = IncrementalBar('Testing package...', max = 100)
-    #             for _ in range(1, 21):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             os.system('cd --')
-    #             for _ in range(21, 60):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             for _ in range(60, 101):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             subprocess.run(['git','--version'])
-    #             subprocess.run(['clang', '--version'])
-    #             subprocess.run(['swift', '--version'])
-    #             subprocess.run(['pip3', '--version'])
-                
-    #             click.echo('\n')
-    #             click.echo(click.style('Test Passed: Git Version ✅\n', fg='green'))
-    #             click.echo(click.style('Test Passed: Clang Version ✅\n', fg='green'))
-    #             click.echo(click.style('Test Passed: Swift Version ✅\n', fg='green'))
-    #             click.echo(click.style('Test Passed: Pip3 Version ✅\n', fg='green'))
-                
-    #         except  subprocess.CalledProcessError as e:
-    #             click.echo(e.output)
-    #             click.echo('An Error Occured During Installation...', err = True)
