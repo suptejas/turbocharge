@@ -8,6 +8,7 @@ from progress.bar import IncrementalBar
 import time
 from subprocess import Popen, PIPE, DEVNULL
 
+
 applications = {
     'android-studio': 'Android Studio',
     'atom' : 'Atom',
