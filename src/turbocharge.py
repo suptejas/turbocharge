@@ -56,6 +56,7 @@ devpackages = {
 
 hyperpkgs = {
     'essential' : HyperPack('git,curl,npm,zsh,vim', 'code,atom,sublime-text'),
+    'office' : HyperPack('sqlite', 'libreoffice')
 } 
 
 
@@ -366,8 +367,6 @@ def install(package_list):
                         time.sleep(0.01)
                         installer_progress.next()
                     os.system(f'echo "export PATH="/home/{username}/anaconda3/bin:$PATH"" >> ~/.bashrc')
-                    # Popen only accepts byte-arrays so you must encode the string
-                    proc.communicate(password.encode())
                     for _ in range(90, 101):
                         time.sleep(0.01)
                         installer_progress.next()
@@ -463,7 +462,7 @@ def remove(package_list):
                 
 @cli.command()
 @cli.argument('package_list', required=True)
-def update():
+def update(package_list):
     '''
     Updates Applications And Packages
     '''
