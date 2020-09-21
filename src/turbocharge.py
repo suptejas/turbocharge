@@ -479,9 +479,8 @@ def update(package_list):
         else:
             return
 
-# Need To Install Large Packs Of Packages Example : Graphics Pack Installs Blender And Other Software
 @cli.command()
-@cli.argument('hyperpack_list', required=True)
+@click.argument('hyperpack_list', required=True)
 def hyperpack(hyperpack_list):
     '''
     Install Large Packs Of Applications And Packages
@@ -500,17 +499,29 @@ def hyperpack(hyperpack_list):
         turbocharge = Installer()
         updater = Updater()
         cleaner = Uninstaller()
+        click.echo('\n')
         hyperpacks = hyperpack_list.split(',')
         for hyperpack in hyperpacks:
             hyper_pack = hyperpkgs[hyperpack]
             packages = hyper_pack.packages.split(',')
             apps = hyper_pack.applications.split(',')
+
+            # Installing Required Packages
             for package in packages:
                 turbocharge.install_task(devpackages[package], f'sudo -S apt-get install -y {package}', password, f'{package} --version', [f'{devpackages[package]} Version'])
-            for app in apps:
-                turbocharge.install_task(applications[package], f'sudo -S snap install --classic {package}', password, '', [])
-                
 
+            # Installing Required Applications    
+            for app in apps:
+                turbocharge.install_task(applications[app], f'sudo -S snap install --classic {app}', password, '', [])
+
+            # Updating Required Packages
+            for package in packages:
+                updater.updatepack(package, password)
+
+            for app in apps:
+                updater.updateapp(app, password)
+
+            cleaner.clean(password)
 
 @cli.command()
 def clean():
