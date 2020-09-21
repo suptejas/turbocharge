@@ -538,6 +538,7 @@ def update(package_list):
         else:
             return
 
+
 # Need To Install Large Packs Of Packages Example : Graphics Pack Installs Blender And Other Software
 @cli.command()
 @cli.argument('hyperpack_list', required=True)
@@ -547,28 +548,41 @@ def hyperpack(hyperpack_list):
     '''   
     password = getpass('Enter your password: ')
     click.echo('\n')
+
     password_bar = IncrementalBar('Verifying Password...', max = 1)
+
     exitcode = is_password_valid(password)
+
     if exitcode == 1:
         click.echo('Wrong Password Entered... Aborting Installation!')
         return
+
     password_bar.next()
+
     os_bar = IncrementalBar('Getting Operating System...', max = 1)
     os_bar.next()
+    
     if platform == 'linux':
         turbocharge = Installer()
         updater = Updater()
         cleaner = Uninstaller()
+
         hyperpacks = hyperpack_list.split(',')
+
         for hyperpack in hyperpacks:
             hyper_pack = hyperpkgs[hyperpack]
+
             packages = hyper_pack.packages.split(',')
             apps = hyper_pack.applications.split(',')
+
             for package in packages:
                 turbocharge.install_task(devpackages[package], f'sudo -S apt-get install -y {package}', password, f'{package} --version', [f'{devpackages[package]} Version'])
+            
             for app in apps:
                 turbocharge.install_task(applications[app], f'sudo -S snap install --classic {app}', password, '', [])
-                
+
+    else:
+        click.echo(f': ( We don\'t support your platform ({platform.title()}) yet. : (')
 
 
 @cli.command()
