@@ -71,7 +71,12 @@ class Debugger:
             click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
             click.echo(click.style(f'Cause: Wrong Password Entered. Code: 001', fg='yellow', bold=True, blink=True))
             return
-        
+        elif platform == 'darwin':
+            click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
+            click.echo(click.style(f'Cause: Incompatible Platform. Turbocharge doesn\'t support macOS yet. Code: 005', fg='yellow', bold=True, blink=True))
+        elif platform != 'linux' and platform != 'darwin':
+            click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
+            click.echo(click.style(f'Cause: Incompatible Platform. Turbocharge doesn\'t support Windows 10/8/7/XP yet. Code: 010', fg='yellow', bold=True, blink=True))
         else:
             click.echo(click.style(':( Failed To Debug... :(', fg='red'))
             return
