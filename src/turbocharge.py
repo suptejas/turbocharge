@@ -55,7 +55,7 @@ devpackages = {
     }
 
 hyperpkgs = {
-    'essential' : HyperPack('git,curl,npm,zsh,vim', 'code'),
+    'essential' : HyperPack('git,curl,npm,zsh,vim', 'code,atom,sublime-text'),
 } 
 
 
@@ -66,7 +66,6 @@ def is_password_valid(password : str):
         return 1
     else:
         return 0
-
 
 
 class Debugger:
@@ -87,6 +86,7 @@ class Debugger:
         else:
             click.echo(click.style(':( Failed To Debug... :(', fg='red'))
             return
+
 class Installer:
     def install_task(self, package_name : str, script : str, password : str, test_script : str, tests_passed):
         try:    
@@ -151,6 +151,7 @@ class Installer:
         except  subprocess.CalledProcessError as e:
             click.echo(e.output)
             click.echo('An Error Occured During Installation...', err = True)
+
 class Uninstaller:
     def uninstall(self, script : str, password : str, package_name : str):
         try:    
@@ -187,6 +188,7 @@ class Uninstaller:
         except  subprocess.CalledProcessError as e:
             click.echo(e.output)
             click.echo('An Error Occured During Installation...', err = True) 
+
 class Updater:
     def updatepack(self, package_name: str, password: str):
         try:
@@ -231,6 +233,7 @@ class Updater:
         except CalledProcessError as e:
             click.echo(e.output)
             click.echo('An Error Occured During Updating..', err=True)
+
 class HyperPack:
     def __init__(self, packages, applications):
         self.packages = packages
@@ -489,7 +492,7 @@ def hyperpack(hyperpack_list):
     password_bar = IncrementalBar('Verifying Password...', max = 1)
     exitcode = is_password_valid(password)
     if exitcode == 1:
-        click.echo('Wrong Password Entered... Aborting Installation')
+        click.echo('Wrong Password Entered... Aborting Installation!')
         return
     password_bar.next()
     os_bar = IncrementalBar('Getting Operating System...', max = 1)
