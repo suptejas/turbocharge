@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name = 'turbocharge',
-    version = '3.0.5',
+    version = '3.0.6',
     description= 'Turbocharged Way To Install All The Packages You Love!',
     url="https://github.com/TheBossProSniper/TurboCharge",
     author = 'TheBossProSniper',
@@ -17,7 +17,7 @@ setup(
     long_description_content_type="text/markdown",
     py_modules=['turbocharge'],
     packages=find_packages(),
-    # scripts=[f'/home/{user}/.local/bin/turbocharge'],
+    scripts=[f'/home/{user}/.local/bin/turbocharge'],
     install_requires = [
         'Click',
         'progress',
