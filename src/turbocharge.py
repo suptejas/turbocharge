@@ -225,7 +225,7 @@ class Installer:
                     line_exists = True
 
             with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
-                if line_exists == False:
+                if line_exists is False:
                     file.write(f'{get_key(package_name)} {package_version} {package_type} \n')
 
             for _ in range(81, 101):
@@ -340,7 +340,7 @@ class Updater:
                     line_exists = True
 
             with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
-                if line_exists == False:
+                if line_exists is False:
                     file.write(f'{package_name} {package_version} {package_type} \n')
 
             for _ in range(1, 26):
