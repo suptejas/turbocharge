@@ -177,7 +177,7 @@ class Installer:
                 time.sleep(0.002)
                 testing_bar.next()
 
-            os.system('cd --')
+            os.system('cd ~')
 
             for _ in range(21, 60):
                 time.sleep(0.002)
@@ -185,10 +185,52 @@ class Installer:
 
             proc = Popen(test_script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
-            for _ in range(60, 101):
+            for _ in range(60, 81):
                 time.sleep(0.002)
                 testing_bar.next()
 
+            os.system('cd ~')
+
+            def subprocess_cmd(command):
+                process = subprocess.Popen(command,stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+                proc_stdout = process.communicate()[0].strip()
+                decoded = proc_stdout.decode("utf-8")
+                version_tag = decoded.split("\n")[1]
+                cleaned_version = version_tag.split(": ")[1] # using [1:] might be useful in some scenario where the version has multiple colons in it.
+                return cleaned_version
+
+            package_type = None
+            if 'sudo -S apt-get' in script:
+                package_type = 'p'
+            elif 'sudo -S snap' in script:
+                package_type = 'a'
+
+            def get_key(val):
+                for key, value in devpackages.items():
+                    if val == value:
+                        return key
+                
+                return 'Key doesn\'t exist'
+                
+            package_version = subprocess_cmd(f'apt show {get_key(package_name)}'.split())
+            os.system('cd ~')
+
+            with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+                lines = file.readlines()
+
+            line_exists = False
+
+            for line in lines:
+                if get_key(package_name) in line:
+                    line_exists = True
+
+            with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
+                if line_exists == False:
+                    file.write(f'{get_key(package_name)} {package_version} {package_type} \n')
+
+            for _ in range(81, 101):
+                time.sleep(0.002)
+                testing_bar.next()
             click.echo('\n')
 
             for test in tests_passed:
@@ -214,6 +256,22 @@ class Uninstaller:
 
             # Popen only accepts byte-arrays so you must encode the string
             proc.communicate(password.encode())
+
+            def get_key(val):
+                for key, value in devpackages.items():
+                    if val == value:
+                        return key
+                
+                return 'Key doesn\'t exist'
+
+            with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+                lines = file.readlines()
+            
+            with open(f'/home/{getuser()}/config.tcc', 'w') as file:
+                for line in lines:
+                    if get_key(package_name) not in line:
+                        file.write(line)
+                    
 
             # stdoutput = (output)[0].decode('utf-8')
             for _ in range(1, 26):
@@ -257,6 +315,34 @@ class Updater:
             # Popen only accepts byte-arrays so you must encode the string
             proc.communicate(password.encode())
             # stdoutput = (output)[0].decode('utf-8')
+            os.system('cd ~')
+
+            def subprocess_cmd(command):
+                process = subprocess.Popen(command,stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+                proc_stdout = process.communicate()[0].strip()
+                decoded = proc_stdout.decode("utf-8")
+                version_tag = decoded.split("\n")[1]
+                cleaned_version = version_tag.split(": ")[1] # using [1:] might be useful in some scenario where the version has multiple colons in it.
+                return cleaned_version
+
+            package_type = 'p'
+            
+            package_version = subprocess_cmd(f'apt show {package_name}'.split())
+            os.system('cd ~')
+
+            with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+                lines = file.readlines()
+
+            line_exists = False
+
+            for line in lines:
+                if package_name in line:
+                    line_exists = True
+
+            with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
+                if line_exists == False:
+                    file.write(f'{package_name} {package_version} {package_type} \n')
+
             for _ in range(1, 26):
                 time.sleep(0.01)
                 installer_progress.next()
@@ -522,7 +608,7 @@ def remove(package_list):
 
                 
 @cli.command()
-@cli.argument('package_list', required=True)
+@click.argument('package_list', required=True)
 def update(package_list):
     '''
     Updates Applications And Packages
