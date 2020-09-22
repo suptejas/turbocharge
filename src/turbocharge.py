@@ -871,7 +871,7 @@ def remove(package_list):
                     with open('.bashrc', 'w') as file:
                         for line in lines:
                             if 'anaconda' in line or 'miniconda' in line:
-                                return
+                                continue
                             else:
                                 file.write(line)
 
@@ -907,7 +907,7 @@ def remove(package_list):
                     with open('.bashrc', 'w') as file:
                         for line in lines:
                             if 'anaconda' in line or 'miniconda' in line:
-                                return
+                                continue
                             else:
                                 file.write(line)
 
