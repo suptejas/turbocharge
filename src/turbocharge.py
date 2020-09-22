@@ -32,27 +32,30 @@ applications = {
     'rubymine' : 'RubyMine',
     'figma-linux' : 'Figma',
 }
-
 devpackages = {
-    'git' : 'Git',
-    'curl' : 'Curl',
-    'docker' : 'Docker',
-    'npm' : 'Npm',
-    'zsh' : 'Zsh',
-    'emacs' : 'Emacs',
-    'neovim' : 'Neo Vim',
-    'vim' : 'Vim',
-    'htop' : 'Htop',
-    'sqlite' : 'Sqlite',
-    'tldr' : 'Tldr',
-    'jq' : 'JQ',
-    'ncdu' : 'Ncdu',
-    'taskwarrior' : 'Task Warrior',
-    'tmux' : 'Tmux',
-    'patchelf' : 'Patchelf',
-    'golang' : 'Go-Lang',
-    'rust' : 'Rust',
-    'zlib' : 'Z-Lib',
+    'git': 'Git',
+    'curl': 'Curl',
+    'docker': 'Docker',
+    'npm': 'Npm',
+    'zsh': 'Zsh',
+    'emacs': 'Emacs',
+    'neovim': 'Neo Vim',
+    'vim': 'Vim',
+    'htop': 'Htop',
+    'sqlite': 'Sqlite',
+    'tldr': 'Tldr',
+    'jq': 'JQ',
+    'ncdu': 'Ncdu',
+    'taskwarrior': 'Task Warrior',
+    'tmux': 'Tmux',
+    'patchelf': 'Patchelf',
+    'golang': 'Go-Lang',
+    'rust': 'Rust',
+    'zlib': 'Z-Lib',
+    'kakoune': 'Kakoune',
+    'autojump': 'Autojump',
+    'pass': 'Pass',
+    'qtpass': 'QTpass'
 }
 
 
@@ -638,6 +641,7 @@ ________________
 | Package      |
 ----------------    
 |  anaconda    |
+|  autojump    |
 |  curl        |
 |  docker      |
 |  emacs       |
@@ -646,11 +650,14 @@ ________________
 |  htop        |
 |  jq          |
 |  kotlin      |
+|  kakoune     |
 |  miniconda   |
 |  ncdu        |
 |  neovim      |
 |  npm         |
+|  pass        |
 |  patchelf    |
+|  qtpass      |
 |  rust        |
 |  sqlite      |
 |  taskwarrior |
@@ -659,7 +666,7 @@ ________________
 |  vim         |
 |  zsh         |
 |  zlib        |
-----------------        
+----------------    
         ''',
         fg='white',
     ),
