@@ -1,6 +1,7 @@
 import click
 import os
 import subprocess
+from subprocess import CalledProcessError
 from sys import platform
 from getpass import getpass, getuser
 from progress.spinner import Spinner
@@ -22,7 +23,7 @@ applications = {
         'webstorm' : 'Web Storm',
         'pycharm': 'Pycharm Community',
         'sublime-text': 'Sublime Text',
-        'code' : 'Visual Stuio Code',
+        'code' : 'Visual Studio Code',
         'code-insiders' : 'Visual Studio Code Insiders',  
         'eclipse' : 'Eclipse',
         'powershell' : 'Powershell',
@@ -54,6 +55,45 @@ devpackages = {
         'zlib' : 'Z-Lib',
     }
 
+class HyperPack:
+    def __init__(self, packages, applications):
+        self.packages = packages
+        self.applications = applications
+
+hyperpkgs = {
+    'essential' : HyperPack('git,curl,npm,zsh,vim', 'code,atom,sublime-text'),
+    'office' : HyperPack('sqlite', 'libreoffice')
+} 
+
+
+def is_password_valid(password : str):
+    proc = subprocess.Popen('sudo -k -S -l'.split(), stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
+    output = proc.communicate(password.encode())
+    if 'incorrect password' in output[1].decode():
+        return 1
+    else:
+        return 0
+
+
+class Debugger:
+    def debug(self, password : str, error : bytes):
+        error = error.decode('utf-8')
+        if 'sudo: 1 incorrect password attempt' in error:
+            click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
+            click.echo(click.style(f'Cause: Wrong Password Entered. Code: 001', fg='yellow', bold=True, blink=True))
+            return
+        elif platform == 'darwin':
+            click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
+            click.echo(click.style(f'Cause: Incompatible Platform. Turbocharge doesn\'t support macOS yet. Code: 005', fg='yellow', bold=True, blink=True))
+            return
+        elif platform == 'win32':
+            click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
+            click.echo(click.style(f'Cause: Incompatible Platform. Turbocharge doesn\'t support Windows 10/8/7/XP yet. Code: 010', fg='yellow', bold=True, blink=True))
+            return
+        else:
+            click.echo(click.style(':( Failed To Debug... :(', fg='red'))
+            return
+
 class Installer:
     def install_task(self, package_name : str, script : str, password : str, test_script : str, tests_passed):
         try:    
@@ -62,11 +102,38 @@ class Installer:
             for _ in range(1, 75):
                 time.sleep(0.01)
                 installer_progress.next()
-            proc = Popen(script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            
+            proc = Popen(script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)\
             # Popen only accepts byte-arrays so you must encode the string
-            proc.communicate(password.encode())
-            # stdoutput = (output)[0].decode('utf-8')
-            click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n'))
+            output, error = proc.communicate(password.encode())
+            if proc.returncode != 0:
+                click.echo(click.style('❎ Installation Failed... ❎', fg='red', blink=True, bold=True))
+                debug = click.prompt('Would you like us to debug the failed installation?[y/n]')
+                if debug == 'y':
+                    debugger = Debugger()
+                    debugger.debug(password, error)
+                    logs = click.prompt('Would you like to see the logs?[y/n]', type=str)
+                    if logs == 'y':
+                        final_output = error.decode('utf-8')
+                        if final_output == '':
+                            click.echo('There were no logs found...')
+                            return
+                        else:
+                            click.echo(final_output)
+                            return
+                    return
+                else:
+                    logs = click.prompt('Would you like to see the logs?[y/n]', type=str)
+                    if logs == 'y':
+                        final_output = output.decode('utf-8')
+                        if final_output == '':
+                            click.echo('There were no logs found...')
+                            return
+                        else:
+                            click.echo(final_output)
+                            return
+                    return
+            click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n', fg='green', bold=True))
             # Testing the successful installation of the package
             testing_bar = IncrementalBar('Testing package...', max = 100)
             if tests_passed == [] and test_script == '':
@@ -80,7 +147,7 @@ class Installer:
             for _ in range(21, 60):
                 time.sleep(0.002)
                 testing_bar.next()
-            subprocess.run(test_script.split(), stdout=subprocess.DEVNULL)
+            proc = Popen(test_script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
             for _ in range(60, 101):
                 time.sleep(0.002)
                 testing_bar.next()
@@ -91,6 +158,7 @@ class Installer:
         except  subprocess.CalledProcessError as e:
             click.echo(e.output)
             click.echo('An Error Occured During Installation...', err = True)
+
 class Uninstaller:
     def uninstall(self, script : str, password : str, package_name : str):
         try:    
@@ -126,7 +194,51 @@ class Uninstaller:
             click.echo(click.style('🎉 Successfully Cleaned Turbocharge! 🎉', fg='green'))
         except  subprocess.CalledProcessError as e:
             click.echo(e.output)
-            click.echo('An Error Occured During Installation...', err = True)
+            click.echo('An Error Occured During Installation...', err = True) 
+
+class Updater:
+    def updatepack(self, package_name: str, password: str):
+        try:
+            installer_progress = Spinner(
+                message=f'Updating {package_name}...', max=100)
+            # sudo requires the flag '-S' in order to take input from stdin
+            for _ in range(1, 75):
+                time.sleep(0.007)
+                installer_progress.next()
+            proc = Popen(
+                f'sudo -S apt-get install --only-upgrade -y {package_name}'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            # Popen only accepts byte-arrays so you must encode the string
+            proc.communicate(password.encode())
+            # stdoutput = (output)[0].decode('utf-8')
+            for _ in range(1, 26):
+                time.sleep(0.01)
+                installer_progress.next()
+            click.echo(click.style(
+                f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n', fg='green'))
+        except CalledProcessError as e:
+            click.echo(e.output)
+            click.echo('An Error Occured During Updating..', err=True)
+
+    def updateapp(self, package_name: str, password: str):
+        try:
+            installer_progress = Spinner(message=f'Updating {package_name}...', max=100)
+            # sudo requires the flag '-S' in order to take input from stdin
+            for _ in range(1, 75):
+                time.sleep(0.007)
+                installer_progress.next()
+            proc = Popen(
+                f'sudo -S snap refresh -y {package_name}'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            # Popen only accepts byte-arrays so you must encode the string
+            proc.communicate(password.encode())
+            # stdoutput = (output)[0].decode('utf-8')
+            for _ in range(1, 26):
+                time.sleep(0.01)
+                installer_progress.next()
+            click.echo(click.style(
+                f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n', fg='green'))
+        except CalledProcessError as e:
+            click.echo(e.output)
+            click.echo('An Error Occured During Updating..', err=True)
 
 def show_progress(finding_bar):
     for _ in range(1, 2):
@@ -143,7 +255,7 @@ def version():
     '''
     Current Turbocharged Version You Have
     '''
-    print('Version: 3.0.5 \nDistribution: Stable x86-64')
+    print('Version: 3.0.6 \nDistribution: Stable x86-64')
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -163,6 +275,14 @@ def install(package_list):
             click.echo('\n')
             finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
 
+            if package_name in devpackages:
+                show_progress(finding_bar)
+                turbocharge.install_task(devpackages[package_name], f'sudo -S apt-get install -y {package_name}', password, f'{package_name} --version', [f'{devpackages[package_name]} Version'])
+
+            if package_name in applications:
+                show_progress(finding_bar)
+                turbocharge.install_task(applications[package_name], f'sudo -S snap install --classic {package_name}', password, '', [])
+
             if package_name == 'chrome':
                 show_progress(finding_bar)
                 try:    
@@ -178,8 +298,6 @@ def install(package_list):
                     proc.wait()
                     second = Popen("sudo -S apt-get install -y ./google-chrome-stable_current_amd64.deb".split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     # Popen only accepts byte-arrays so you must encode the string
-                    pro_id = os.getpid()
-                    loading_bar(pro_id)
                     second.communicate(password.encode())
                     
                     # stdoutput = (output)[0].decode('utf-8') 
@@ -232,20 +350,35 @@ def install(package_list):
                     click.echo('An Error Occured During Installation...', err = True)
 
             if package_name == 'miniconda':
-                pass
-            
-            if package_name in devpackages:
                 show_progress(finding_bar)
-                turbocharge.install_task(devpackages[package_name], f'sudo -S apt-get install -y {package_name}', password, f'{package_name} --version', [f'{devpackages[package_name]} Version'])
+                username = getuser()
+                try:    
+                    installer_progress = Spinner(message=f'Installing {package_name}...', max=100)
+                    # sudo requires the flag '-S' in order to take input from stdin
+                    for _ in range(1, 35):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    os.system("wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh -O ~/miniconda.sh")
+                    for _ in range(35, 61):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    os.system('bash ~/anaconda.sh -b -p $HOME/anaconda3')
+                    for _ in range(61, 91):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    os.system(f'echo "export PATH="/home/{username}/anaconda3/bin:$PATH"" >> ~/.bashrc')
+                    for _ in range(90, 101):
+                        time.sleep(0.01)
+                        installer_progress.next()
+                    # stdoutput = (output)[0].decode('utf-8')
+                    click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n'))
+                except  subprocess.CalledProcessError as e:
+                    click.echo(e.output)
+                    click.echo('An Error Occured During Installation...', err = True)
 
-            if package_name in applications:
-                show_progress(finding_bar)
-                turbocharge.install_task(applications[package_name], f'sudo -S snap install --classic {package_name}', password, '', [])
-
-
-            if package_name not in devpackages and package_name not in applications and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
+            elif package_name not in devpackages and package_name not in applications and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
-                click.echo(click.style(':( Package Not Found! If you would like this package to be added, then please email it to us at : turbochargedev@gmail.com  :(', fg='red'))
+                click.echo(click.style(':( Package Not Found! :(', fg='red'))
 
 
 @cli.command()
@@ -264,6 +397,130 @@ def remove(package_list):
         if package in applications:        
             uninstaller.uninstall(f'sudo snap remove {package}', password, package_name=applications[package])
         
+        if package == 'anaconda':
+            try:
+                installer_progress = Spinner(
+                    message=f'Uninstalling Anaconda...', max=100)
+                # sudo requires the flag '-S' in order to take input from stdin
+                for _ in range(1, 75):
+                    time.sleep(0.007)
+                    installer_progress.next()
+                os.system('rm -rf ~/anaconda3 ~/.continuum ~/.conda')
+                os.system('rm ~/anaconda.sh')
+                with open('.bashrc', 'r') as file:
+                    lines = file.read()
+
+                with open('.bashrc', 'w') as file:
+                    for line in lines:
+                        if 'anaconda' in line or 'miniconda' in line:
+                            return
+                        else:
+                            file.write(line)
+
+                # stdoutput = (output)[0].decode('utf-8')
+                for _ in range(75, 101):
+                    time.sleep(0.01)
+                    installer_progress.next()
+                click.echo(click.style(
+                    f'\n\n 🎉 Successfully Uninstalled Anaconda! 🎉 \n', fg='green'))
+            except CalledProcessError as e:
+                click.echo(e.output)
+                click.echo('An Error Occured During Uninstallation...', err=True)
+
+        if package == 'miniconda':
+            try:
+                installer_progress = Spinner(
+                    message=f'Uninstalling Miniconda...', max=100)
+                # sudo requires the flag '-S' in order to take input from stdin
+                for _ in range(1, 75):
+                    time.sleep(0.007)
+                    installer_progress.next()
+                os.system('rm -rf ~/miniconda ~/.continuum ~/.conda ~/.condarc')
+                os.system('rm ~/miniconda.sh')
+                with open('.bashrc', 'r') as file:
+                    lines = file.read()
+
+                with open('.bashrc', 'w') as file:
+                    for line in lines:
+                        if 'anaconda' in line or 'miniconda' in line:
+                            return
+                        else:
+                            file.write(line)
+                # stdoutput = (output)[0].decode('utf-8')
+                for _ in range(1, 101):
+                    time.sleep(0.01)
+                    installer_progress.next()
+                click.echo(click.style(
+                    f'\n\n 🎉 Successfully Uninstalled Miniconda! 🎉 \n', fg='green'))
+            except CalledProcessError as e:
+                click.echo(e.output)
+                click.echo('An Error Occured During Uninstallation...', err=True)
+
+                
+@cli.command()
+@click.argument('package_list', required=True)
+def update(package_list):
+    '''
+    Updates Applications And Packages
+    '''
+    updater = Updater()
+    password = getpass('Enter your password: ')
+    packages = package_list.split(',')
+    for package in packages:
+        if package in devpackages:
+            updater.updatepack(package, password)
+
+        if package in applications:
+            updater.updateapp(package, password)
+
+        else:
+            return
+
+# Need To Install Large Packs Of Packages Example : Graphics Pack Installs Blender And Other Software
+@cli.command()
+@click.argument('hyperpack_list', required=True)
+def hyperpack(hyperpack_list):
+    '''
+    Install Large Packs Of Applications And Packages
+    '''   
+    password = getpass('Enter your password: ')
+    click.echo('\n')
+    password_bar = IncrementalBar('Verifying Password...', max = 1)
+    exitcode = is_password_valid(password)
+    if exitcode == 1:
+        click.echo('Wrong Password Entered... Aborting Installation!')
+        return
+    password_bar.next()
+    os_bar = IncrementalBar('Getting Operating System...', max = 1)
+    os_bar.next()
+    if platform == 'linux':
+        turbocharge = Installer()
+        updater = Updater()
+        cleaner = Uninstaller()
+        click.echo('\n')
+        hyperpacks = hyperpack_list.split(',')
+        for hyperpack in hyperpacks:
+            hyper_pack = hyperpkgs[hyperpack]
+            packages = hyper_pack.packages.split(',')
+            apps = hyper_pack.applications.split(',')
+
+            # Installing Required Packages
+            for package in packages:
+                turbocharge.install_task(devpackages[package], f'sudo -S apt-get install -y {package}', password, f'{package} --version', [f'{devpackages[package]} Version'])
+                
+            # Installing Required Applications    
+            for app in apps:
+                turbocharge.install_task(applications[app], f'sudo -S snap install --classic {app}', password, '', [])
+            
+            # Updating Required Packages
+            for package in packages:
+                updater.updatepack(package, password)
+            
+            for app in apps:
+                updater.updateapp(app, password)
+                
+            cleaner.clean(password)
+
 @cli.command()
 def clean():
     '''
@@ -274,22 +531,7 @@ def clean():
     password = getpass('Enter your password: ')
     uninstaller.clean(password)
 
-def loading_bar(pro_id):
-    spin = ["-", "\\", "|", "/",]
-    click.echo("Working ${spin[0]}")
-    command = '''
-    echo -n "Working ${spin[0]}"
-    while [ kill -0 $pid ]
-    do
-        for i in "${spin[@]}"
-        do
-            echo -ne "\b$i"
-            sleep 0.1
-        done
-    done
-    '''
-    click.echo(command)
-    
+
 @cli.command()
 def list():
     '''
@@ -324,6 +566,7 @@ __________________________________________
 ________________
 | Package      |
 ----------------    
+|  anaconda    |
 |  curl        |
 |  docker      |
 |  emacs       |
@@ -332,6 +575,7 @@ ________________
 |  htop        |
 |  jq          |
 |  kotlin      |
+|  miniconda   |
 |  ncdu        |
 |  neovim      |
 |  npm         |
@@ -349,82 +593,3 @@ ________________
         fg='white',
     ),
 )
-
-# if platform == 'darwin':
-    #     os_bar.next()
-    #     click.echo('\n')
-    #     finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
-    #     if package_name == 'brew':
-    #         for _ in range(1, 2):
-    #             time.sleep(0.03)
-    #             finding_bar.next()
-    #         try:    
-    #             click.echo('\n')
-    #             password = getpass("Enter your password: ")
-    #             installer_progress = Spinner(message='Installing Homebrew...', max=100)
-    #             # sudo requires the flag '-S' in order to take input from stdin
-    #             for _ in range(1, 75):
-    #                 time.sleep(0.03)
-    #                 installer_progress.next()
-    #             proc = pexpect.spawn('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"')
-    #             proc.sendline(password)
-    #             proc.sendline('\n')
-    #             click.echo(click.style('\n\n 🎉 Successfully Installed Homebrew! 🎉 \n'))
-    #             # Testing the successful installation of the package
-    #             testing_bar = IncrementalBar('Testing package...', max = 100)
-    #             for _ in range(1, 21):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             os.system('cd --')
-    #             for _ in range(21, 60):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             for _ in range(60, 101):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             subprocess.run(['brew','--version'])
-    #             click.echo('\n')
-    #             click.echo(click.style('Test Passed: Brew Version ✅\n', fg='green'))
-    #         except  subprocess.CalledProcessError as e:
-    #             click.echo(e.output)
-    #             click.echo('An Error Occured During Installation...', err = True)
-    #     if package_name == 'xcode-tools':
-    #         for _ in range(1, 2):
-    #             time.sleep(0.03)
-    #             finding_bar.next()
-    #         try:    
-    #             click.echo('\n')
-    #             password = getpass("Enter your password: ")
-    #             installer_progress = Spinner(message='Installing Xcode-Command-Line-Tools...', max=100)
-    #             # sudo requires the flag '-S' in order to take input from stdin
-    #             for _ in range(1, 75):
-    #                 time.sleep(0.03)
-    #                 installer_progress.next()
-    #             proc = pexpect.spawn('xcode-select --install')
-    #             click.echo(click.style('\n\n 🎉 Successfully Installed Xcode-Command-Line-Tools! 🎉 \n'))
-    #             # Testing the successful installation of the package
-    #             testing_bar = IncrementalBar('Testing package...', max = 100)
-    #             for _ in range(1, 21):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             os.system('cd --')
-    #             for _ in range(21, 60):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             for _ in range(60, 101):
-    #                 time.sleep(0.05)
-    #                 testing_bar.next()
-    #             subprocess.run(['git','--version'])
-    #             subprocess.run(['clang', '--version'])
-    #             subprocess.run(['swift', '--version'])
-    #             subprocess.run(['pip3', '--version'])
-                
-    #             click.echo('\n')
-    #             click.echo(click.style('Test Passed: Git Version ✅\n', fg='green'))
-    #             click.echo(click.style('Test Passed: Clang Version ✅\n', fg='green'))
-    #             click.echo(click.style('Test Passed: Swift Version ✅\n', fg='green'))
-    #             click.echo(click.style('Test Passed: Pip3 Version ✅\n', fg='green'))
-                
-    #         except  subprocess.CalledProcessError as e:
-    #             click.echo(e.output)
-    #             click.echo('An Error Occured During Installation...', err = True)
