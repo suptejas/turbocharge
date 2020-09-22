@@ -6,7 +6,7 @@ from getpass import getpass, getuser
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 import time
-from subprocess import Popen, PIPE, DEVNULL
+from subprocess import Popen, PIPE, DEVNULL, run
 
 
 applications = {
@@ -108,158 +108,252 @@ class Debugger:
 
 class Installer:
     def install_task(self, package_name : str, script : str, password : str, test_script : str, tests_passed):
-        try:    
-            installer_progress = Spinner(message=f'Installing {package_name}...', max=100)
+        if platform == 'linux':
+            try:    
+                installer_progress = Spinner(message=f'Installing {package_name}...', max=100)
 
-            # sudo requires the flag '-S' in order to take input from stdin
-            for _ in range(1, 75):
-                time.sleep(0.01)
-                installer_progress.next()
-            
-            proc = Popen(script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
-
-            # Popen only accepts byte-arrays so you must encode the string
-            output, error = proc.communicate(password.encode())
-
-            if proc.returncode != 0:
-                click.echo(click.style('❎ Installation Failed... ❎', fg='red', blink=True, bold=True))
+                # sudo requires the flag '-S' in order to take input from stdin
+                for _ in range(1, 75):
+                    time.sleep(0.01)
+                    installer_progress.next()
                 
-                debug = click.prompt('Would you like us to debug the failed installation?[y/n]')
+                proc = Popen(script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
+                # Popen only accepts byte-arrays so you must encode the string
+                output, error = proc.communicate(password.encode())
+
+                if proc.returncode != 0:
+                    click.echo(click.style('❎ Installation Failed... ❎', fg='red', blink=True, bold=True))
+                    
+                    debug = click.prompt('Would you like us to debug the failed installation?[y/n]')
+                    
+                    if debug == 'y':
+                        debugger = Debugger()
+                        debugger.debug(password, error)
+
+                        logs = click.prompt('Would you like to see the logs?[y/n]', type=str)
+
+                        if logs == 'y':
+                            final_output = error.decode('utf-8')
+
+                            if final_output == '':
+                                click.echo('There were no logs found...')
+
+                                return
+                            else:
+                                click.echo(final_output)
+
+                                return
+                        return
+                    else:
+                        logs = click.prompt('Would you like to see the logs?[y/n]', type=str)
+
+                        if logs == 'y':
+                            final_output = output.decode('utf-8')
+
+                            if final_output == '':
+                                click.echo('There were no logs found...')
+                                
+                                return
+                            else:
+                                click.echo(final_output)
+
+                                return
+                        return
+
+                click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n', fg='green', bold=True))
                 
-                if debug == 'y':
-                    debugger = Debugger()
-                    debugger.debug(password, error)
+                # Testing the successful installation of the package
+                testing_bar = IncrementalBar('Testing package...', max = 100)
 
-                    logs = click.prompt('Would you like to see the logs?[y/n]', type=str)
+                if tests_passed == [] and test_script == '':
+                    click.echo('\n')
+                    click.echo(click.style(f'Test Passed: {package_name} Launch ✅\n', fg='green'))
 
-                    if logs == 'y':
-                        final_output = error.decode('utf-8')
-
-                        if final_output == '':
-                            click.echo('There were no logs found...')
-
-                            return
-                        else:
-                            click.echo(final_output)
-
-                            return
-                    return
-                else:
-                    logs = click.prompt('Would you like to see the logs?[y/n]', type=str)
-
-                    if logs == 'y':
-                        final_output = output.decode('utf-8')
-
-                        if final_output == '':
-                            click.echo('There were no logs found...')
-                            
-                            return
-                        else:
-                            click.echo(final_output)
-
-                            return
                     return
 
-            click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n', fg='green', bold=True))
-            
-            # Testing the successful installation of the package
-            testing_bar = IncrementalBar('Testing package...', max = 100)
+                for _ in range(1, 21):
+                    time.sleep(0.002)
+                    testing_bar.next()
 
-            if tests_passed == [] and test_script == '':
+                os.system('cd --')
+
+                for _ in range(21, 60):
+                    time.sleep(0.002)
+                    testing_bar.next()
+
+                proc = Popen(test_script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
+                for _ in range(60, 101):
+                    time.sleep(0.002)
+                    testing_bar.next()
+
                 click.echo('\n')
-                click.echo(click.style(f'Test Passed: {package_name} Launch ✅\n', fg='green'))
+
+                for test in tests_passed:
+                    click.echo(click.style(f'Test Passed: {test} ✅\n', fg='green'))
 
                 return
 
-            for _ in range(1, 21):
-                time.sleep(0.002)
-                testing_bar.next()
+            except subprocess.CalledProcessError as e:
+                click.echo(e.output)
+                click.echo('An Error Occured During Installation...', err = True)
 
-            os.system('cd --')
 
-            for _ in range(21, 60):
-                time.sleep(0.002)
-                testing_bar.next()
+        elif platform == 'win32':
+            try:
+                installer_progress = Spinner(message=f'Installing {package_name}...', max=100)
+                
+                for _ in range(1, 75):
+                    time.sleep(0.01)
+                    installer_progress.next()
 
-            proc = Popen(test_script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                run(script, stdout=PIPE, stderr=PIPE)
 
-            for _ in range(60, 101):
-                time.sleep(0.002)
-                testing_bar.next()
+                for _ in range(1, 25):
+                    time.sleep(0.01)
+                    installer_progress.next()
 
-            click.echo('\n')
+                # Haven't implemented debug because .run() doesn't offer communicate() function
 
-            for test in tests_passed:
-                click.echo(click.style(f'Test Passed: {test} ✅\n', fg='green'))
+                click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n', fg='green', bold=True))
 
-            return
+                testing_bar = IncrementalBar('Testing package...', max = 100)
+            
+                if tests_passed == [] and test_script == '':
+                    click.echo('\n')
+                    click.echo(click.style(f'Test Passed: {package_name} Launch ✅\n', fg='green'))
 
-        except subprocess.CalledProcessError as e:
-            click.echo(e.output)
-            click.echo('An Error Occured During Installation...', err = True)
+                    return
+                
+                for _ in range(1, 64):
+                    time.sleep(0.002)
+                    testing_bar.next()
+                
+                run(test_script, stdout=PIPE, stderr=PIPE)
+
+                for _ in range(1, 36):
+                    time.sleep(0.002)
+                    testing_bar.next()
+                
+                click.echo('\n')
+
+                for test in tests_passed:
+                    click.echo(click.style(f'Test Passed: {test} ✅\n', fg='green'))
+
+                return
+            
+            except Exception as e:
+                click.echo(e)
+                click.echo('An Error Occured During Installation...', err = True)
+
+
 
 class Uninstaller:
     def uninstall(self, script : str, password : str, package_name : str):
-        try:    
-            installer_progress = Spinner(message=f'Uninstalling {package_name}...', max=100)
+        if platform == 'linux':
+            try:    
+                installer_progress = Spinner(message=f'Uninstalling {package_name}...', max=100)
 
-            # sudo requires the flag '-S' in order to take input from stdin
-            for _ in range(1, 75):
-                time.sleep(0.007)
-                installer_progress.next()
+                # sudo requires the flag '-S' in order to take input from stdin
+                for _ in range(1, 75):
+                    time.sleep(0.007)
+                    installer_progress.next()
 
-            proc = Popen(script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                proc = Popen(script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
-            # Popen only accepts byte-arrays so you must encode the string
-            proc.communicate(password.encode())
+                # Popen only accepts byte-arrays so you must encode the string
+                proc.communicate(password.encode())
 
-            # stdoutput = (output)[0].decode('utf-8')
-            for _ in range(1, 26):
-                time.sleep(0.01)
-                installer_progress.next()
+                # stdoutput = (output)[0].decode('utf-8')
+                for _ in range(1, 25):
+                    time.sleep(0.01)
+                    installer_progress.next()
 
-            click.echo(click.style(f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n', fg='green'))
+                click.echo(click.style(f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n', fg='green'))
 
-        except subprocess.CalledProcessError as e:
-            click.echo(e.output)
-            click.echo('An Error Occured During Installation...', err = True)
-    
+            except subprocess.CalledProcessError as e:
+                click.echo(e.output)
+                click.echo('An Error Occured During Installation...', err = True)
+        
+
+        elif platform == 'win32':
+            try:
+                installer_progress = Spinner(message=f'Uninstalling {package_name}...', max=100)
+
+                for _ in range(1, 75):
+                    time.sleep(0.007)
+                    installer_progress.next()
+                
+                run(script, stdout=PIPE, stderr=PIPE)
+
+                for _ in range(1, 25):
+                    time.sleep(0.007)
+                    installer_progress.next()
+
+                click.echo(click.style(f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n', fg='green'))
+
+            except subprocess.CalledProcessError as e:
+                click.echo(e.output)
+                click.echo('An Error Occured During Installation...', err = True)
+
+
     def clean(self, password : str):
-        try:
-            install_progress = Spinner(message='Cleaning Up Packages ')
-            for _ in range(1, 75):
-                time.sleep(0.007)
-                install_progress.next()
-            proc = Popen('sudo apt-get -y autoremove'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
-            proc.communicate(password.encode())
-            for _ in range(1, 26):
-                time.sleep(0.007)
-                install_progress.next()
-            click.echo('\n')
-            click.echo(click.style('🎉 Successfully Cleaned Turbocharge! 🎉', fg='green'))
-        except subprocess.CalledProcessError as e:
-            click.echo(e.output)
-            click.echo('An Error Occured During Installation...', err = True) 
+        if platform == 'linux':
+            try:
+                install_progress = Spinner(message='Cleaning Up Packages ')
+                
+                for _ in range(1, 75):
+                    time.sleep(0.007)
+                    install_progress.next()
+                
+                proc = Popen('sudo apt-get -y autoremove'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                
+                proc.communicate(password.encode())
+                
+                for _ in range(1, 26):
+                    time.sleep(0.007)
+                    install_progress.next()
+                
+                click.echo('\n')
+                click.echo(click.style('🎉 Successfully Cleaned Turbocharge! 🎉', fg='green'))
+            
+            except subprocess.CalledProcessError as e:
+                click.echo(e.output)
+                click.echo('An Error Occured During Installation...', err = True)
+        
+        elif platform == 'win32':
+            pass # chocolatey auto removes files
+
 
 class Updater:
     def updatepack(self, package_name: str, password: str):
         try:
             installer_progress = Spinner(
                 message=f'Updating {package_name}...', max=100)
-            # sudo requires the flag '-S' in order to take input from stdin
+
+            
             for _ in range(1, 75):
                 time.sleep(0.007)
                 installer_progress.next()
+            
             proc = Popen(
-                f'sudo -S apt-get install --only-upgrade -y {package_name}'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                f'sudo -S apt-get install --only-upgrade -y {package_name}'.split(),
+                stdin=PIPE,
+                stdout=PIPE,
+                stderr=PIPE
+            )
+            
             # Popen only accepts byte-arrays so you must encode the string
             proc.communicate(password.encode())
+            
             # stdoutput = (output)[0].decode('utf-8')
             for _ in range(1, 26):
                 time.sleep(0.01)
                 installer_progress.next()
-            click.echo(click.style(
-                f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n', fg='green'))
+            
+            click.echo(click.style(f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n', fg='green'))
+        
         except subprocess.CalledProcessError as e:
             click.echo(e.output)
             click.echo('An Error Occured During Updating..', err=True)
@@ -294,9 +388,11 @@ def show_progress(finding_bar):
         finding_bar.next()
     click.echo('\n')
 
+
 @click.group()
 def cli():
     pass
+
 
 @cli.command()
 def version():
@@ -304,6 +400,7 @@ def version():
     Current Turbocharged Version You Have
     '''
     print('Version: 3.0.6 \nDistribution: Stable x86-64')
+
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -338,17 +435,22 @@ def install(package_list):
 
             if package_name == 'chrome':
                 show_progress(finding_bar)
-                try:    
+                try:
                     click.echo('\n')
+
                     password = getpass("Enter your password: ")
+
                     installer_progress = Spinner(message='Installing Chrome...', max=100)
-                    # sudo requires the flag '-S' in order to take input from stdin
+
                     for _ in range(1, 75):
                         time.sleep(0.03)
                         installer_progress.next()
+                    
                     click.echo(click.style('\n Chrome Will Take 2 to 4 Minutes To Download... \n', fg='yellow'))
+                    
                     proc = Popen("wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb".split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
                     proc.wait()
+                    
                     second = Popen("sudo -S apt-get install -y ./google-chrome-stable_current_amd64.deb".split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
                     # Popen only accepts byte-arrays so you must encode the string
                     second.communicate(password.encode())
@@ -435,6 +537,31 @@ def install(package_list):
             elif package_name not in devpackages and package_name not in applications and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
+        
+        elif platform == 'win32':
+            click.echo('\n')
+            finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
+
+            if package_name in devpackages:
+                show_progress(finding_bar)
+                turbocharge.install_task(
+                    package_name=package_name,
+                    script=f"choco install {package_name} -y",
+                    password="",
+                    test_script=f"{package_name} --version",
+                    tests_passed=[f'{devpackages[package_name]} Version']
+                )
+
+            if package_name in applications:
+                show_progress(finding_bar)
+                turbocharge.install_task(
+                    package_name=package_name,
+                    script=f"choco install {package_name} -y",
+                    password="",
+                    test_script="",
+                    tests_passed=[]
+                )
+            
 
 
 @cli.command()
@@ -603,6 +730,7 @@ def clean():
     password = getpass('Enter your password: ')
     uninstaller.clean(password)
     
+
 @cli.command()
 def list():
     '''
@@ -634,6 +762,7 @@ __________________________________________
 | vscode            |   2m   || 162.5 MB |
 | vscode-insiders   |   2m   || 153.3 MB |
 ------------------------------------------
+
 ________________
 | Package      |
 ----------------    
@@ -659,7 +788,14 @@ ________________
 |  vim         |
 |  zsh         |
 |  zlib        |
-----------------        
+----------------
+
+_______________________________________________________________________
+| HyperPacks  |  Content                                              |
+-----------------------------------------------------------------------
+|  essential  |  git, curl, npm, zsh, vim, code, atom, sublime-text   |
+|  office     |  sqlite, libreoffice                                  |
+-----------------------------------------------------------------------
         ''',
         fg='white',
     ),
