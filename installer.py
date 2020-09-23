@@ -18,6 +18,7 @@ applications = {
     'clion' : 'C Lion',
     'discord' : 'Discord',
     'datagrip' : 'Data Grip',
+    'gimp': 'Gimp',
     'libreoffice' : 'Libre Office',
     'librepcb' : 'Libre PCB',
     'opera' : 'Opera',
@@ -32,10 +33,13 @@ applications = {
     'goland' : 'Go Land',
     'rubymine' : 'RubyMine',
     'figma-linux' : 'Figma',
+    'slack': 'Slack'
 }
 
 devpackages = {
+    'ansible': 'Ansible',
     'git': 'Git',
+    'git-secret': 'Git-secret',
     'curl': 'Curl',
     'docker': 'Docker',
     'npm': 'Npm',
@@ -57,7 +61,11 @@ devpackages = {
     'kakoune': 'Kakoune',
     'autojump': 'Autojump',
     'pass': 'Pass',
-    'qtpass': 'QTpass'
+    'qtpass': 'QTpass',
+    'restic': 'Restic',
+    'steam': 'Steam',
+    'synaptic': 'Synaptic',
+    'ubuntu-cleaner': 'Ubuntu-cleaner'
 }
 
 
