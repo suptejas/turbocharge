@@ -220,6 +220,48 @@ class Installer:
                 testing_bar = IncrementalBar('Testing package...', max=100)
 
                 if tests_passed == [] and test_script == '':
+                    os.system('cd ~')
+
+                def subprocess_cmd(command):
+                    process = subprocess.Popen(
+                        command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+                    proc_stdout = process.communicate()[0].strip()
+                    decoded = proc_stdout.decode("utf-8")
+                    version_tag = decoded.split("\n")[1]
+                    # using [1:] might be useful in some scenario where the
+                    # version has multiple colons in it.
+                    cleaned_version = version_tag.split(": ")[1]
+                    return cleaned_version
+
+                package_type = None
+                if 'sudo -S apt-get' in script:
+                    package_type = 'p'
+                elif 'sudo -S snap' in script:
+                    package_type = 'a'
+
+                def get_key(val):
+                    for key, value in applications.items():
+                        if val == value:
+                            return key
+
+                    return 'Key doesn\'t exist'
+
+                if package_type == 'a':
+                    os.system('cd ~')
+
+                    with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+                        lines = file.readlines()
+
+                    line_exists = False
+
+                    for line in lines:
+                        if get_key(package_name) in line:
+                            line_exists = True
+
+                    with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
+                        if line_exists == False:
+                            file.write(
+                                f'{get_key(package_name)} None {package_type} \n')
                     click.echo('\n')
                     click.echo(
                         click.style(
@@ -243,22 +285,6 @@ class Installer:
                     stdin=PIPE,
                     stdout=PIPE,
                     stderr=PIPE)
-
-                for _ in range(60, 101):
-                    time.sleep(0.002)
-                    testing_bar.next()
-
-                click.echo('\n')
-
-                for test in tests_passed:
-                    click.echo(
-                        click.style(
-                            f'Test Passed: {test} ✅\n',
-                            fg='green'))
-
-                for _ in range(60, 81):
-                    time.sleep(0.002)
-                    testing_bar.next()
 
                 os.system('cd ~')
 
@@ -286,23 +312,36 @@ class Installer:
 
                     return 'Key doesn\'t exist'
 
-                package_version = subprocess_cmd(
-                    f'apt show {get_key(package_name)}'.split())
-                os.system('cd ~')
+                if package_type == 'p':
+                    package_version = subprocess_cmd(
+                        f'apt show {get_key(package_name)}'.split())
+                    os.system('cd ~')
 
-                with open(f'/home/{getuser()}/config.tcc', 'r') as file:
-                    lines = file.readlines()
+                    with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+                        lines = file.readlines()
 
-                line_exists = False
+                    line_exists = False
 
-                for line in lines:
-                    if get_key(package_name) in line:
-                        line_exists = True
+                    for line in lines:
+                        if get_key(package_name) in line:
+                            line_exists = True
 
-                with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
-                    if line_exists == False:
-                        file.write(
-                            f'{get_key(package_name)} {package_version} {package_type} \n')
+                    with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
+                        if line_exists == False:
+                            file.write(
+                                f'{get_key(package_name)} {package_version} {package_type} \n')
+
+                for _ in range(60, 101):
+                    time.sleep(0.002)
+                    testing_bar.next()
+
+                click.echo('\n')
+
+                for test in tests_passed:
+                    click.echo(
+                        click.style(
+                            f'Test Passed: {test} ✅\n',
+                            fg='green'))
 
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
