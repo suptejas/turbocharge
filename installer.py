@@ -84,13 +84,13 @@ class Debugger:
         
         elif platform == 'darwin':
             click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
-            click.echo(click.style(f'Cause: Incompatible Platform. Turbocharge doesn\'t support macOS yet. Code: 005', fg='yellow', bold=True, blink=True))
+            click.echo(click.style(f'Cause: Incompatible Platform. Turbocharge doesn\'t support debugging in macOS yet. Code: 005', fg='yellow', bold=True, blink=True))
             
             return
 
         elif platform == 'win32':
             click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
-            click.echo(click.style(f'Cause: Incompatible Platform. Turbocharge doesn\'t support Windows 10/8/7/XP yet. Code: 010', fg='yellow', bold=True, blink=True))
+            click.echo(click.style(f'Cause: Incompatible Platform. Turbocharge doesn\'t support debugging in Windows 10/8/7/XP yet. Code: 010', fg='yellow', bold=True, blink=True))
             
             return
 

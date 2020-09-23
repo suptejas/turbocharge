@@ -21,7 +21,7 @@ def cli():
 @cli.command()
 def version():
     '''
-    Current Turbocharged Version You Have
+    The Current Turbocharged Version You Have installed
     '''
     print('Version: 3.0.6 \nDistribution: Stable x86-64')
 
