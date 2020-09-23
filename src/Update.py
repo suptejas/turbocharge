@@ -1,4 +1,4 @@
-import platform
+from sys import platform
 import click
 import subprocess
 from subprocess import Popen, PIPE, DEVNULL, run
