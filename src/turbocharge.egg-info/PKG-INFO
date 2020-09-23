@@ -65,4 +65,6 @@ Description: # TurboCharge
         
         Work in progress...
 Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: Unix
 Description-Content-Type: text/markdown

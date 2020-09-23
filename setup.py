@@ -18,9 +18,7 @@ setup(
     long_description_content_type="text/markdown",
     py_modules=['turbocharge'],
     packages=find_packages(),
-    scripts=[
-        os.path.join(os.path.abspath(os.getcwd()), 'src', 'turbocharge.py')
-    ],
+    scripts=[os.path.join(os.path.abspath(os.getcwd()), 'src', 'turbocharge.py')],
     install_requires = [
         'Click',
         'progress',
