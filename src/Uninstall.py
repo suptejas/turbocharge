@@ -1,4 +1,4 @@
-import platform
+from sys import platform
 from subprocess import Popen, PIPE, DEVNULL, run
 import time
 from progress.spinner import Spinner
