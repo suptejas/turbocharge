@@ -1,4 +1,4 @@
-import platform
+from sys import platform
 import click
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
