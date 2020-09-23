@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 from getpass import getuser
+import os
 
 user = getuser()
 
@@ -17,7 +18,9 @@ setup(
     long_description_content_type="text/markdown",
     py_modules=['turbocharge'],
     packages=find_packages(),
-    scripts=[f'/home/{user}/.local/bin/turbocharge'],
+    scripts=[
+        os.path.join(os.path.abspath(os.getcwd()), 'src', 'turbocharge.py')
+    ],
     install_requires = [
         'Click',
         'progress',
