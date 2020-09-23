@@ -1,5 +1,5 @@
 import click
-import platform
+from sys import platform
 
 class Debugger:
     def debug(self, password: str, error: bytes):
