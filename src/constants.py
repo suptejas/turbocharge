@@ -116,11 +116,13 @@ ________________
 | Package      |
 ----------------
 |  anaconda    |
+|  ansible     |
 |  autojump    |
 |  curl        |
 |  docker      |
 |  emacs       |
 |  git         |
+|  git-secret  |
 |  golang      |
 |  htop        |
 |  jq          |
@@ -134,10 +136,14 @@ ________________
 |  patchelf    |
 |  qtpass      |
 |  rust        |
+|  restic      |
 |  sqlite      |
+|  steam       |
+|  synaptic    |
 |  taskwarrior |
 |  tldr        |
 |  tmux        |
+|  ubuntu-cleaner|
 |  vim         |
 |  zsh         |
 |  zlib        |
