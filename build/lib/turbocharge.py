@@ -157,7 +157,7 @@ class Installer:
             return
         except  subprocess.CalledProcessError as e:
             click.echo(e.output)
-            click.echo('An Error Occured During Installation...', err = True)
+            click.echo('An Error Occurred During Installation...', err = True)
 
 class Uninstaller:
     def uninstall(self, script : str, password : str, package_name : str):
@@ -177,7 +177,7 @@ class Uninstaller:
             click.echo(click.style(f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n', fg='green'))
         except  subprocess.CalledProcessError as e:
             click.echo(e.output)
-            click.echo('An Error Occured During Installation...', err = True)
+            click.echo('An Error Occurred During Installation...', err = True)
     
     def clean(self, password : str):
         try:
@@ -194,7 +194,7 @@ class Uninstaller:
             click.echo(click.style('🎉 Successfully Cleaned Turbocharge! 🎉', fg='green'))
         except  subprocess.CalledProcessError as e:
             click.echo(e.output)
-            click.echo('An Error Occured During Installation...', err = True) 
+            click.echo('An Error Occurred During Installation...', err = True) 
 
 class Updater:
     def updatepack(self, package_name: str, password: str):
@@ -217,7 +217,7 @@ class Updater:
                 f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n', fg='green'))
         except CalledProcessError as e:
             click.echo(e.output)
-            click.echo('An Error Occured During Updating..', err=True)
+            click.echo('An Error Occurred During Updating..', err=True)
 
     def updateapp(self, package_name: str, password: str):
         try:
@@ -238,7 +238,7 @@ class Updater:
                 f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n', fg='green'))
         except CalledProcessError as e:
             click.echo(e.output)
-            click.echo('An Error Occured During Updating..', err=True)
+            click.echo('An Error Occurred During Updating..', err=True)
 
 def show_progress(finding_bar):
     for _ in range(1, 2):
@@ -318,7 +318,7 @@ def install(package_list):
                     click.echo(click.style('Test Passed: Chrome Launch ✅\n', fg='green'))
                 except  subprocess.CalledProcessError as e:
                     click.echo(e.output)
-                    click.echo('An Error Occured During Installation...', err = True)
+                    click.echo('An Error Occurred During Installation...', err = True)
        
             if package_name == 'anaconda':
                 show_progress(finding_bar)
@@ -347,7 +347,7 @@ def install(package_list):
                     click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n'))
                 except  subprocess.CalledProcessError as e:
                     click.echo(e.output)
-                    click.echo('An Error Occured During Installation...', err = True)
+                    click.echo('An Error Occurred During Installation...', err = True)
 
             if package_name == 'miniconda':
                 show_progress(finding_bar)
@@ -374,7 +374,7 @@ def install(package_list):
                     click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n'))
                 except  subprocess.CalledProcessError as e:
                     click.echo(e.output)
-                    click.echo('An Error Occured During Installation...', err = True)
+                    click.echo('An Error Occurred During Installation...', err = True)
 
             elif package_name not in devpackages and package_name not in applications and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
@@ -425,7 +425,7 @@ def remove(package_list):
                     f'\n\n 🎉 Successfully Uninstalled Anaconda! 🎉 \n', fg='green'))
             except CalledProcessError as e:
                 click.echo(e.output)
-                click.echo('An Error Occured During Uninstallation...', err=True)
+                click.echo('An Error Occurred During Uninstallation...', err=True)
 
         if package == 'miniconda':
             try:
@@ -454,7 +454,7 @@ def remove(package_list):
                     f'\n\n 🎉 Successfully Uninstalled Miniconda! 🎉 \n', fg='green'))
             except CalledProcessError as e:
                 click.echo(e.output)
-                click.echo('An Error Occured During Uninstallation...', err=True)
+                click.echo('An Error Occurred During Uninstallation...', err=True)
 
                 
 @cli.command()
