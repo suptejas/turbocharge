@@ -25,8 +25,8 @@ class Installer:
 
                 proc = Popen(
                     script.split(),
-                    stdin=PIPE,
                     stdout=PIPE,
+                    stdin=PIPE,
                     stderr=PIPE)
 
                 # Popen only accepts byte-arrays so you must encode the string
@@ -298,5 +298,11 @@ class Installer:
                 return
 
             except Exception as e:
-                click.echo(e)
+                click.echo('\n')
                 click.echo('An Error Occured During Installation...', err=True)
+                debug = click.prompt('Do you want to see the error? [y/n] ')
+                if debug == 'y':
+                    click.echo('\n')
+                    click.echo(e)
+                else:
+                    return
