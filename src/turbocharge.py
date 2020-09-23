@@ -13,6 +13,7 @@ from Install import Installer
 from Uninstall import Uninstaller
 from Update import Updater
 
+
 @click.group()
 def cli():
     pass
@@ -194,6 +195,36 @@ def install(package_list):
             elif package_name not in devpackages and package_name not in applications and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
+        
+
+        elif platform == 'win32':
+            click.echo('\n')
+            finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
+
+            if package_name in devpackages:
+                show_progress(finding_bar)
+                turbocharge.install_task(
+                    package_name=devpackages[package_name],
+                    script=f"choco install {package_name} -y",
+                    password="",
+                    test_script=f"{package_name} --version",
+                    tests_passed=[f'{devpackages[package_name]} Version']
+                )
+
+            elif package_name in applications:
+                show_progress(finding_bar)
+                turbocharge.install_task(
+                    package_name=applications[package_name],
+                    script=f"choco install {package_name} -y",
+                    password="",
+                    test_script="",
+                    tests_passed=[]
+                )
+            
+            elif package_name not in devpackages and package_name not in applications:
+                click.echo('\n')
+                click.echo(click.style(':( Package Not Found! :(', fg='red'))
+            
 
         if platform == 'win32':
             click.echo('\n')
@@ -282,8 +313,7 @@ def remove(package_list):
                         f'\n\n 🎉 Successfully Uninstalled Anaconda! 🎉 \n', fg='green'))
                 except subprocess.CalledProcessError as e:
                     click.echo(e.output)
-                    click.echo(
-                        'An Error Occurred During Uninstallation...', err=True)
+                    click.echo('An Error Occurred During Uninstallation...', err=True)
 
             if package == 'miniconda':
                 try:
@@ -327,14 +357,12 @@ def remove(package_list):
                     password="",
                     package_name=devpackages[package]
                 )
-
             elif package in applications:
                 uninstaller.uninstall(
                     f'choco uninstall {package}',
                     password="",
                     package_name=applications[package]
                 )
-
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -433,6 +461,37 @@ def hyperpack(hyperpack_list):
                 updater.updateapp(app, password)
 
             cleaner.clean(password)
+    
+    elif platform == 'win32':
+        for hyperpack in hyperpacks:
+            hyper_pack = hyperpkgs[hyperpack]
+
+            packages = hyper_pack.packages.split(',')
+            apps = hyper_pack.applications.split(',')
+
+            for package in packages:
+                installer.install_task(
+                    package_name=devpackages[package],
+                    script=f'choco install {package} -y',
+                    password="",
+                    test_script=f'{package} --version',
+                    tests_passed=[f'{devpackages[package]} Version']
+                )
+
+            for package in packages:
+                updater.updatepack(package, password="")
+            
+            for app in apps:
+                installer.install_task(
+                    package_name=applications[app],
+                    script=f'choco install {app} -y',
+                    password="",
+                    test_script='',
+                    tests_passed=[]
+                )
+            
+            for app in apps:
+                updater.updateapp(app, password="")
 
     elif platform == 'win32':
         for hyperpack in hyperpacks:
@@ -475,7 +534,6 @@ def clean():
 
     password = getpass('Enter your password: ')
     uninstaller.clean(password)
-
 
 @cli.command()
 def list():
