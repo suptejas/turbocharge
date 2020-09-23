@@ -1,6 +1,7 @@
 import click
 import os
 import subprocess
+from os.path import isfile
 from sys import platform, stderr
 from getpass import getpass, getuser
 from progress.spinner import Spinner
@@ -30,6 +31,7 @@ applications = {
     'goland': 'Go Land',
     'rubymine': 'RubyMine',
     'figma-linux': 'Figma',
+    'slack': 'Slack',   
 }
 
 devpackages = {
@@ -216,11 +218,10 @@ class Installer:
                         fg='green',
                         bold=True))
 
-                # Testing the successful installation of the package
-                testing_bar = IncrementalBar('Testing package...', max=100)
-
-                if tests_passed == [] and test_script == '':
-                    os.system('cd ~')
+                def get_key(val, dictionary):
+                        for key, value in dictionary.items():
+                            if val == value:
+                                return key
 
                 def subprocess_cmd(command):
                     process = subprocess.Popen(
@@ -234,34 +235,52 @@ class Installer:
                     return cleaned_version
 
                 package_type = None
+                
                 if 'sudo -S apt-get' in script:
                     package_type = 'p'
                 elif 'sudo -S snap' in script:
                     package_type = 'a'
 
-                def get_key(val):
-                    for key, value in applications.items():
-                        if val == value:
-                            return key
+                os.system('cd ~')
 
-                    return 'Key doesn\'t exist'
+                # Testing the successful installation of the package
+                testing_bar = IncrementalBar('Testing package...', max=100)
 
-                if package_type == 'a':
-                    os.system('cd ~')
+                if tests_passed == [] and test_script == '':
+                    if package_type == 'a':
+                        file_exists = False
+                        if isfile(f'/home/{getuser()}/config.tcc'):
+                            file_exists = True
+            
+                        if file_exists:
+                            with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+                                lines = file.readlines()
 
-                    with open(f'/home/{getuser()}/config.tcc', 'r') as file:
-                        lines = file.readlines()
+                            line_exists = False
 
-                    line_exists = False
+                            for line in lines:
+                                if get_key(package_name, applications) in line:
+                                    line_exists = True
 
-                    for line in lines:
-                        if get_key(package_name) in line:
-                            line_exists = True
+                            with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
+                                if line_exists == False:
+                                    file.write(
+                                        f'{get_key(package_name, applications)} None {package_type} \n')
+                        elif file_exists == False:
+                            with open(f'/home/{getuser()}/config.tcc', 'w+') as file:
+                                lines = file.readlines()
 
-                    with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
-                        if line_exists == False:
-                            file.write(
-                                f'{get_key(package_name)} None {package_type} \n')
+                            line_exists = False
+
+                            for line in lines:
+                                if get_key(package_name, applications) in line:
+                                    line_exists = True
+
+                            with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
+                                if line_exists == False:
+                                    file.write(
+                                        f'{get_key(package_name, applications)} None {package_type} \n')
+
                     click.echo('\n')
                     click.echo(
                         click.style(
@@ -288,48 +307,57 @@ class Installer:
 
                 os.system('cd ~')
 
-                def subprocess_cmd(command):
-                    process = subprocess.Popen(
-                        command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
-                    proc_stdout = process.communicate()[0].strip()
-                    decoded = proc_stdout.decode("utf-8")
-                    version_tag = decoded.split("\n")[1]
-                    # using [1:] might be useful in some scenario where the
-                    # version has multiple colons in it.
-                    cleaned_version = version_tag.split(": ")[1]
-                    return cleaned_version
-
                 package_type = None
                 if 'sudo -S apt-get' in script:
                     package_type = 'p'
                 elif 'sudo -S snap' in script:
                     package_type = 'a'
 
-                def get_key(val):
-                    for key, value in devpackages.items():
-                        if val == value:
-                            return key
+                
 
                     return 'Key doesn\'t exist'
 
                 if package_type == 'p':
+
+                    file_exists = False
+                    if isfile(f'/home/{getuser()}/config.tcc'):
+                        file_exists = True
+                                        
                     package_version = subprocess_cmd(
-                        f'apt show {get_key(package_name)}'.split())
+                        f'apt show {get_key(package_name, devpackages)}'.split())
                     os.system('cd ~')
 
-                    with open(f'/home/{getuser()}/config.tcc', 'r') as file:
-                        lines = file.readlines()
+                    if file_exists:
+                        with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+                            lines = file.readlines()
 
-                    line_exists = False
+                        line_exists = False
 
-                    for line in lines:
-                        if get_key(package_name) in line:
-                            line_exists = True
+                        for line in lines:
+                            if get_key(package_name, devpackages) in line:
+                                line_exists = True
 
-                    with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
-                        if line_exists == False:
-                            file.write(
-                                f'{get_key(package_name)} {package_version} {package_type} \n')
+                        with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
+                            if line_exists == False:
+                                file.write(
+                                    f'{get_key(package_name, devpackages)} {package_version} {package_type} \n')
+                    
+                    elif file_exists == False:
+
+                        with open(f'/home/{getuser()}/config.tcc', 'w+') as file:
+                            lines = file.readlines()
+
+                        line_exists = False
+
+                        for line in lines:
+                            if get_key(package_name, devpackages) in line:
+                                line_exists = True
+
+                        with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
+                            if line_exists == False:
+                                file.write(
+                                    f'{get_key(package_name, devpackages)} {package_version} {package_type} \n')
+
 
                 for _ in range(60, 101):
                     time.sleep(0.002)
@@ -425,13 +453,58 @@ class Uninstaller:
                     stdout=PIPE,
                     stderr=PIPE)
 
+                os.system('cd ~')
                 # Popen only accepts byte-arrays so you must encode the string
                 proc.communicate(password.encode())
+
+                file_exists = False
+                if isfile(f'/home/{getuser()}/config.tcc'):
+                    file_exists = True
+                
+                if file_exists:
+                    with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+                        lines = file.readlines()
+                else:
+                    for _ in range(1, 25):
+                        time.sleep(0.01)
+                        installer_progress.next()
+
+                    click.echo(
+                        click.style(
+                            f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n',
+                            fg='green'))
+                    return
+
+                def get_key(val, dictionary):
+                    for key, value in dictionary.items():
+                        if val == value:
+                            return key
+
+                package_type = None
+                if 'sudo -S apt-get' in script:
+                    package_type = 'p'
+                elif 'sudo -S snap' in script:
+                    package_type = 'a'
+                
+                dictionary = None
+                if package_type == 'p':
+                    dictionary = devpackages
+                
+                elif package_type == 'a':
+                    dictionary = applications
+
+                with open(f'/home/{getuser()}/config.tcc', 'w+') as file:
+                    for line in lines:
+                        if get_key(package_name, dictionary) in line:
+                            continue
+                        else:
+                            file.write(line)
 
                 # stdoutput = (output)[0].decode('utf-8')
                 for _ in range(1, 25):
                     time.sleep(0.01)
                     installer_progress.next()
+
 
                 click.echo(
                     click.style(
@@ -887,7 +960,7 @@ def remove(package_list):
 
             if package in applications:
                 uninstaller.uninstall(
-                    f'sudo snap remove {package}',
+                    f'sudo -S snap remove {package}',
                     password,
                     package_name=applications[package])
 
@@ -1151,7 +1224,6 @@ __________________________________________
 | vscode            |   2m   || 162.5 MB |
 | vscode-insiders   |   2m   || 153.3 MB |
 ------------------------------------------
-
 ________________
 | Package      |
 ----------------
@@ -1182,7 +1254,6 @@ ________________
 |  zsh         |
 |  zlib        |
 ----------------
-
 _______________________________________________________________________
 | HyperPacks  |  Content                                              |
 -----------------------------------------------------------------------
