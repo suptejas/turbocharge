@@ -10,6 +10,7 @@ import subprocess
 from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux
 from os.path import isfile
 
+
 class Installer:
     def install_task(self, package_name: str, script: str,
                      password: str, test_script: str, tests_passed):
