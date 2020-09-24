@@ -7,7 +7,7 @@ from subprocess import Popen, PIPE, DEVNULL, run
 from getpass import getuser
 from Debugger import Debugger
 import subprocess
-from constants import applications, devpackages
+from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux
 from os.path import isfile
 
 class Installer:
@@ -126,13 +126,13 @@ class Installer:
                             line_exists = False
 
                             for line in lines:
-                                if get_key(package_name, applications) in line:
+                                if get_key(package_name, applications_linux) in line:
                                     line_exists = True
 
                             with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
                                 if line_exists == False:
                                     file.write(
-                                        f'{get_key(package_name, applications)} None {package_type} \n')
+                                        f'{get_key(package_name, applications_linux)} None {package_type} \n')
                         elif file_exists == False:
                             with open(f'/home/{getuser()}/config.tcc', 'w+') as file:
                                 lines = file.readlines()
@@ -140,13 +140,13 @@ class Installer:
                             line_exists = False
 
                             for line in lines:
-                                if get_key(package_name, applications) in line:
+                                if get_key(package_name, applications_linux) in line:
                                     line_exists = True
 
                             with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
                                 if line_exists == False:
                                     file.write(
-                                        f'{get_key(package_name, applications)} None {package_type} \n')
+                                        f'{get_key(package_name, applications_linux)} None {package_type} \n')
 
                     click.echo('\n')
                     click.echo(
@@ -191,7 +191,7 @@ class Installer:
                         file_exists = True
                                         
                     package_version = subprocess_cmd(
-                        f'apt show {get_key(package_name, devpackages)}'.split())
+                        f'apt show {get_key(package_name, devpackages_linux)}'.split())
                     
 
                     if file_exists:
@@ -201,13 +201,13 @@ class Installer:
                         line_exists = False
 
                         for line in lines:
-                            if get_key(package_name, devpackages) in line:
+                            if get_key(package_name, devpackages_linux) in line:
                                 line_exists = True
 
                         with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
                             if line_exists == False:
                                 file.write(
-                                    f'{get_key(package_name, devpackages)} {package_version} {package_type} \n')
+                                    f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} \n')
                     
                     elif file_exists == False:
 
@@ -217,13 +217,13 @@ class Installer:
                         line_exists = False
 
                         for line in lines:
-                            if get_key(package_name, devpackages) in line:
+                            if get_key(package_name, devpackages_linux) in line:
                                 line_exists = True
 
                         with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
                             if line_exists == False:
                                 file.write(
-                                    f'{get_key(package_name, devpackages)} {package_version} {package_type} \n')
+                                    f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} \n')
 
 
                 for _ in range(60, 101):
@@ -251,7 +251,7 @@ class Installer:
                     time.sleep(0.01)
                     installer_progress.next()
 
-                run(script)
+                run(script, stdout=PIPE, stderr=PIPE) # first time
 
                 for _ in range(1, 25):
                     time.sleep(0.01)
@@ -267,6 +267,10 @@ class Installer:
                         bold=True))
 
                 testing_bar = IncrementalBar('Testing package...', max=100)
+                # the order of these lines below doesn't make sense.
+                # even with that fake thing. 
+
+                # this condition will be true for all application package stuff
 
                 if tests_passed == [] and test_script == '':
                     click.echo('\n')
@@ -276,12 +280,15 @@ class Installer:
                             fg='green'))
 
                     return
+                # everything clear up to here..
 
                 for _ in range(1, 64):
                     time.sleep(0.002)
                     testing_bar.next()
-
-                run(test_script)
+                 #now this line below... takes a test_script...
+                
+                run(test_script, stdout=PIPE, stderr=PIPE) # this should either return emtpy stuff or some stuff.
+                # 
 
                 for _ in range(1, 36):
                     time.sleep(0.002)

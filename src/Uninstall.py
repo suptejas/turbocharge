@@ -6,7 +6,7 @@ from progress.bar import IncrementalBar
 from os.path import isfile
 import click
 from getpass import getuser
-from constants import devpackages, applications
+from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux
 import subprocess
 
 class Uninstaller:
@@ -62,10 +62,10 @@ class Uninstaller:
                 
                 dictionary = None
                 if package_type == 'p':
-                    dictionary = devpackages
+                    dictionary = devpackages_linux
                 
                 elif package_type == 'a':
-                    dictionary = applications
+                    dictionary = applications_linux
 
                 with open(f'/home/{getuser()}/config.tcc', 'w+') as file:
                     for line in lines:
@@ -98,7 +98,7 @@ class Uninstaller:
                     time.sleep(0.007)
                     installer_progress.next()
 
-                run(script)
+                run(script, stdout=PIPE, stderr=PIPE)
 
                 for _ in range(1, 25):
                     time.sleep(0.007)
