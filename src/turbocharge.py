@@ -5,7 +5,7 @@ from getpass import getpass, getuser
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 from subprocess import Popen, PIPE, DEVNULL, run
-from constants import applications, devpackages, apt_script, apt_remove, snap_script, snap_remove, display_list, hyperpkgs
+from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, apt_script, apt_remove, snap_script, snap_remove, display_list_linux, display_list_windows, hyperpkgs
 from miscellaneous import show_progress, is_password_valid
 from HyperPack import HyperPack
 from Debugger import Debugger
@@ -33,7 +33,11 @@ def install(package_list):
     '''
     Install A Specified Package(s)
     '''
-    password = getpass('Enter your password: ')
+    if platform == 'linux':
+        password = getpass('Enter your password: ')
+    else:
+        password = ''
+        # otherwise the variable would be undefined..
 
     packages = package_list.split(',')
     turbocharge = Installer()
@@ -51,19 +55,19 @@ def install(package_list):
             finding_bar = IncrementalBar(
                 'Finding Requested Packages...', max=1)
 
-            if package_name in devpackages:
+            if package_name in devpackages_linux:
                 show_progress(finding_bar)
                 turbocharge.install_task(
-                    devpackages[package_name],
+                    devpackages_linux[package_name],
                     f'{constant.apt_script} {package_name}',
                     password,
                     f'{package_name} --version',
-                    [f'{devpackages[package_name]} Version'])
+                    [f'{devpackages_linux[package_name]} Version'])
 
-            if package_name in applications:
+            if package_name in applications_linux:
                 show_progress(finding_bar)
                 turbocharge.install_task(
-                    applications[package_name],
+                    applications_linux[package_name],
                     f'{constant.snap_script} {package_name}',
                     password,
                     '',
@@ -192,7 +196,7 @@ def install(package_list):
                     click.echo(
                         'An Error Occurred During Installation...', err=True)
 
-            elif package_name not in devpackages and package_name not in applications and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
+            elif package_name not in devpackages_linux and package_name not in applications_linux and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
         
@@ -201,59 +205,33 @@ def install(package_list):
             click.echo('\n')
             finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
 
-            if package_name in devpackages:
+            if package_name in devpackages_windows:
                 show_progress(finding_bar)
                 turbocharge.install_task(
-                    package_name=devpackages[package_name],
+                    package_name=devpackages_windows[package_name],
                     script=f"choco install {package_name} -y",
                     password="",
                     test_script=f"{package_name} --version",
-                    tests_passed=[f'{devpackages[package_name]} Version']
+                    tests_passed=[f'{devpackages_windows[package_name]} Version']
                 )
+                # test _scirpt is just a string here..
 
-            elif package_name in applications:
+
+            elif package_name in applications_windows:
                 show_progress(finding_bar)
                 turbocharge.install_task(
-                    package_name=applications[package_name],
+                    package_name=applications_windows[package_name],
                     script=f"choco install {package_name} -y",
                     password="",
                     test_script="",
                     tests_passed=[]
                 )
             
-            elif package_name not in devpackages and package_name not in applications:
+            elif package_name not in devpackages_windows and package_name not in applications_windows:
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
             
 
-        if platform == 'win32':
-            click.echo('\n')
-            finding_bar = IncrementalBar(
-                'Finding Requested Packages...', max=1)
-
-            if package_name in devpackages:
-                show_progress(finding_bar)
-                turbocharge.install_task(
-                    package_name=devpackages[package_name],
-                    script=f"choco install {package_name} -y",
-                    password="",
-                    test_script=f"{package_name} --version",
-                    tests_passed=[f'{devpackages[package_name]} Version']
-                )
-
-            elif package_name in applications:
-                show_progress(finding_bar)
-                turbocharge.install_task(
-                    package_name=applications[package_name],
-                    script=f"choco install {package_name} -y",
-                    password="",
-                    test_script="",
-                    tests_passed=[]
-                )
-
-            elif package_name not in devpackages and package_name not in applications:
-                click.echo('\n')
-                click.echo(click.style(':( Package Not Found! :(', fg='red'))
 
 
 @cli.command()
@@ -263,24 +241,27 @@ def remove(package_list):
     Uninstall Applications And Packages
     '''
     uninstaller = Uninstaller()
-
-    password = getpass('Enter your password: ')
+    
+    if platform == 'linux':
+        password = getpass('Enter your password: ')
+    else:
+        password = ''
 
     packages = package_list.split(',')
 
     for package in packages:
         if platform == 'linux':
-            if package in devpackages:
+            if package in devpackages_linux:
                 uninstaller.uninstall(
                     f'{apt_remove} {package}',
                     password,
-                    package_name=devpackages[package])
+                    package_name=devpackages_linux[package])
 
-            if package in applications:
+            if package in applications_linux:
                 uninstaller.uninstall(
                     f'{snap_remove} {package}',
                     password,
-                    package_name=applications[package])
+                    package_name=applications_linux[package])
 
             if package == 'anaconda':
                 try:
@@ -351,17 +332,17 @@ def remove(package_list):
                         'An Error Occurred During Uninstallation...', err=True)
 
         elif platform == 'win32':
-            if package in devpackages:
+            if package in devpackages_windows:
                 uninstaller.uninstall(
                     f'choco uninstall {package} -y',
                     password="",
-                    package_name=devpackages[package]
+                    package_name=devpackages_windows[package]
                 )
-            elif package in applications:
+            elif package in applications_windows:
                 uninstaller.uninstall(
                     f'choco uninstall {package}',
                     password="",
-                    package_name=applications[package]
+                    package_name=applications_windows[package]
                 )
 
 @cli.command()
@@ -372,26 +353,29 @@ def update(package_list):
     '''
     updater = Updater()
 
-    password = getpass('Enter your password: ')
+    if platform == 'linux':
+        password = getpass('Enter your password: ')
+    else:
+        password = ''
 
     packages = package_list.split(',')
 
     for package in packages:
         if platform == "linux":
-            if package in devpackages:
+            if package in devpackages_linux:
                 updater.updatepack(package, password)
 
-            if package in applications:
+            if package in applications_linux:
                 updater.updateapp(package, password)
 
             else:
                 return
 
         elif platform == "win32":
-            if package in devpackages:
+            if package in devpackages_windows:
                 updater.updatepack(package, "")
 
-            if package in applications:
+            if package in applications_windows:
                 updater.updateapp(package, "")
 
             else:
@@ -438,16 +422,16 @@ def hyperpack(hyperpack_list):
             # Installing Required Packages
             for package in packages:
                 installer.install_task(
-                    devpackages[package],
+                    devpackages_linux[package],
                     f'sudo -S apt-get install -y {package}',
                     password,
                     f'{package} --version',
-                    [f'{devpackages[package]} Version'])
+                    [f'{devpackages_linux[package]} Version'])
 
             # Installing Required Applications
             for app in apps:
                 installer.install_task(
-                    applications[app],
+                    applications_linux[app],
                     f'sudo -S snap install --classic {app}',
                     password,
                     '',
@@ -471,11 +455,11 @@ def hyperpack(hyperpack_list):
 
             for package in packages:
                 installer.install_task(
-                    package_name=devpackages[package],
+                    package_name=devpackages_windows[package],
                     script=f'choco install {package} -y',
                     password="",
                     test_script=f'{package} --version',
-                    tests_passed=[f'{devpackages[package]} Version']
+                    tests_passed=[f'{devpackages_windows[package]} Version']
                 )
 
             for package in packages:
@@ -483,44 +467,13 @@ def hyperpack(hyperpack_list):
             
             for app in apps:
                 installer.install_task(
-                    package_name=applications[app],
+                    package_name=applications_windows[app],
                     script=f'choco install {app} -y',
                     password="",
                     test_script='',
                     tests_passed=[]
                 )
             
-            for app in apps:
-                updater.updateapp(app, password="")
-
-    elif platform == 'win32':
-        for hyperpack in hyperpacks:
-            hyper_pack = hyperpkgs[hyperpack]
-
-            packages = hyper_pack.packages.split(',')
-            apps = hyper_pack.applications.split(',')
-
-            for package in packages:
-                installer.install_task(
-                    package_name=devpackages[package],
-                    script=f'choco install {package} -y',
-                    password="",
-                    test_script=f'{package} --version',
-                    tests_passed=[f'{devpackages[package]} Version']
-                )
-
-            for package in packages:
-                updater.updatepack(package, password="")
-
-            for app in apps:
-                installer.install_task(
-                    package_name=applications[app],
-                    script=f'choco install {app} -y',
-                    password="",
-                    test_script='',
-                    tests_passed=[]
-                )
-
             for app in apps:
                 updater.updateapp(app, password="")
 
@@ -530,14 +483,26 @@ def clean():
     '''
     Remove Junk Packages Which Are Not Needed
     '''
-    uninstaller = Uninstaller()
+    if platform == 'linux':
+        uninstaller = Uninstaller()
+        password = getpass('Enter your password: ')
+        uninstaller.clean(password)
+    elif platform == 'win32':
+        arr = ['|',"/","-","\\"]
+        slen = len(arr)
+        print('.....Getting your PC cleaned .........')
+        for i in range(1, 60):
+            time.sleep(0.04)
+            print(arr[i%slen], end='\r')
 
-    password = getpass('Enter your password: ')
-    uninstaller.clean(password)
 
 @cli.command()
 def list():
     '''
     Applications And Packages TurboCharge Supports
     '''
-    click.echo(click.style(display_list, fg='white'))
+    if platform == 'linux':
+        click.echo(click.style(display_list_linux, fg='white'))
+    elif platform == 'win32':
+        
+        click.echo(click.style(display_list_windows, fg='white'))
