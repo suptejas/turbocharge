@@ -40,6 +40,8 @@ applications = {
     'space': 'Space',
     'intellij-idea-educational': 'IntelliJ Idea Educational',
     'phpstorm': 'PHPStorm',
+    'easy-disk-cleaner': 'Easy Disk Cleaner',
+    'disk-space-saver' : 'Disk Space Saver',
 }
 
 devpackages = {
@@ -80,8 +82,13 @@ devpackages = {
 }
 
 hyperpkgs = {
-    'essential': HyperPack('git,curl,npm,zsh,vim', 'code,atom,sublime-text'),
-    'office': HyperPack('sqlite', 'libreoffice')
+    'essential': HyperPack('git,curl,npm,zsh,vim,synaptic', 'code,atom,sublime-text,1password-linux'),
+    'office': HyperPack('vim,synaptic', 'libreoffice,todoist,slack,skype,1password-linux'),
+    'artist': HyperPack('krita,', 'gimp,inkscape,figma-linux'),
+    'pccare': HyperPack('ubuntu-cleaner,restic', 'easy-disk-cleaner,disk-space-saver'),
+    'gamer': HyperPack('steam', 'discord'),
+    'godev': HyperPack('golang', 'goland'),
+    'flutter': HyperPack('git', 'android-studio,figma-linux'),
 }
 
 apt_script = 'sudo -S apt-get install -y'
