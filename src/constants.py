@@ -43,7 +43,9 @@ applications = {
 }
 
 devpackages = {
+    'ansible': 'Ansible',
     'git': 'Git',
+    'git-secret': 'Git-secret',
     'curl': 'Curl',
     'docker': 'Docker',
     'npm': 'Npm',
@@ -71,6 +73,10 @@ devpackages = {
     'librecad': 'LibreCAD',
     'krita': 'Krita',
     'chromium-browser': 'Chromium',
+    'restic': 'Restic',
+    'steam': 'Steam',
+    'synaptic': 'Synaptic',
+    'ubuntu-cleaner': 'Ubuntu-cleaner'
 }
 
 hyperpkgs = {
@@ -149,6 +155,7 @@ _____________________
 | Package           |
 ---------------------
 |  anaconda         |
+|  ansible          |
 |  autojump         |
 |  curl             |
 |  docker           |
@@ -169,11 +176,15 @@ _____________________
 |  patchelf         |
 |  qtpass           |
 |  ruby             |
+|  restic           |
 |  rust             |
+|  steam            |
+|  synaptic         |
 |  sqlite           |
 |  taskwarrior      |
 |  tldr             |
 |  tmux             |
+|  ubuntu-cleaner   |
 |  vim              |
 |  zsh              |
 |  zlib             |
