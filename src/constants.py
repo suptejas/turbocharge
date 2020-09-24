@@ -126,7 +126,7 @@ _______________________________________________________
 | brackets                       |   1m   || 109.6 MB |
 | cacher                         |   1m   || 73.8  MB |
 | clion                          |   3m   || 502.0 MB |
-| chromium                       |   1m   || 169.9 MB |
+| chromium-browser               |   1m   || 169.9 MB |
 | chrome                         |   1m   || 70.2  MB |
 | datagrip                       |   2m   || 356.8 MB |
 | discord                        |   1m   || 60.1  MB |
