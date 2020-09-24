@@ -81,8 +81,7 @@ class Updater:
                     time.sleep(0.007)
                     installer_progress.next()
 
-                run(f'choco upgrade {package_name} -y',
-                    stdout=PIPE, stderr=PIPE)
+                run(f'choco upgrade {package_name} -y')
 
                 for _ in range(1, 25):
                     time.sleep(0.007)
