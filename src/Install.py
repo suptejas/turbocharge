@@ -251,7 +251,7 @@ class Installer:
                     time.sleep(0.01)
                     installer_progress.next()
 
-                run(script, stdout=PIPE, stderr=PIPE)
+                run(script)
 
                 for _ in range(1, 25):
                     time.sleep(0.01)
@@ -281,7 +281,7 @@ class Installer:
                     time.sleep(0.002)
                     testing_bar.next()
 
-                run(test_script, stdout=PIPE, stderr=PIPE)
+                run(test_script)
 
                 for _ in range(1, 36):
                     time.sleep(0.002)

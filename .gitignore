@@ -1,3 +1,4 @@
 .vscode
 testing
 src/__pycache__
+src/turbocharge.egg-info

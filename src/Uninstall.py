@@ -98,7 +98,7 @@ class Uninstaller:
                     time.sleep(0.007)
                     installer_progress.next()
 
-                run(script, stdout=PIPE, stderr=PIPE)
+                run(script)
 
                 for _ in range(1, 25):
                     time.sleep(0.007)
