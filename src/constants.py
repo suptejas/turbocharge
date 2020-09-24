@@ -9,6 +9,7 @@ applications = {
     'clion': 'C Lion',
     'discord': 'Discord',
     'datagrip': 'Data Grip',
+    'gimp': 'Gimp',
     'libreoffice': 'Libre Office',
     'librepcb': 'Libre PCB',
     'opera': 'Opera',
@@ -27,7 +28,9 @@ applications = {
 }
 
 devpackages = {
+    'ansible': 'Ansible',
     'git': 'Git',
+    'git-secret': 'Git-secret',
     'curl': 'Curl',
     'docker': 'Docker',
     'npm': 'Npm',
@@ -50,6 +53,10 @@ devpackages = {
     'autojump': 'Autojump',
     'pass': 'Pass',
     'qtpass': 'QTpass'
+    'restic': 'Restic',
+    'steam': 'Steam',
+    'synaptic': 'Synaptic',
+    'ubuntu-cleaner': 'Ubuntu-cleaner'
 }
 
 hyperpkgs = {
@@ -109,11 +116,13 @@ ________________
 | Package      |
 ----------------
 |  anaconda    |
+|  ansible     |
 |  autojump    |
 |  curl        |
 |  docker      |
 |  emacs       |
 |  git         |
+|  git-secret  |
 |  golang      |
 |  htop        |
 |  jq          |
@@ -127,10 +136,14 @@ ________________
 |  patchelf    |
 |  qtpass      |
 |  rust        |
+|  restic      |
 |  sqlite      |
+|  steam       |
+|  synaptic    |
 |  taskwarrior |
 |  tldr        |
 |  tmux        |
+|  ubuntu-cleaner|
 |  vim         |
 |  zsh         |
 |  zlib        |
