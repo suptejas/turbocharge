@@ -201,7 +201,14 @@ def install(package_list):
             elif package_name not in devpackages_linux and package_name not in applications_linux and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
-        
+                suggestions = find(package_name)
+                if suggestions != []:
+                    click.echo('\n')
+                    click.echo('Turbocharge found similar packages: \n')
+                    for suggestion in suggestions:
+                        click.echo(f'{suggestion} \n')
+                else:
+                    click.echo('Turbocharge couldn\'t find similar packages...')
 
         if platform == 'win32':
             click.echo('\n')
@@ -232,7 +239,16 @@ def install(package_list):
             elif package_name not in devpackages_windows and package_name not in applications_windows:
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
-        
+                
+                suggestions = find(package_name)
+                if suggestions != []:
+                    click.echo('\n')
+                    click.echo('Turbocharge found similar packages: \n')
+                    for suggestion in suggestions:
+                        click.echo(f'{suggestion} \n')
+                else:
+                    click.echo('Turbocharge couldn\'t find similar packages...')
+
         if platform == 'darwin':
             click.echo('\n')
             finding_bar = IncrementalBar(
@@ -262,8 +278,16 @@ def install(package_list):
 
             elif package_name not in devpackages_macos and package_name not in applications_macos:
                 click.echo('\n')
-                click.echo(click.style(':( Package Not Found! :(', fg='red'))
-
+                click.echo(click.style(':( Package Not Found! :( \n', fg='red'))
+                suggestions = find(package_name)
+                if suggestions != []:
+                    click.echo('\n')
+                    click.echo('Turbocharge found similar packages: \n')
+                    for suggestion in suggestions:
+                        click.echo(f'{suggestion} \n')
+                else:
+                    click.echo('Turbocharge couldn\'t find similar packages...')
+                    
 @cli.command()
 @click.argument('package_list', required=True)
 def remove(package_list):
