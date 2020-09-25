@@ -9,7 +9,7 @@ from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 from subprocess import Popen, PIPE, DEVNULL, run
 from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, apt_script, apt_remove, snap_script, snap_remove, display_list_linux, display_list_windows, display_list_macos, hyperpkgs, devpackages_macos, applications_macos
-from miscellaneous import show_progress, is_password_valid
+from miscellaneous import show_progress, is_password_valid, find
 from HyperPack import HyperPack
 from Debugger import Debugger
 from Install import Installer
@@ -589,6 +589,13 @@ def hyperpack(hyperpack_list):
             for app in apps:
                 updater.updateapp(app, password="")
 
+@cli.command()
+@click.argument('text', required=True)
+def search(text):
+    click.echo(f'Searching for packages...')
+    suggestions = find(text)
+    for suggestion in suggestions:
+        click.echo(f'{suggestion} \n') 
 
 @cli.command()
 def clean():
