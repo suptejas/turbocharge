@@ -22,3 +22,33 @@ def show_progress(finding_bar):
         finding_bar.next()
         
     click.echo('\n')
+    
+    def find(text):
+    suggestions = []
+    if platform == 'linux':
+        for app in applications_linux:
+            if text in app:
+                suggestions.append(app)
+
+        for package in devpackages_linux:
+            if text in package:
+                suggestions.append(app)
+
+    if platform == 'win32':
+        for app in applications_windows:
+            if text in app:
+                suggestions.append(app)
+
+        for package in devpackages_windows:
+            if text in package:
+                suggestions.append(app)
+
+    if platform == 'darwin':
+        for app in applications_macos:
+            if text in app:
+                suggestions.append(app)
+
+        for package in devpackages_macos:
+            if text in package:
+                suggestions.append(app)
+    return suggestions
