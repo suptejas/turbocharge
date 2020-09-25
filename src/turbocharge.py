@@ -1,4 +1,7 @@
-import click, os, subprocess, time
+import click
+import os
+import subprocess
+import time
 import constants as constant
 from sys import platform, stderr
 from getpass import getpass, getuser
@@ -12,6 +15,7 @@ from Debugger import Debugger
 from Install import Installer
 from Uninstall import Uninstaller
 from Update import Updater
+from Setup import Setup
 
 
 @click.group()
@@ -23,7 +27,7 @@ def version():
     '''
     Current Turbocharged Version You Have
     '''
-    print(f'Version: 3.0.6 \nDistribution: {platform} Stable x86-64')
+    click.echo(f'Version: 3.0.6 \nDistribution: {platform} Stable x86-64')
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -90,7 +94,6 @@ def install(package_list):
                             '\n Chrome Will Take 2 to 4 Minutes To Download... \n',
                             fg='yellow'))
 
-
                     os.system(constant.chrome_link)
 
                     os.system(constant.chrome_move)
@@ -99,7 +102,8 @@ def install(package_list):
                         constant.chrome_setup.split(),
                         stdin=PIPE,
                         stdout=PIPE,
-                        stderr=PIPE)
+                        stderr=PIPE
+                    )
                     # Popen only accepts byte-arrays so you must encode the
                     # string
                     second.communicate(password.encode())
@@ -197,12 +201,15 @@ def install(package_list):
             elif package_name not in devpackages_linux and package_name not in applications_linux and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
+        
+
         if platform == 'win32':
             click.echo('\n')
-            finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
+            finding_bar = IncrementalBar('Finding Requested Packages...', max=1)
 
             if package_name in devpackages_windows:
                 show_progress(finding_bar)
+
                 turbocharge.install_task(
                     package_name=devpackages_windows[package_name],
                     script=f"choco install {package_name} -y",
@@ -210,7 +217,6 @@ def install(package_list):
                     test_script=f"{package_name} --version",
                     tests_passed=[f'{devpackages_windows[package_name]} Version']
                 )
-                # test _scirpt is just a string here..
 
 
             elif package_name in applications_windows:
@@ -226,6 +232,7 @@ def install(package_list):
             elif package_name not in devpackages_windows and package_name not in applications_windows:
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
+        
         if platform == 'darwin':
             click.echo('\n')
             finding_bar = IncrementalBar(
@@ -353,6 +360,8 @@ def remove(package_list):
                     click.echo(e.output)
                     click.echo(
                         'An Error Occurred During Uninstallation...', err=True)
+            
+
         if platform == 'win32':
             if package in devpackages_windows:
                 uninstaller.uninstall(
@@ -360,12 +369,15 @@ def remove(package_list):
                     password="",
                     package_name=devpackages_windows[package]
                 )
+            
             elif package in applications_windows:
                 uninstaller.uninstall(
                     f'choco uninstall {package}',
                     password="",
                     package_name=applications_windows[package]
                 )
+        
+        
         if platform == 'darwin':
             if package in devpackages_windows:
                 uninstaller.uninstall(
@@ -440,6 +452,8 @@ def hyperpack(hyperpack_list):
 
     hyperpacks = hyperpack_list.split(',')
 
+    password = ""
+
     if platform == 'linux' or platform == 'darwin':
         password = getpass('Enter your password: ')
         click.echo('\n')
@@ -453,6 +467,7 @@ def hyperpack(hyperpack_list):
             return
 
         password_bar.next()
+
 
     click.echo('\n')
     if platform == 'linux':
@@ -488,7 +503,8 @@ def hyperpack(hyperpack_list):
                 updater.updateapp(app, password)
 
             cleaner.clean(password)
-    if platform == 'win32':
+
+    elif platform == 'win32':
         for hyperpack in hyperpacks:
             hyper_pack = hyperpkgs[hyperpack]
 
@@ -518,7 +534,7 @@ def hyperpack(hyperpack_list):
 
             for app in apps:
                 updater.updateapp(app, password="")
-    if platform == 'darwin':
+    elif platform == 'darwin':
         for hyperpack in hyperpacks:
             hyper_pack = hyperpkgs[hyperpack]
 
@@ -559,14 +575,16 @@ def clean():
         uninstaller = Uninstaller()
         password = getpass('Enter your password: ')
         uninstaller.clean(password)
+    
     if platform == 'win32':
-        arr = ['|',"/","-","\\"]
+        arr = ['|', "/", "-", "\\"]
         slen = len(arr)
         print('Cleaning Your PC...')
         for i in range(1, 60):
             time.sleep(0.04)
             print(arr[i%slen], end='\r')
-    if platform == 'darwin':
+    
+    elif platform == 'darwin':
         uninstaller = Uninstaller()
         password = getpass('Enter your password: ')
         uninstaller.clean(password)
@@ -579,7 +597,9 @@ def list():
     '''
     if platform == 'linux':
         click.echo(click.style(display_list_linux, fg='white'))
-    if platform == 'win32':
+    
+    elif platform == 'win32':
         click.echo(click.style(display_list_windows, fg='white'))
-    if platform == 'darwin':
+    
+    elif platform == 'darwin':
         click.echo(click.style(display_list_macos, fg='white'))

@@ -10,9 +10,10 @@ import subprocess
 from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux
 from os.path import isfile
 
+
 class Installer:
     def install_task(self, package_name: str, script: str,
-                     password: str, test_script: str, tests_passed,):
+                     password: str, test_script: str, tests_passed):
         if platform == 'linux':
             try:
                 installer_progress = Spinner(
@@ -102,13 +103,13 @@ class Installer:
                     return cleaned_version
 
                 package_type = None
-
+                
                 if 'sudo -S apt-get' in script:
                     package_type = 'p'
                 elif 'sudo -S snap' in script:
                     package_type = 'a'
 
-
+                
 
                 # Testing the successful installation of the package
                 testing_bar = IncrementalBar('Testing package...', max=100)
@@ -118,7 +119,7 @@ class Installer:
                         file_exists = False
                         if isfile(f'/home/{getuser()}/config.tcc'):
                             file_exists = True
-
+            
                         if file_exists:
                             with open(f'/home/{getuser()}/config.tcc', 'r') as file:
                                 lines = file.readlines()
@@ -160,7 +161,7 @@ class Installer:
                     time.sleep(0.002)
                     testing_bar.next()
 
-
+                
 
                 for _ in range(21, 60):
                     time.sleep(0.002)
@@ -172,15 +173,13 @@ class Installer:
                     stdout=PIPE,
                     stderr=PIPE)
 
-
+                
 
                 package_type = None
                 if 'sudo -S apt-get' in script:
                     package_type = 'p'
                 elif 'sudo -S snap' in script:
                     package_type = 'a'
-
-
 
                     return 'Key doesn\'t exist'
 
@@ -189,10 +188,10 @@ class Installer:
                     file_exists = False
                     if isfile(f'/home/{getuser()}/config.tcc'):
                         file_exists = True
-
+                                        
                     package_version = subprocess_cmd(
                         f'apt show {get_key(package_name, devpackages_linux)}'.split())
-
+                    
 
                     if file_exists:
                         with open(f'/home/{getuser()}/config.tcc', 'r') as file:
@@ -208,7 +207,7 @@ class Installer:
                             if line_exists == False:
                                 file.write(
                                     f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} \n')
-
+                    
                     elif file_exists == False:
 
                         with open(f'/home/{getuser()}/config.tcc', 'w+') as file:
@@ -241,7 +240,8 @@ class Installer:
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occured During Installation...', err=True)
-        if platform == 'win32':
+
+        elif platform == 'win32':
             try:
                 installer_progress = Spinner(
                     message=f'Installing {package_name}...', max=100)
@@ -267,7 +267,7 @@ class Installer:
 
                 testing_bar = IncrementalBar('Testing package...', max=100)
                 # the order of these lines below doesn't make sense.
-                # even with that fake thing.
+                # even with that fake thing. 
 
                 # this condition will be true for all application package stuff
 
@@ -285,9 +285,8 @@ class Installer:
                     time.sleep(0.002)
                     testing_bar.next()
                  #now this line below... takes a test_script...
-
+                
                 run(test_script, stdout=PIPE, stderr=PIPE) # this should either return emtpy stuff or some stuff.
-                #
 
                 for _ in range(1, 36):
                     time.sleep(0.002)
@@ -306,6 +305,7 @@ class Installer:
             except Exception as e:
                 click.echo(e)
                 click.echo('An Error Occured During Installation...', err=True)
+        
         if platform == 'darwin':
             try:
                 installer_progress = Spinner(

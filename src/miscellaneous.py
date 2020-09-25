@@ -20,4 +20,5 @@ def show_progress(finding_bar):
     for _ in range(1, 2):
         time.sleep(0.01)
         finding_bar.next()
+        
     click.echo('\n')

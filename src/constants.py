@@ -81,45 +81,55 @@ devpackages_linux = {
     'zsh': 'Zsh',
 }
 
+#     'librepcb' : 'Libre PCB', Doesn't exist for chocolatey they are too lazy
+#   'powershell' : 'Powershell', Comes preinstalled with Windows.
 applications_windows = {
     'androidstudio': 'Android Studio',
-    'atom': 'Atom',
-    'blender': 'Blender',
-    'brackets': 'Brackets',
-    'clion-ide': 'C Lion',
-    'datagrip': 'Data Grip',
-    'discord': 'Discord',
-    'eclipse': 'Eclipse',
-    'figma': 'Figma',
-    'goland': 'Go Land',
-    'kotlinc': 'Kotlin',
-    'libreoffice-fresh': 'Libre Office',
-    'opera': 'Opera',
+    'atom' : 'Atom',
+    'blender' : 'Blender',
+    'brackets' : 'Brackets',
+    'clion-ide' : 'C Lion',
+    'discord' : 'Discord',
+    'datagrip' : 'Data Grip',
+    'libreoffice-fresh' : 'Libre Office',
+    'opera' : 'Opera',
+    'webstorm' : 'Web Storm',
     'pycharm-community': 'Pycharm Community',
-    'rubymine': 'RubyMine',
     'sublimetext3.app': 'Sublime Text',
-    'vscode': 'Visual Studio Code',
-    'vscode-insiders.install': 'Visual Studio Code Insiders',
-    'webstorm': 'Web Storm',
+    'vscode' : 'Visual Studio Code',
+    'vscode-insiders.install' : 'Visual Studio Code Insiders',
+    'eclipse' : 'Eclipse',
+    'kotlinc' : 'Kotlin',
+    'goland' : 'Go Land',
+    'rubymine' : 'RubyMine',
+    'figma' : 'Figma',
 }
 
+#     'zsh': 'Zsh', Not available on windows using chocolatey...
+# 'ntop.portable' : 'NTop',  We could use this.... totally new. instead of htop
 devpackages_windows = {
+    'git': 'Git',
     'curl': 'Curl',
     'docker': 'Docker',
-    'emacs': 'Emacs',
-    'fzf': 'Fzf',
-    'git': 'Git',
-    'golang': 'Go-Lang',
-    'jq': 'JQ',
-    'neovim': 'Neo Vim',
     'nodejs': 'Npm',
-    'ntop.portable': 'Ntop',
-    'pass': 'Pass',
-    'qtpass': 'QTpass',
-    'rust': 'Rust',
+    'emacs': 'Emacs',
+    'neovim': 'Neo Vim',
+    'vim': 'Vim',
+    # 'htop': 'Htop',
     'sqlite': 'Sqlite',
     'tldr': 'Tldr',
-    'vim': 'Vim',
+    'jq': 'JQ',
+    # 'ncdu': 'Ncdu', Does not exist.
+    # 'taskwarrior': 'Task Warrior', Does not exist
+    # 'tmux': 'Tmux', Does not exist, possible counterpart is fzf
+    # 'patchelf': 'Patchelf', not for windows
+    'golang': 'Go-Lang',
+    'rust': 'Rust',
+    # 'zlib': 'Z-Lib', Rejected on Chocolatey .... some issue going on...
+    # 'kakoune': 'Kakoune', no windows possibility
+    # 'autojump': 'Autojump', not directly... can do from direct github repo using python
+    'pass': 'Pass',
+    'qtpass': 'QTpass'
 }
 
 hyperpkgs = {
