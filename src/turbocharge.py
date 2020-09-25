@@ -1,4 +1,7 @@
-import click, os, subprocess, time
+import click
+import os
+import subprocess
+import time
 import constants as constant
 from sys import platform, stderr
 from getpass import getpass, getuser
@@ -12,6 +15,7 @@ from Debugger import Debugger
 from Install import Installer
 from Uninstall import Uninstaller
 from Update import Updater
+from Setup import Setup
 
 
 @click.group()
@@ -24,8 +28,12 @@ def version():
     '''
     Current Turbocharged Version You Have
     '''
-    print('Version: 3.0.6 \nDistribution: Stable x86-64')
+    click.echo('Version: 3.0.6 \nDistribution: Stable x86-64')
 
+@cli.command()
+def setup():
+    setup = Setup()
+    setup.setup()
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -33,7 +41,7 @@ def install(package_list):
     '''
     Install A Specified Package(s)
     '''
-    if platform == 'linux':
+    if platform == 'linux' or platform == 'darwin':
         password = getpass('Enter your password: ')
     else:
         password = ''
@@ -92,7 +100,6 @@ def install(package_list):
                             '\n Chrome Will Take 2 to 4 Minutes To Download... \n',
                             fg='yellow'))
 
-                    
                     os.system(constant.chrome_link)
 
                     os.system(constant.chrome_move)
@@ -114,7 +121,7 @@ def install(package_list):
                     for _ in range(1, 21):
                         time.sleep(0.045)
                         testing_bar.next()
-                    
+
                     for _ in range(21, 60):
                         time.sleep(0.045)
                         testing_bar.next()
@@ -199,11 +206,10 @@ def install(package_list):
             elif package_name not in devpackages_linux and package_name not in applications_linux and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
-        
-
-        elif platform == 'win32':
+        if platform == 'win32':
             click.echo('\n')
-            finding_bar = IncrementalBar('Finding Requested Packages...', max = 1)
+            finding_bar = IncrementalBar(
+                'Finding Requested Packages...', max=1)
 
             if package_name in devpackages_windows:
                 show_progress(finding_bar)
@@ -212,10 +218,10 @@ def install(package_list):
                     script=f"choco install {package_name} -y",
                     password="",
                     test_script=f"{package_name} --version",
-                    tests_passed=[f'{devpackages_windows[package_name]} Version']
+                    tests_passed=[
+                        f'{devpackages_windows[package_name]} Version']
                 )
                 # test _scirpt is just a string here..
-
 
             elif package_name in applications_windows:
                 show_progress(finding_bar)
@@ -226,12 +232,10 @@ def install(package_list):
                     test_script="",
                     tests_passed=[]
                 )
-            
+
             elif package_name not in devpackages_windows and package_name not in applications_windows:
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
-            
-
 
 
 @cli.command()
@@ -241,7 +245,7 @@ def remove(package_list):
     Uninstall Applications And Packages
     '''
     uninstaller = Uninstaller()
-    
+
     if platform == 'linux':
         password = getpass('Enter your password: ')
     else:
@@ -294,7 +298,8 @@ def remove(package_list):
                         f'\n\n 🎉 Successfully Uninstalled Anaconda! 🎉 \n', fg='green'))
                 except subprocess.CalledProcessError as e:
                     click.echo(e.output)
-                    click.echo('An Error Occurred During Uninstallation...', err=True)
+                    click.echo(
+                        'An Error Occurred During Uninstallation...', err=True)
 
             if package == 'miniconda':
                 try:
@@ -330,8 +335,7 @@ def remove(package_list):
                     click.echo(e.output)
                     click.echo(
                         'An Error Occurred During Uninstallation...', err=True)
-
-        elif platform == 'win32':
+        if platform == 'win32':
             if package in devpackages_windows:
                 uninstaller.uninstall(
                     f'choco uninstall {package} -y',
@@ -445,7 +449,7 @@ def hyperpack(hyperpack_list):
                 updater.updateapp(app, password)
 
             cleaner.clean(password)
-    
+
     elif platform == 'win32':
         for hyperpack in hyperpacks:
             hyper_pack = hyperpkgs[hyperpack]
@@ -464,7 +468,7 @@ def hyperpack(hyperpack_list):
 
             for package in packages:
                 updater.updatepack(package, password="")
-            
+
             for app in apps:
                 installer.install_task(
                     package_name=applications_windows[app],
@@ -473,7 +477,7 @@ def hyperpack(hyperpack_list):
                     test_script='',
                     tests_passed=[]
                 )
-            
+
             for app in apps:
                 updater.updateapp(app, password="")
 
@@ -487,13 +491,13 @@ def clean():
         uninstaller = Uninstaller()
         password = getpass('Enter your password: ')
         uninstaller.clean(password)
-    elif platform == 'win32':
-        arr = ['|',"/","-","\\"]
+    if platform == 'win32':
+        arr = ['|', "/", "-", "\\"]
         slen = len(arr)
-        print('.....Getting your PC cleaned .........')
+        print('Cleaning Your PC...')
         for i in range(1, 60):
             time.sleep(0.04)
-            print(arr[i%slen], end='\r')
+            print(arr[i % slen], end='\r')
 
 
 @cli.command()
@@ -504,5 +508,4 @@ def list():
     if platform == 'linux':
         click.echo(click.style(display_list_linux, fg='white'))
     elif platform == 'win32':
-        
         click.echo(click.style(display_list_windows, fg='white'))
