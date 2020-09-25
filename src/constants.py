@@ -132,8 +132,6 @@ devpackages_windows = {
     'qtpass': 'QTpass'
 }
 
-
-
 hyperpkgs = {
     'essential': HyperPack('git,curl,npm,zsh,vim,synaptic', 'code,atom,sublime-text,1password-linux'),
     'office': HyperPack('vim,synaptic', 'libreoffice,todoist,slack,skype,1password-linux'),
@@ -143,6 +141,104 @@ hyperpkgs = {
     'godev': HyperPack('golang', 'goland'),
     'flutter': HyperPack('git', 'android-studio,figma-linux'),
 }
+
+applications_macos = {
+    '1password': '1Password',
+    'adoptopenjdk8': 'AdoptOpenJDK8',
+    'alfred': 'Alfred',
+    'anaconda': 'Anaconda',
+    'android-platform-tools': 'Android Platform Tools',
+    'android-studio': 'Android Studio',
+    'atom': 'Atom',
+    'beekeeper-studio': 'BeeKeeper-Studio',
+    'blender': 'Blender',
+    'brackets': 'Brackets',
+    'cacher': 'Cacher',
+    'chromedriver': 'ChromeDriver',
+    'chromium': 'Chromium',
+    'clion': 'C Lion',
+    'datagrip': 'Data Grip',
+    'discord': 'Discord',
+    'docker': 'Docker',
+    'figma': 'Figma',
+    'firefox': 'Firefox',
+    'flash-player': 'Adobe Flash Player',
+    'flutter': 'Flutter',
+    'gimp': 'GIMP',
+    'gitkraken': 'Gitkraken',
+    'goland': 'Go Land',
+    'google-chrome': 'Google Chrome',
+    'hyper': 'Hyper',
+    'inkscape': 'Inkscape',
+    'intellij-idea-ce': 'IntelliJ Idea Community',
+    'iterm2': 'iTerm 2',
+    'java': 'Java',
+    'julia': 'Julia',
+    'kotlin': 'Kotlin',
+    'krita': 'Krita',
+    'librecad': 'LibreCAD',
+    'libreoffice': 'Libre Office',
+    'librepcb': 'Libre PCB',
+    'lnkd-ecl': 'ECL',
+    'microsoft-office': 'Microsoft Office',
+    'microsoft-teams': 'Microsoft Teams',
+    'miniconda': 'Miniconda',
+    'obs': 'OBS',
+    'opera': 'Opera',
+    'osxfuse': 'OSXFuse',
+    'phpstorm': 'PHPStorm',
+    'postman': 'Postman',
+    'powershell': 'Powershell',
+    'pycharm': 'Pycharm Community',
+    'rubymine': 'RubyMine',
+    'skype': 'Skype',
+    'slack': 'Slack',
+    'sourcetree': 'Source Tree',
+    'spotify': 'Spotify',
+    'steam': 'Steam',
+    'sublime-text': 'Sublime Text',
+    'teamviewer': 'Team Viewer',
+    'telegram': 'Telegram',
+    'vagrant': 'Vagrant',
+    'virtualbox': 'Virtual Box',
+    'visual-studio-code': 'Visual Studio Code',
+    'vlc': 'VLC Media Player',
+    'webstorm': 'Web Storm',
+    'whatsapp': 'Whatsapp',
+    'wine-stable': 'Wine',
+    'xquartz': 'XQuartz',
+    'zoomus': 'Zoom.us',
+}
+
+devpackages_macos = {
+    'ansible': 'Ansible',
+    'autojump': 'Autojump',
+    'curl': 'Curl',
+    'docker': 'Docker',
+    'emacs': 'Emacs',
+    'git': 'Git',
+    'git-secret': 'Git-secret',
+    'go': 'Go-Lang',
+    'htop': 'Htop',
+    'jq': 'JQ',
+    'kakoune': 'Kakoune',
+    'ncdu': 'Ncdu',
+    'neovim': 'Neo Vim',
+    'node': 'Node',
+    'pass': 'Pass',
+    'patchelf': 'Patchelf',
+    'qtpass': 'QTpass',
+    'restic': 'Restic',
+    'ruby': 'Ruby',
+    'rust': 'Rust',
+    'sqlite': 'Sqlite',
+    'tldr': 'Tldr',
+    'tmux': 'Tmux',
+    'vim': 'Vim',
+    'zlib': 'Z-Lib',
+    'zsh': 'Zsh',
+}
+
 
 apt_script = 'sudo -S apt-get install -y'
 apt_remove = 'sudo -S apt-get remove -y'
@@ -309,4 +405,112 @@ _______________________________________________________________________
 |  essential  |  git, curl, npm, vim, vscode, atom, sublimetext3      |
 |  office     |  sqlite, libreoffice                                  |
 -----------------------------------------------------------------------
+'''
+
+display_list_macos = '''
+_____________________________
+| Applications              |
+-----------------------------
+| 1password                 |
+| adoptopenjdk8             |
+| alfred                    |
+| anaconda                  |
+| android-platform-tools    |
+| android-studio            |
+| atom                      |
+| beekeeper-studio          |
+| blender                   |
+| brackets                  |
+| cacher                    |
+| chromedriver              |
+| chromium                  |
+| clion                     |
+| datagrip                  |
+| discord                   |
+| docker                    |
+| figma                     |
+| firefox                   |
+| flash-player              |
+| flutter                   |
+| gimp                      |
+| gitkraken                 |
+| goland                    |
+| google-chrome             |
+| hyper                     |
+| inkscape                  |
+| intellij-idea-ce          |
+| iterm2                    |
+| java                      |
+| julia                     |
+| kotlin                    |
+| krita                     |
+| librecad                  |
+| libreoffice               |
+| librepcb                  |
+| lnkd-ecl                  |
+| microsoft-office          |
+| microsoft-teams           |
+| miniconda                 |
+| obs                       |
+| opera                     |
+| osxfuse                   |
+| phpstorm                  |
+| postman                   |
+| powershell                |
+| pycharm                   |
+| rubymine                  |
+| skype                     |
+| slack                     |
+| sourcetree                |
+| spotify                   |
+| steam                     |
+| sublime-text              |
+| teamviewer                |
+| telegram                  |
+| vagrant                   |
+| virtualbox                |
+| visual-studio-code        |
+| vlc                       |
+| webstorm                  |
+| whatsapp                  |
+| wine-stable               |
+| xquartz                   |
+| zoomus                    |
+-----------------------------
+_____________________
+| Package            |
+---------------------
+| ansible            |
+| autojump           |
+| curl               |
+| docker             |
+| emacs              |
+| git                |
+| git-secret         |
+| go                 |
+| htop               |
+| jq                 |
+| kakoune            |
+| ncdu               |
+| neovim             |
+| node               |
+| pass               |
+| patchelf           |
+| qtpass             |
+| restic             |
+| ruby               |
+| rust               |
+| sqlite             |
+| tldr               |
+| tmux               |
+| vim                |
+| zlib               |
+| zsh                |
+---------------------
+_________________________________________________________________________________
+| HyperPacks  |  Content                                                        |
+---------------------------------------------------------------------------------
+|  essential  |  git, curl, npm, zsh, vim, code, atom, sublime-text             |
+|  office     |  sqlite, libreoffice                                            |
+---------------------------------------------------------------------------------
 '''

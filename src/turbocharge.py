@@ -8,7 +8,7 @@ from getpass import getpass, getuser
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 from subprocess import Popen, PIPE, DEVNULL, run
-from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, apt_script, apt_remove, snap_script, snap_remove, display_list_linux, display_list_windows, hyperpkgs
+from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, apt_script, apt_remove, snap_script, snap_remove, display_list_linux, display_list_windows, display_list_macos, hyperpkgs, devpackages_macos, applications_macos
 from miscellaneous import show_progress, is_password_valid
 from HyperPack import HyperPack
 from Debugger import Debugger
@@ -22,18 +22,12 @@ from Setup import Setup
 def cli():
     pass
 
-
 @cli.command()
 def version():
     '''
     Current Turbocharged Version You Have
     '''
-    click.echo('Version: 3.0.6 \nDistribution: Stable x86-64')
-
-@cli.command()
-def setup():
-    setup = Setup()
-    setup.setup()
+    click.echo(f'Version: 3.0.6 \nDistribution: {platform} Stable x86-64')
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -108,7 +102,8 @@ def install(package_list):
                         constant.chrome_setup.split(),
                         stdin=PIPE,
                         stdout=PIPE,
-                        stderr=PIPE)
+                        stderr=PIPE
+                    )
                     # Popen only accepts byte-arrays so you must encode the
                     # string
                     second.communicate(password.encode())
@@ -206,22 +201,23 @@ def install(package_list):
             elif package_name not in devpackages_linux and package_name not in applications_linux and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
+        
+
         if platform == 'win32':
             click.echo('\n')
-            finding_bar = IncrementalBar(
-                'Finding Requested Packages...', max=1)
+            finding_bar = IncrementalBar('Finding Requested Packages...', max=1)
 
             if package_name in devpackages_windows:
                 show_progress(finding_bar)
+
                 turbocharge.install_task(
                     package_name=devpackages_windows[package_name],
                     script=f"choco install {package_name} -y",
                     password="",
                     test_script=f"{package_name} --version",
-                    tests_passed=[
-                        f'{devpackages_windows[package_name]} Version']
+                    tests_passed=[f'{devpackages_windows[package_name]} Version']
                 )
-                # test _scirpt is just a string here..
+
 
             elif package_name in applications_windows:
                 show_progress(finding_bar)
@@ -236,7 +232,37 @@ def install(package_list):
             elif package_name not in devpackages_windows and package_name not in applications_windows:
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
+        
+        if platform == 'darwin':
+            click.echo('\n')
+            finding_bar = IncrementalBar(
+                'Finding Requested Packages...', max=1)
 
+            if package_name in devpackages_windows:
+                show_progress(finding_bar)
+                turbocharge.install_task(
+                    package_name=devpackages_macos[package_name],
+                    script=f"brew install {package_name}",
+                    password="",
+                    test_script=f"{package_name} --version",
+                    tests_passed=[
+                        f'{devpackages_macos[package_name]} Version']
+                )
+                # test _scirpt is just a string here..
+
+            elif package_name in applications_windows:
+                show_progress(finding_bar)
+                turbocharge.install_task(
+                    package_name=applications_macos[package_name],
+                    script=f"brew cask install {package_name}",
+                    password="",
+                    test_script="",
+                    tests_passed=[]
+                )
+
+            elif package_name not in devpackages_macos and package_name not in applications_macos:
+                click.echo('\n')
+                click.echo(click.style(':( Package Not Found! :(', fg='red'))
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -246,7 +272,7 @@ def remove(package_list):
     '''
     uninstaller = Uninstaller()
 
-    if platform == 'linux':
+    if platform == 'linux' or platform == 'darwin':
         password = getpass('Enter your password: ')
     else:
         password = ''
@@ -298,8 +324,7 @@ def remove(package_list):
                         f'\n\n 🎉 Successfully Uninstalled Anaconda! 🎉 \n', fg='green'))
                 except subprocess.CalledProcessError as e:
                     click.echo(e.output)
-                    click.echo(
-                        'An Error Occurred During Uninstallation...', err=True)
+                    click.echo('An Error Occurred During Uninstallation...', err=True)
 
             if package == 'miniconda':
                 try:
@@ -335,6 +360,8 @@ def remove(package_list):
                     click.echo(e.output)
                     click.echo(
                         'An Error Occurred During Uninstallation...', err=True)
+            
+
         if platform == 'win32':
             if package in devpackages_windows:
                 uninstaller.uninstall(
@@ -342,22 +369,38 @@ def remove(package_list):
                     password="",
                     package_name=devpackages_windows[package]
                 )
+            
             elif package in applications_windows:
                 uninstaller.uninstall(
                     f'choco uninstall {package}',
                     password="",
                     package_name=applications_windows[package]
                 )
+        
+        
+        if platform == 'darwin':
+            if package in devpackages_windows:
+                uninstaller.uninstall(
+                    f'brew uninstall {package}',
+                    password="",
+                    package_name=devpackages_macos[package]
+                )
+            elif package in applications_windows:
+                uninstaller.uninstall(
+                    f'brew cask uninstall {package}',
+                    password="",
+                    package_name=applications_macos[package]
+                )
 
 @cli.command()
 @click.argument('package_list', required=True)
 def update(package_list):
     '''
-    Updates Applications And Packages
+    Update Applications And Packages
     '''
     updater = Updater()
 
-    if platform == 'linux':
+    if platform == 'linux' or platform == 'darwin':
         password = getpass('Enter your password: ')
     else:
         password = ''
@@ -374,13 +417,21 @@ def update(package_list):
 
             else:
                 return
-
-        elif platform == "win32":
+        if platform == "win32":
             if package in devpackages_windows:
                 updater.updatepack(package, "")
 
             if package in applications_windows:
                 updater.updateapp(package, "")
+
+            else:
+                return
+        if platform == "darwin":
+            if package in devpackages_macos:
+                updater.updatepack(package, password)
+
+            if package in applications_macos:
+                updater.updateapp(package, password)
 
             else:
                 return
@@ -401,7 +452,9 @@ def hyperpack(hyperpack_list):
 
     hyperpacks = hyperpack_list.split(',')
 
-    if platform == 'linux':
+    password = ""
+
+    if platform == 'linux' or platform == 'darwin':
         password = getpass('Enter your password: ')
         click.echo('\n')
 
@@ -415,8 +468,9 @@ def hyperpack(hyperpack_list):
 
         password_bar.next()
 
-        click.echo('\n')
 
+    click.echo('\n')
+    if platform == 'linux':
         for hyperpack in hyperpacks:
             hyper_pack = hyperpkgs[hyperpack]
 
@@ -480,6 +534,36 @@ def hyperpack(hyperpack_list):
 
             for app in apps:
                 updater.updateapp(app, password="")
+    elif platform == 'darwin':
+        for hyperpack in hyperpacks:
+            hyper_pack = hyperpkgs[hyperpack]
+
+            packages = hyper_pack.packages.split(',')
+            apps = hyper_pack.applications.split(',')
+
+            for package in packages:
+                installer.install_task(
+                    package_name=devpackages_macos[package],
+                    script=f'brew install {package}',
+                    password="",
+                    test_script=f'{package} --version',
+                    tests_passed=[f'{devpackages_macos[package]} Version']
+                )
+
+            for package in packages:
+                updater.updatepack(package, password="")
+
+            for app in apps:
+                installer.install_task(
+                    package_name=applications_macos[app],
+                    script=f'brew cask install {app}',
+                    password="",
+                    test_script='',
+                    tests_passed=[]
+                )
+
+            for app in apps:
+                updater.updateapp(app, password="")
 
 
 @cli.command()
@@ -491,13 +575,19 @@ def clean():
         uninstaller = Uninstaller()
         password = getpass('Enter your password: ')
         uninstaller.clean(password)
+    
     if platform == 'win32':
         arr = ['|', "/", "-", "\\"]
         slen = len(arr)
         print('Cleaning Your PC...')
         for i in range(1, 60):
             time.sleep(0.04)
-            print(arr[i % slen], end='\r')
+            print(arr[i%slen], end='\r')
+    
+    elif platform == 'darwin':
+        uninstaller = Uninstaller()
+        password = getpass('Enter your password: ')
+        uninstaller.clean(password)
 
 
 @cli.command()
@@ -507,5 +597,9 @@ def list():
     '''
     if platform == 'linux':
         click.echo(click.style(display_list_linux, fg='white'))
+    
     elif platform == 'win32':
         click.echo(click.style(display_list_windows, fg='white'))
+    
+    elif platform == 'darwin':
+        click.echo(click.style(display_list_macos, fg='white'))

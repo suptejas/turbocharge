@@ -43,7 +43,7 @@ class Updater:
 
                 package_version = subprocess_cmd(
                     f'apt show {package_name}'.split())
-                
+
 
                 with open(f'/home/{getuser()}/config.tcc', 'r') as file:
                     lines = file.readlines()
@@ -72,7 +72,7 @@ class Updater:
                 click.echo(e.output)
                 click.echo('An Error Occurred During Updating..', err=True)
 
-        elif platform == 'win32':
+        if platform == 'win32':
             try:
                 installer_progress = Spinner(
                     message=f'Updating {package_name}...', max=100)
@@ -81,7 +81,8 @@ class Updater:
                     time.sleep(0.007)
                     installer_progress.next()
 
-                run(f'choco upgrade {package_name} -y')
+                run(f'choco upgrade {package_name} -y',
+                    stdout=PIPE, stderr=PIPE)
 
                 for _ in range(1, 25):
                     time.sleep(0.007)
@@ -95,7 +96,31 @@ class Updater:
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occurred During Updating..', err=True)
-            
+        if platform == 'darwin':
+            try:
+                installer_progress = Spinner(
+                    message=f'Updating {package_name}...', max=100)
+
+                for _ in range(1, 75):
+                    time.sleep(0.007)
+                    installer_progress.next()
+
+                run(f'brew upgrade {package_name}',
+                    stdout=PIPE, stderr=PIPE)
+
+                for _ in range(1, 25):
+                    time.sleep(0.007)
+                    installer_progress.next()
+
+                click.echo(
+                    click.style(
+                        f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n',
+                        fg='green'))
+
+            except subprocess.CalledProcessError as e:
+                click.echo(e.output)
+                click.echo('An Error Occurred During Updating..', err=True)
+
     def updateapp(self, package_name: str, password: str):
         if platform == 'linux':
             try:
@@ -119,7 +144,7 @@ class Updater:
                 click.echo(e.output)
                 click.echo('An Error Occurred During Updating...', err=True)
 
-        elif platform == 'win32':
+        if platform == 'win32':
             try:
                 installer_progress = Spinner(
                     message=f'Updating {package_name}...', max=100)
@@ -129,6 +154,30 @@ class Updater:
                     installer_progress.next()
 
                 run(f'choco upgrade {package_name} -y',
+                    stdout=PIPE, stderr=PIPE)
+
+                for _ in range(1, 25):
+                    time.sleep(0.007)
+                    installer_progress.next()
+
+                click.echo(
+                    click.style(
+                        f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n',
+                        fg='green'))
+
+            except subprocess.CalledProcessError as e:
+                click.echo(e.output)
+                click.echo('An Error Occurred During Updating..', err=True)
+        if platform == 'darwin':
+            try:
+                installer_progress = Spinner(
+                    message=f'Updating {package_name}...', max=100)
+
+                for _ in range(1, 75):
+                    time.sleep(0.007)
+                    installer_progress.next()
+
+                run(f'brew cask upgrade {package_name}',
                     stdout=PIPE, stderr=PIPE)
 
                 for _ in range(1, 25):
