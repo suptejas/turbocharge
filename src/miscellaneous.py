@@ -1,6 +1,8 @@
 from subprocess import Popen, PIPE, DEVNULL
 import time
 import click
+from sys import platform
+from constants import applications_linux, applications_macos, applications_windows, devpackages_linux, devpackages_macos, devpackages_windows
 
 def is_password_valid(password: str):
     proc = Popen(
