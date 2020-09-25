@@ -383,10 +383,10 @@ def update(package_list):
 
         elif platform == "win32":
             if package in devpackages_windows:
-                updater.updatepack(package, "")
+                updater.updatepack(package, password)
 
             if package in applications_windows:
-                updater.updateapp(package, "")
+                updater.updateapp(package, password)
 
             else:
                 return

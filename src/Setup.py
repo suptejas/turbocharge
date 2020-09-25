@@ -5,6 +5,7 @@ from getpass import getuser
 import click
 from progress.bar import IncrementalBar
 from time import sleep
+import subprocess
 
 class Setup:
     def setup(self):
@@ -57,7 +58,7 @@ class Setup:
                         sleep(0.02)
                         setup_progress.next()
 
-        if platform == 'win32':
+        elif platform == 'win32':
             # Install Chocolatey And Setup
             click.echo('Installing Chocolatey...')
             subprocess.Popen(
@@ -66,5 +67,3 @@ class Setup:
                 'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
             ]
             )
-            # Setup for Windows Is Complete
-        
