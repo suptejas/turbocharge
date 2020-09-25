@@ -108,7 +108,8 @@ def install(package_list):
                         constant.chrome_setup.split(),
                         stdin=PIPE,
                         stdout=PIPE,
-                        stderr=PIPE)
+                        stderr=PIPE
+                    )
                     # Popen only accepts byte-arrays so you must encode the
                     # string
                     second.communicate(password.encode())
@@ -206,25 +207,27 @@ def install(package_list):
             elif package_name not in devpackages_linux and package_name not in applications_linux and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
+        
+
         if platform == 'win32':
             click.echo('\n')
-            finding_bar = IncrementalBar(
-                'Finding Requested Packages...', max=1)
+            finding_bar = IncrementalBar('Finding Requested Packages...', max=1)
 
             if package_name in devpackages_windows:
                 show_progress(finding_bar)
+
                 turbocharge.install_task(
                     package_name=devpackages_windows[package_name],
                     script=f"choco install {package_name} -y",
                     password="",
                     test_script=f"{package_name} --version",
-                    tests_passed=[
-                        f'{devpackages_windows[package_name]} Version']
+                    tests_passed=[f'{devpackages_windows[package_name]} Version']
                 )
-                # test _scirpt is just a string here..
+
 
             elif package_name in applications_windows:
                 show_progress(finding_bar)
+
                 turbocharge.install_task(
                     package_name=applications_windows[package_name],
                     script=f"choco install {package_name} -y",
@@ -335,6 +338,8 @@ def remove(package_list):
                     click.echo(e.output)
                     click.echo(
                         'An Error Occurred During Uninstallation...', err=True)
+            
+
         if platform == 'win32':
             if package in devpackages_windows:
                 uninstaller.uninstall(
@@ -342,6 +347,7 @@ def remove(package_list):
                     password="",
                     package_name=devpackages_windows[package]
                 )
+            
             elif package in applications_windows:
                 uninstaller.uninstall(
                     f'choco uninstall {package}',
