@@ -82,54 +82,59 @@ devpackages_linux = {
 }
 
 applications_windows = {
+    '7zip': '7 Zip',
+    'adobe-reader': 'Adobe Reader DC',
     'androidstudio': 'Android Studio',
     'atom': 'Atom',
+    'audacity': 'Audacity',
     'blender': 'Blender',
     'brackets': 'Brackets',
+    'ccleaner': 'CCleaner',
     'clion-ide': 'C Lion',
+    'cutepdf': 'CutePDF',
     'datagrip': 'Data Grip',
     'discord': 'Discord',
+    'dropbox': 'Dropbox',
     'eclipse': 'Eclipse',
     'figma': 'Figma',
+    'firefox': 'Firefox',
+    'flash-player-plugin': 'Flash Player Plugin',
+    'gimp': 'GIMP',
     'goland': 'Go Land',
+    'itunes': 'iTunes',
     'kotlinc': 'Kotlin',
     'libreoffice-fresh': 'Libre Office',
+    'malwarebytes': 'Malwarebytes',
+    'microsoft-edge': 'Microsoft Edge',
+    'microsoft-windows-terminal': 'Windows Terminal',
+    'mingw': 'MinGW',
+    'notepadplusplus': 'Notepad++',
     'opera': 'Opera',
+    'postman': 'Postman',
     'pycharm-community': 'Pycharm Community',
     'rubymine': 'RubyMine',
-    'sublimetext3.app': 'Sublime Text',
-    'vscode': 'Visual Studio Code',
-    'vscode-insiders.install': 'Visual Studio Code Insiders',
-    'webstorm': 'Web Storm',
-    'adobe-reader': 'Adobe Reader DC',
-    'flash-player-plugin': 'Flash Player Plugin',
-    'firefox': 'Firefox',
-    '7zip': '7 Zip',
-    'notepadplusplus': 'Notepad++',
-    'vlc': 'VLC Media Player',
-    'winrar': 'WinRAR',
-    'malwarebytes': 'Malwarebytes',
     'skype': 'Skype',
-    'ccleaner': 'CCleaner',
+    'sourcetree': 'Source Tree',
+    'spotify': 'Spotify',
+    'sublimetext3.app': 'Sublime Text',
     'teamviewer': 'Teamviewer',
-    'gimp': 'GIMP',
-    'itunes': 'iTunes',
-    'dropbox': 'Dropbox',
-    'microsoft-edge': 'Microsoft Edge',
+    'thunderbird': 'Thunderbird',
     'virtualbox': 'VirtualBox',
+    'vlc': 'VLC Media Player',
+    'vscode': 'Visual Studio Code',
+    'vscode-insiders': 'Visual Studio Code Insiders',
+    'webstorm': 'Web Storm',
+    'winrar': 'WinRAR',
     'wireshark': 'Wireshark',
     'zoom': 'Zoom',
-    'spotify': 'Spotify',
-    'sourcetree': 'Source Tree',
-    'microsoft-windows-terminal': 'Windows Terminal',
-    'audacity': 'Audacity',
-    'postman': 'Postman',
-    'mingw': 'MinGW',
-    'thunderbird': 'Thunderbird',
-    'cutepdf': 'CutePDF',
 }
 
 devpackages_windows = {
+    'autoruns': 'Autoruns',
+    'awscli': 'AwsCLI',
+    'azure-cli': 'Azure-CLI',
+    'boxstarter': 'BoxStarter',
+    'cgywin': 'CGYWin',
     'curl': 'Curl',
     'docker': 'Docker',
     'emacs': 'Emacs',
@@ -137,31 +142,26 @@ devpackages_windows = {
     'git': 'Git',
     'golang': 'Go-Lang',
     'jq': 'JQ',
+    'julia': 'Julia',
     'neovim': 'Neo Vim',
+    'ninja': 'Ninja',
     'nodejs': 'Npm',
     'ntop.portable': 'Ntop',
+    'openssh': 'OpenSSH',
     'pass': 'Pass',
+    'php': 'PHP',
+    'putty': 'Putty',
+    'python': 'Python Latest Version',
+    'python2': 'Python 2',
+    'python3': 'Python 3',
     'qtpass': 'QTpass',
+    'ruby': 'Ruby',
     'rust': 'Rust',
     'sqlite': 'Sqlite',
     'tldr': 'Tldr',
     'vim': 'Vim',
-    'python3': 'Python 3',
-    'python': 'Python Latest Version',
-    'python2': 'Python 2',   
     'wget': 'Wget',
-    'php': 'PHP',
-    'ruby': 'Ruby',
     'yarn': 'Yarn',
-    'julia': 'Julia',
-    'openssh': 'OpenSSH',
-    'autoruns': 'Autoruns'
-    'putty': 'Putty',
-    'awscli': 'AwsCLI',
-    'cgywin': 'CGYWin',
-    'boxstarter': 'BoxStarter',
-    'azure-cli': 'Azure-CLI',
-    'ninja': 'Ninja',
 }
 
 hyperpkgs = {
@@ -387,50 +387,91 @@ ________________________________________________________________________________
 
 
 display_list_windows = '''
-___________________________________________
-| Applications       |Duration||   Size   |
--------------------------------------------
-| android-studio     |   5m   || 840.0 MB |
-| atom               |   2m   || 224.8 MB |
-| blender            |   2m   || 187.7 MB |
-| brackets           |   1m   || 109.6 MB |
-| clion-ide          |   3m   || 502.0 MB |
-| chrome             |   2m   || 70.2  MB |
-| datagrip           |   2m   || 356.8 MB |
-| discord            |   1m   || 60.1  MB |
-| eclipse            |   2m   || 220.3 MB |
-| figma              |   2m   || 96.4  MB |
-| libreoffice-fresh  |   1m   || 25.0  MB |
-| opera              |   1m   || 64.2 MB  |
-| pycharm-community  |   3m   || 372.1 MB |
-| powershell         |   1m   || 62.5  MB |
-| rubymine           |   3m   || 363.2 MB |
-| sublimetext3       |   1m   || 70.8 MB  |
-| webstorm           |   3m   || 343.8 MB |
-| vscode             |   2m   || 162.5 MB |
-| vscode-insiders    |   2m   || 153.3 MB |
--------------------------------------------
-________________
-| Package      |
-----------------
-|  anaconda    |
-|  curl        |
-|  docker      |
-|  emacs       |
-|  git         |
-|  golang      |
-|  jq          |
-|  kotlin      |
-|  miniconda   |
-|  neovim      |
-|  nodejs      |
-|  pass        |
-|  qtpass      |
-|  rust        |
-|  sqlite      |
-|  tldr        |
-|  vim         |
-----------------
+-------------------------------
+| 7zip                        |
+| adobe-reader                |
+| androidstudio               |
+| atom                        |
+| audacity                    |
+| blender                     |
+| brackets                    |
+| ccleaner                    |
+| clion-ide                   |
+| cutepdf                     |
+| datagrip                    |
+| discord                     |
+| dropbox                     |
+| eclipse                     |
+| figma                       |
+| firefox                     |
+| flash-player-plugin         |
+| gimp                        |
+| goland                      |
+| itunes                      |
+| kotlinc                     |
+| libreoffice-fresh           |
+| malwarebytes                |
+| microsoft-edge              |
+| microsoft-windows-terminal  |
+| mingw                       |
+| notepadplusplus             |
+| opera                       |
+| postman                     |
+| pycharm-community           |
+| rubymine                    |
+| skype                       |
+| sourcetree                  |
+| spotify                     |
+| sublimetext3.app            |
+| teamviewer                  |
+| thunderbird                 |
+| virtualbox                  |
+| vlc                         |
+| vscode                      |
+| vscode-insiders             |
+| webstorm                    |
+| winrar                      |
+| wireshark                   |
+| zoom                        |
+-------------------------------
+
+____________________
+| Package           |
+---------------------
+| autoruns          |
+| awscli            |
+| azure-cli         |
+| boxstarter        |
+| cgywin            |
+| curl              |
+| docker            |
+| emacs             |
+| fzf               |
+| git               |
+| golang            |
+| jq                |
+| julia             |
+| neovim            |
+| ninja             |
+| nodejs            |
+| ntop.portable     |
+| openssh           |
+| pass              |
+| php               |
+| putty             |
+| python            |
+| python2           |
+| python3           |
+| qtpass            |
+| ruby              |
+| rust              |
+| sqlite            |
+| tldr              |
+| vim               |
+| wget              |
+| yarn              |
+---------------------
+
 _______________________________________________________________________
 | HyperPacks  |  Content                                              |
 -----------------------------------------------------------------------
