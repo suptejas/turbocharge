@@ -6,9 +6,10 @@ import click
 from progress.bar import IncrementalBar
 from time import sleep
 import subprocess
+from subprocess import Popen, PIPE
 
 class Setup:
-    def setup(self):
+    def setup(self, password : str):
         if platform == 'linux':
             # Creating the config file
             setup_progress = IncrementalBar(message='Setting Up Your Turbocharge Config...', max=100)
@@ -44,7 +45,8 @@ class Setup:
                         setup_progress.next()
             else:
                 # Config does not exist so creating config.tcc...
-                action = click.echo(f'Turbocharge couldn\'t find a pre-existing configuration, creating config.tcc at /home/{getuser()}.')
+                click.echo(f'Turbocharge couldn\'t find a pre-existing configuration, creating config.tcc at /home/{getuser()}.')
+                
                 if action == 'install':
                     # Need to import the configinstaller and do the setup...
                     for _ in range(61, 100):
@@ -57,8 +59,7 @@ class Setup:
                     for _ in range(61, 100):
                         sleep(0.02)
                         setup_progress.next()
-
-        elif platform == 'win32':
+        if platform == 'win32':
             # Install Chocolatey And Setup
             click.echo('Installing Chocolatey...')
             subprocess.Popen(
@@ -67,3 +68,17 @@ class Setup:
                 'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
             ]
             )
+        if platform == 'darwin':
+            click.echo('Setting Up Turbocharge On Your Mac...')
+            proc = Popen('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"', stdout=PIPE, stdin=PIPE, stderr=PIPE)
+            output = proc.communicate(password.encode())
+            returncode = proc.returncode 
+            if returncode != 0:
+                click.echo('Installation Failed...', err=True)
+                logs = click.prompt('Would you like the see the logs? [y/n]: ')
+                if logs == 'y':
+                    click.echo(output[0].decode('utf-8'))
+                else:
+                    return
+            else:
+                click.echo('Succesfully Setup Turbocharge!')

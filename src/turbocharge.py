@@ -8,22 +8,14 @@ from getpass import getpass, getuser
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 from subprocess import Popen, PIPE, DEVNULL, run
-<<<<<<< HEAD
-from constants import applications, devpackages, apt_script, apt_remove, snap_script, snap_remove, display_list, hyperpkgs
-from miscellaneous import show_progress, is_password_valid
-=======
 from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, apt_script, apt_remove, snap_script, snap_remove, display_list_linux, display_list_windows, display_list_macos, hyperpkgs, devpackages_macos, applications_macos
 from miscellaneous import show_progress, is_password_valid, find
->>>>>>> 417cd1d... Added Search With Python And Google Chrome
 from HyperPack import HyperPack
 from Debugger import Debugger
 from Install import Installer
 from Uninstall import Uninstaller
 from Update import Updater
-<<<<<<< HEAD
-=======
 from Setup import Setup
->>>>>>> 417cd1d... Added Search With Python And Google Chrome
 
 
 @click.group()
@@ -468,6 +460,14 @@ def update(package_list):
             else:
                 return
 
+
+@cli.command()
+def setup():
+    password = ''
+    if platform == 'darwin' or platform == 'linux':
+        password = getpass()
+    setup = Setup()
+    setup.setup(password)
 
 @cli.command()
 @click.argument('hyperpack_list', required=True)
