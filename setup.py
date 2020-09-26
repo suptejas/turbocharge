@@ -8,36 +8,38 @@ import subprocess
 
 user = getuser()
 
-# class PostDevelopCommand(develop):
-#     def run(self):
-#         develop.run(self)
+class PostDevelopCommand(develop):
+    def run(self):
+        develop.run(self)
 
-#         if platform == 'linux':
-#             os.system(f'export PATH="/home/{user}/.local/bin:$PATH"')
+        if platform == 'linux':
+            os.system(f'export PATH="/home/{user}/.local/bin:$PATH"')
 
-#         elif platform == 'win32':
-#             subprocess.Popen(
-#                 [
-#                     'powershell.exe',
-#                     'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
-#                 ]
-#             )
+        elif platform == 'win32':
+            subprocess.Popen(
+                [
+                    'powershell.exe',
+                    'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
+                ]
+            )
         
 
-# class PostInstallCommand(install):
-#     def run(self):
-#         install.run(self)
+class PostInstallCommand:
+    def run(self):
+        if platform == 'linux':
+            os.system(f'export PATH="/home/{user}/.local/bin:$PATH"')
 
-#         if platform == 'linux':
-#             os.system(f'export PATH="/home/{user}/.local/bin:$PATH"')
+        elif platform == 'win32':
+            subprocess.Popen(
+                [
+                    'powershell.exe',
+                    'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
+                ]
+            )
 
-#         elif platform == 'win32':
-#             subprocess.Popen(
-#                 [
-#                     'powershell.exe',
-#                     'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
-#                 ]
-#             )
+postinstallcommand = PostInstallCommand()
+
+postinstallcommand.run()
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
