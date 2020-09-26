@@ -14,6 +14,22 @@ from os.path import isfile
 class Installer:
     def install_task(self, package_name: str, script: str,
                      password: str, test_script: str, tests_passed):
+        def get_key(val, dictionary):
+                        for key, value in dictionary.items():
+                            if val == value:
+                                return key
+    
+        def subprocess_cmd(command):
+                    process = subprocess.Popen(
+                        command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+                    proc_stdout = process.communicate()[0].strip()
+                    decoded = proc_stdout.decode("utf-8")
+                    version_tag = decoded.split("\n")[1]
+                    # using [1:] might be useful in some scenario where the
+                    # version has multiple colons in it.
+                    cleaned_version = version_tag.split(": ")[1]
+                    return cleaned_version
+
         if platform == 'linux':
             try:
                 installer_progress = Spinner(
@@ -85,22 +101,6 @@ class Installer:
                         f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n',
                         fg='green',
                         bold=True))
-
-                def get_key(val, dictionary):
-                        for key, value in dictionary.items():
-                            if val == value:
-                                return key
-
-                def subprocess_cmd(command):
-                    process = subprocess.Popen(
-                        command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
-                    proc_stdout = process.communicate()[0].strip()
-                    decoded = proc_stdout.decode("utf-8")
-                    version_tag = decoded.split("\n")[1]
-                    # using [1:] might be useful in some scenario where the
-                    # version has multiple colons in it.
-                    cleaned_version = version_tag.split(": ")[1]
-                    return cleaned_version
 
                 package_type = None
                 
@@ -241,7 +241,7 @@ class Installer:
                 click.echo(e.output)
                 click.echo('An Error Occured During Installation...', err=True)
 
-        elif platform == 'win32':
+        if platform == 'win32':
             try:
                 installer_progress = Spinner(
                     message=f'Installing {package_name}...', max=100)
@@ -378,21 +378,7 @@ class Installer:
                         fg='green',
                         bold=True))
 
-                def get_key(val, dictionary):
-                        for key, value in dictionary.items():
-                            if val == value:
-                                return key
-
-                def subprocess_cmd(command):
-                    process = subprocess.Popen(
-                        command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
-                    proc_stdout = process.communicate()[0].strip()
-                    decoded = proc_stdout.decode("utf-8")
-                    version_tag = decoded.split("\n")[1]
-                    # using [1:] might be useful in some scenario where the
-                    # version has multiple colons in it.
-                    cleaned_version = version_tag.split(": ")[1]
-                    return cleaned_version
+                
 
                 package_type = None
 
