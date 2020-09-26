@@ -25,7 +25,7 @@ def show_progress(finding_bar):
         
     click.echo('\n')
     
-    def find(text):
+def find(text):
     suggestions = []
     if platform == 'linux':
         for app in applications_linux:
@@ -34,7 +34,7 @@ def show_progress(finding_bar):
 
         for package in devpackages_linux:
             if text in package:
-                suggestions.append(app)
+                suggestions.append(package)
 
     if platform == 'win32':
         for app in applications_windows:
@@ -43,7 +43,7 @@ def show_progress(finding_bar):
 
         for package in devpackages_windows:
             if text in package:
-                suggestions.append(app)
+                suggestions.append(package)
 
     if platform == 'darwin':
         for app in applications_macos:
@@ -52,5 +52,5 @@ def show_progress(finding_bar):
 
         for package in devpackages_macos:
             if text in package:
-                suggestions.append(app)
+                suggestions.append(package)
     return suggestions
