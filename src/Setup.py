@@ -70,7 +70,7 @@ class Setup:
             )
         if platform == 'darwin':
             click.echo('Setting Up Turbocharge On Your Mac...')
-            proc = Popen('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"', stdout=PIPE, stdin=PIPE, stderr=PIPE)
+            proc = Popen('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'.split(), stdout=PIPE, stdin=PIPE, stderr=PIPE)
             output = proc.communicate(password.encode())
             returncode = proc.returncode 
             if returncode != 0:
