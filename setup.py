@@ -8,7 +8,6 @@ import subprocess
 
 user = getuser()
 
-
 class PostDevelopCommand(develop):
     def run(self):
         develop.run(self)
@@ -25,10 +24,8 @@ class PostDevelopCommand(develop):
             )
         
 
-class PostInstallCommand(install):
+class PostInstallCommand:
     def run(self):
-        install.run(self)
-
         if platform == 'linux':
             os.system(f'export PATH="/home/{user}/.local/bin:$PATH"')
 
@@ -40,7 +37,9 @@ class PostInstallCommand(install):
                 ]
             )
 
+postinstallcommand = PostInstallCommand()
 
+postinstallcommand.run()
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
