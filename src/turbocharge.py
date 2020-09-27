@@ -464,7 +464,7 @@ def update(package_list):
 @cli.command()
 def setup():
     password = ''
-    if platform == 'darwin' or platform == 'linux':
+    if platform == 'linux':
         password = getpass()
     setup = Setup()
     setup.setup(password)
