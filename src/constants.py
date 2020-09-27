@@ -81,55 +81,87 @@ devpackages_linux = {
     'zsh': 'Zsh',
 }
 
-#     'librepcb' : 'Libre PCB', Doesn't exist for chocolatey they are too lazy
-#   'powershell' : 'Powershell', Comes preinstalled with Windows.
 applications_windows = {
+    '7zip': '7 Zip',
+    'adobe-reader': 'Adobe Reader DC',
     'androidstudio': 'Android Studio',
-    'atom' : 'Atom',
-    'blender' : 'Blender',
-    'brackets' : 'Brackets',
-    'clion-ide' : 'C Lion',
-    'discord' : 'Discord',
-    'datagrip' : 'Data Grip',
-    'libreoffice-fresh' : 'Libre Office',
-    'opera' : 'Opera',
-    'webstorm' : 'Web Storm',
+    'atom': 'Atom',
+    'audacity': 'Audacity',
+    'blender': 'Blender',
+    'brackets': 'Brackets',
+    'ccleaner': 'CCleaner',
+    'clion-ide': 'C Lion',
+    'cutepdf': 'CutePDF',
+    'datagrip': 'Data Grip',
+    'discord': 'Discord',
+    'dropbox': 'Dropbox',
+    'eclipse': 'Eclipse',
+    'figma': 'Figma',
+    'firefox': 'Firefox',
+    'flash-player-plugin': 'Flash Player Plugin',
+    'gimp': 'GIMP',
+    'goland': 'Go Land',
+    'itunes': 'iTunes',
+    'kotlinc': 'Kotlin',
+    'libreoffice-fresh': 'Libre Office',
+    'malwarebytes': 'Malwarebytes',
+    'microsoft-edge': 'Microsoft Edge',
+    'microsoft-windows-terminal': 'Windows Terminal',
+    'mingw': 'MinGW',
+    'notepadplusplus': 'Notepad++',
+    'opera': 'Opera',
+    'postman': 'Postman',
     'pycharm-community': 'Pycharm Community',
+    'rubymine': 'RubyMine',
+    'skype': 'Skype',
+    'sourcetree': 'Source Tree',
+    'spotify': 'Spotify',
     'sublimetext3.app': 'Sublime Text',
-    'vscode' : 'Visual Studio Code',
-    'vscode-insiders.install' : 'Visual Studio Code Insiders',
-    'eclipse' : 'Eclipse',
-    'kotlinc' : 'Kotlin',
-    'goland' : 'Go Land',
-    'rubymine' : 'RubyMine',
-    'figma' : 'Figma',
+    'teamviewer': 'Teamviewer',
+    'thunderbird': 'Thunderbird',
+    'virtualbox': 'VirtualBox',
+    'vlc': 'VLC Media Player',
+    'vscode': 'Visual Studio Code',
+    'vscode-insiders': 'Visual Studio Code Insiders',
+    'webstorm': 'Web Storm',
+    'winrar': 'WinRAR',
+    'wireshark': 'Wireshark',
+    'zoom': 'Zoom',
 }
 
-#     'zsh': 'Zsh', Not available on windows using chocolatey...
-# 'ntop.portable' : 'NTop',  We could use this.... totally new. instead of htop
 devpackages_windows = {
-    'git': 'Git',
+    'autoruns': 'Autoruns',
+    'awscli': 'AwsCLI',
+    'azure-cli': 'Azure-CLI',
+    'boxstarter': 'BoxStarter',
+    'cgywin': 'CGYWin',
     'curl': 'Curl',
     'docker': 'Docker',
-    'nodejs': 'Npm',
     'emacs': 'Emacs',
+    'fzf': 'Fzf',
+    'git': 'Git',
+    'golang': 'Go-Lang',
+    'jq': 'JQ',
+    'julia': 'Julia',
     'neovim': 'Neo Vim',
-    'vim': 'Vim',
-    # 'htop': 'Htop',
+    'ninja': 'Ninja',
+    'nodejs': 'Npm',
+    'ntop.portable': 'Ntop',
+    'openssh': 'OpenSSH',
+    'pass': 'Pass',
+    'php': 'PHP',
+    'putty': 'Putty',
+    'python': 'Python Latest Version',
+    'python2': 'Python 2',
+    'python3': 'Python 3',
+    'qtpass': 'QTpass',
+    'ruby': 'Ruby',
+    'rust': 'Rust',
     'sqlite': 'Sqlite',
     'tldr': 'Tldr',
-    'jq': 'JQ',
-    # 'ncdu': 'Ncdu', Does not exist.
-    # 'taskwarrior': 'Task Warrior', Does not exist
-    # 'tmux': 'Tmux', Does not exist, possible counterpart is fzf
-    # 'patchelf': 'Patchelf', not for windows
-    'golang': 'Go-Lang',
-    'rust': 'Rust',
-    # 'zlib': 'Z-Lib', Rejected on Chocolatey .... some issue going on...
-    # 'kakoune': 'Kakoune', no windows possibility
-    # 'autojump': 'Autojump', not directly... can do from direct github repo using python
-    'pass': 'Pass',
-    'qtpass': 'QTpass'
+    'vim': 'Vim',
+    'wget': 'Wget',
+    'yarn': 'Yarn',
 }
 
 hyperpkgs = {
@@ -355,50 +387,91 @@ ________________________________________________________________________________
 
 
 display_list_windows = '''
-___________________________________________
-| Applications       |Duration||   Size   |
--------------------------------------------
-| android-studio     |   5m   || 840.0 MB |
-| atom               |   2m   || 224.8 MB |
-| blender            |   2m   || 187.7 MB |
-| brackets           |   1m   || 109.6 MB |
-| clion-ide          |   3m   || 502.0 MB |
-| chrome             |   2m   || 70.2  MB |
-| datagrip           |   2m   || 356.8 MB |
-| discord            |   1m   || 60.1  MB |
-| eclipse            |   2m   || 220.3 MB |
-| figma              |   2m   || 96.4  MB |
-| libreoffice-fresh  |   1m   || 25.0  MB |
-| opera              |   1m   || 64.2 MB  |
-| pycharm-community  |   3m   || 372.1 MB |
-| powershell         |   1m   || 62.5  MB |
-| rubymine           |   3m   || 363.2 MB |
-| sublimetext3       |   1m   || 70.8 MB  |
-| webstorm           |   3m   || 343.8 MB |
-| vscode             |   2m   || 162.5 MB |
-| vscode-insiders    |   2m   || 153.3 MB |
--------------------------------------------
-________________
-| Package      |
-----------------
-|  anaconda    |
-|  curl        |
-|  docker      |
-|  emacs       |
-|  git         |
-|  golang      |
-|  jq          |
-|  kotlin      |
-|  miniconda   |
-|  neovim      |
-|  nodejs      |
-|  pass        |
-|  qtpass      |
-|  rust        |
-|  sqlite      |
-|  tldr        |
-|  vim         |
-----------------
+-------------------------------
+| 7zip                        |
+| adobe-reader                |
+| androidstudio               |
+| atom                        |
+| audacity                    |
+| blender                     |
+| brackets                    |
+| ccleaner                    |
+| clion-ide                   |
+| cutepdf                     |
+| datagrip                    |
+| discord                     |
+| dropbox                     |
+| eclipse                     |
+| figma                       |
+| firefox                     |
+| flash-player-plugin         |
+| gimp                        |
+| goland                      |
+| itunes                      |
+| kotlinc                     |
+| libreoffice-fresh           |
+| malwarebytes                |
+| microsoft-edge              |
+| microsoft-windows-terminal  |
+| mingw                       |
+| notepadplusplus             |
+| opera                       |
+| postman                     |
+| pycharm-community           |
+| rubymine                    |
+| skype                       |
+| sourcetree                  |
+| spotify                     |
+| sublimetext3.app            |
+| teamviewer                  |
+| thunderbird                 |
+| virtualbox                  |
+| vlc                         |
+| vscode                      |
+| vscode-insiders             |
+| webstorm                    |
+| winrar                      |
+| wireshark                   |
+| zoom                        |
+-------------------------------
+
+____________________
+| Package           |
+---------------------
+| autoruns          |
+| awscli            |
+| azure-cli         |
+| boxstarter        |
+| cgywin            |
+| curl              |
+| docker            |
+| emacs             |
+| fzf               |
+| git               |
+| golang            |
+| jq                |
+| julia             |
+| neovim            |
+| ninja             |
+| nodejs            |
+| ntop.portable     |
+| openssh           |
+| pass              |
+| php               |
+| putty             |
+| python            |
+| python2           |
+| python3           |
+| qtpass            |
+| ruby              |
+| rust              |
+| sqlite            |
+| tldr              |
+| vim               |
+| wget              |
+| yarn              |
+---------------------
+
 _______________________________________________________________________
 | HyperPacks  |  Content                                              |
 -----------------------------------------------------------------------

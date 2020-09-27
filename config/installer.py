@@ -9,7 +9,6 @@ import time
 from subprocess import Popen, PIPE, DEVNULL
 from Installable import Installable
 
-
 applications = {
     'android-studio': 'Android Studio',
     'atom' : 'Atom',
@@ -60,7 +59,6 @@ devpackages = {
     'qtpass': 'QTpass'
 }
 
-
 def is_password_valid(password : str):
     proc = Popen('sudo -k -S -l'.split(), stdin=PIPE, stderr=PIPE, stdout=DEVNULL)
     
@@ -70,7 +68,6 @@ def is_password_valid(password : str):
         return 1
     else:
         return 0
-
 
 class Debugger:
     def debug(self, password : str, error : bytes):
@@ -190,8 +187,6 @@ class Installer:
         except subprocess.CalledProcessError as e:
             click.echo(e.output)
             click.echo('An Error Occurred During Installation...', err = True)
-
-
 
 def show_progress(finding_bar):
     for _ in range(1, 2):
@@ -318,6 +313,3 @@ def install(package):
             except  subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occurred During Installation...', err = True)
-
-
-
