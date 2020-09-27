@@ -93,7 +93,7 @@ class Installer:
 
                 def subprocess_cmd(command):
                     process = subprocess.Popen(
-                        command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+                        command, stdout=PIPE, stdin=PIPE, stderr=PIPE)
                     proc_stdout = process.communicate()[0].strip()
                     decoded = proc_stdout.decode("utf-8")
                     version_tag = decoded.split("\n")[1]

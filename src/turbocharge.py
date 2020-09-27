@@ -1,3 +1,19 @@
+#   Copyright 2020 Turbocharge
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+
+
 import click
 import os
 import subprocess
@@ -22,12 +38,14 @@ from Setup import Setup
 def cli():
     pass
 
+
 @cli.command()
 def version():
     '''
     Current Turbocharged Version You Have
     '''
     click.echo(f'Version: 3.0.6 \nDistribution: {platform} Stable x86-64')
+
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -634,3 +652,37 @@ def list():
     
     elif platform == 'darwin':
         click.echo(click.style(display_list_macos, fg='white'))
+
+
+@cli.command()
+def local():
+    '''
+    Lists all the installed packages.
+    '''
+
+    if platform == 'linux':
+        pass
+
+    elif platform == 'win32':
+        packages = []
+
+        cmd = run('choco list --local-only', stdout=PIPE, stderr=PIPE)
+
+        output = cmd.stdout.decode()
+
+        lines = output.split('\n')
+
+        for line in lines:
+            if not 'Chocolatey' in line and not 'chocolatey' in line and 'packages installed' not in line:
+                packages.append(line)
+        
+        result = "Packages installed:\n"
+
+        for p in packages:
+            result += p
+            result += "\n"
+        
+        click.echo(result)
+        
+    elif platform == 'darwin':
+        pass

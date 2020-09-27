@@ -5,41 +5,22 @@ from getpass import getuser
 import os
 from sys import platform
 import subprocess
+from src.Setup import Setup
+import atexit
 
 user = getuser()
 
-class PostDevelopCommand(develop):
+s = Setup()
+
+class PostDevelop(develop):
     def run(self):
         develop.run(self)
-
-        if platform == 'linux':
-            os.system(f'export PATH="/home/{user}/.local/bin:$PATH"')
-
-        elif platform == 'win32':
-            subprocess.Popen(
-                [
-                    'powershell.exe',
-                    'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
-                ]
-            )
-        
-
-class PostInstallCommand:
+        s.setup()
+    
+class PostInstall(install):
     def run(self):
-        if platform == 'linux':
-            os.system(f'export PATH="/home/{user}/.local/bin:$PATH"')
-
-        elif platform == 'win32':
-            subprocess.Popen(
-                [
-                    'powershell.exe',
-                    'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
-                ]
-            )
-
-postinstallcommand = PostInstallCommand()
-
-postinstallcommand.run()
+        install.run(self)
+        s.setup()
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -60,6 +41,10 @@ setup(
         'Click',
         'progress',
     ],
+    cmdclass={
+        'develop': PostDevelop,
+        'install': PostInstall
+    },
     package_dir={'': 'src'},
     entry_points = 
     '''
@@ -67,7 +52,7 @@ setup(
         turbo=turbocharge:cli
     ''',
     classifiers=[
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: Apache License 2.0",
         "Operating System :: Unix",
     ]
 )
