@@ -53,6 +53,6 @@ setup(
     ''',
     classifiers=[
         "License :: OSI Approved :: Apache License 2.0",
-        "Operating System :: Unix",
+        "Operating System :: OS Independent",
     ]
 )

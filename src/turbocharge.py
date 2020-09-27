@@ -32,6 +32,7 @@ from Install import Installer
 from Uninstall import Uninstaller
 from Update import Updater
 from Setup import Setup
+from PackageAdderHelper import sort_packages
 
 
 @click.group()
@@ -79,7 +80,7 @@ def install(package_list):
                 show_progress(finding_bar)
                 turbocharge.install_task(
                     devpackages_linux[package_name],
-                    f'{constant.apt_script} {package_name}',
+                    f'{apt_script} {package_name}',
                     password,
                     f'{package_name} --version',
                     [f'{devpackages_linux[package_name]} Version'])
@@ -88,7 +89,7 @@ def install(package_list):
                 show_progress(finding_bar)
                 turbocharge.install_task(
                     applications_linux[package_name],
-                    f'{constant.snap_script} {package_name}',
+                    f'{snap_script} {package_name}',
                     password,
                     '',
                     [])
@@ -611,7 +612,9 @@ def hyperpack(hyperpack_list):
 @click.argument('text', required=True)
 def search(text):
     click.echo(f'Searching for packages...')
+    
     suggestions = find(text)
+    
     for suggestion in suggestions:
         click.echo(f'{suggestion} \n') 
 
@@ -627,8 +630,11 @@ def clean():
     
     if platform == 'win32':
         arr = ['|', "/", "-", "\\"]
+        
         slen = len(arr)
+        
         print('Cleaning Your PC...')
+        
         for i in range(1, 60):
             time.sleep(0.04)
             print(arr[i%slen], end='\r')

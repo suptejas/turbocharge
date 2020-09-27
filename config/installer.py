@@ -7,7 +7,7 @@ from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 import time
 from subprocess import Popen, PIPE, DEVNULL
-from Installable import Installable
+from config.Installable import Installable
 
 applications = {
     'android-studio': 'Android Studio',
@@ -37,7 +37,7 @@ devpackages = {
     'git': 'Git',
     'curl': 'Curl',
     'docker': 'Docker',
-    'npm': 'Npm',
+    'npm': 'Node Package Manager',
     'zsh': 'Zsh',
     'emacs': 'Emacs',
     'neovim': 'Neo Vim',
@@ -50,7 +50,7 @@ devpackages = {
     'taskwarrior': 'Task Warrior',
     'tmux': 'Tmux',
     'patchelf': 'Patchelf',
-    'golang': 'Go-Lang',
+    'golang': 'Golang',
     'rust': 'Rust',
     'zlib': 'Z-Lib',
     'kakoune': 'Kakoune',
