@@ -1,3 +1,19 @@
+#   Copyright 2020 Turbocharge
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+
+
 import click
 import os
 import subprocess
@@ -61,7 +77,7 @@ def install(package_list):
                 show_progress(finding_bar)
                 turbocharge.install_task(
                     devpackages_linux[package_name],
-                    f'{constant.apt_script} {package_name}',
+                    f'{apt_script} {package_name}',
                     password,
                     f'{package_name} --version',
                     [f'{devpackages_linux[package_name]} Version'])
@@ -70,7 +86,7 @@ def install(package_list):
                 show_progress(finding_bar)
                 turbocharge.install_task(
                     applications_linux[package_name],
-                    f'{constant.snap_script} {package_name}',
+                    f'{snap_script} {package_name}',
                     password,
                     '',
                     [])
@@ -462,14 +478,6 @@ def update(package_list):
 
 
 @cli.command()
-def setup():
-    password = ''
-    if platform == 'linux':
-        password = getpass()
-    setup = Setup()
-    setup.setup(password)
-
-@cli.command()
 @click.argument('hyperpack_list', required=True)
 def hyperpack(hyperpack_list):
     '''
@@ -601,7 +609,9 @@ def hyperpack(hyperpack_list):
 @click.argument('text', required=True)
 def search(text):
     click.echo(f'Searching for packages...')
+    
     suggestions = find(text)
+    
     for suggestion in suggestions:
         click.echo(f'{suggestion} \n') 
 
@@ -617,8 +627,11 @@ def clean():
     
     if platform == 'win32':
         arr = ['|', "/", "-", "\\"]
+        
         slen = len(arr)
+        
         print('Cleaning Your PC...')
+        
         for i in range(1, 60):
             time.sleep(0.04)
             print(arr[i%slen], end='\r')
@@ -642,3 +655,37 @@ def list():
     
     elif platform == 'darwin':
         click.echo(click.style(display_list_macos, fg='white'))
+
+
+@cli.command()
+def local():
+    '''
+    Lists all the installed packages.
+    '''
+
+    if platform == 'linux':
+        pass
+
+    elif platform == 'win32':
+        packages = []
+
+        cmd = run('choco list --local-only', stdout=PIPE, stderr=PIPE)
+
+        output = cmd.stdout.decode()
+
+        lines = output.split('\n')
+
+        for line in lines:
+            if not 'Chocolatey' in line and not 'chocolatey' in line and 'packages installed' not in line:
+                packages.append(line)
+        
+        result = "Packages installed:\n"
+
+        for p in packages:
+            result += p
+            result += "\n"
+        
+        click.echo(result)
+        
+    elif platform == 'darwin':
+        pass

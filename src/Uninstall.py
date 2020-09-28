@@ -13,9 +13,9 @@ class Uninstaller:
     def uninstall(self, script: str, password: str, package_name: str):
 
         def get_key(val, dictionary):
-                    for key, value in dictionary.items():
-                        if val == value:
-                            return key
+            for key, value in dictionary.items():
+                if val == value:
+                    return key
 
         if platform == 'linux':
             try:
@@ -89,7 +89,8 @@ class Uninstaller:
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occured During Installation...', err=True)
-        if platform == 'win32':
+
+        elif platform == 'win32':
             try:
                 installer_progress = Spinner(
                     message=f'Uninstalling {package_name}...', max=100)

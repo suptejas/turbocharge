@@ -250,7 +250,7 @@ class Installer:
                 click.echo(e.output)
                 click.echo('An Error Occured During Installation...', err=True)
 
-        if platform == 'win32':
+        elif platform == 'win32':
             try:
                 installer_progress = Spinner(
                     message=f'Installing {package_name}...', max=100)
@@ -393,7 +393,7 @@ class Installer:
 
                 if 'brew install' in script:
                     package_type = 'p'
-                if 'brew cask install' in script:
+                elif 'brew cask install' in script:
                     package_type = 'a'
 
                 # Testing the successful installation of the package

@@ -1,5 +1,5 @@
-from installer import install
-from Installable import Installable
+from config.installer import install
+from config.Installable import Installable
 
 with open('config.tcc') as file:
     lines = file.readlines()

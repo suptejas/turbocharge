@@ -106,7 +106,7 @@ class Updater:
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occurred During Updating..', err=True)
-       
+        
         if platform == 'darwin':
             try:
                 installer_progress = Spinner(
