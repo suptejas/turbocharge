@@ -32,13 +32,11 @@ from Install import Installer
 from Uninstall import Uninstaller
 from Update import Updater
 from Setup import Setup
-from PackageAdderHelper import sort_packages
 
 
 @click.group()
 def cli():
     pass
-
 
 @cli.command()
 def version():
@@ -46,7 +44,6 @@ def version():
     Current Turbocharged Version You Have
     '''
     click.echo(f'Version: 3.0.6 \nDistribution: {platform} Stable x86-64')
-
 
 @cli.command()
 @click.argument('package_list', required=True)

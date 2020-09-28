@@ -7,13 +7,38 @@ from subprocess import Popen, PIPE, DEVNULL, run
 from getpass import getuser
 from Debugger import Debugger
 import subprocess
-from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux
+from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, applications_macos, devpackages_macos
 from os.path import isfile
 
 
 class Installer:
     def install_task(self, package_name: str, script: str,
                      password: str, test_script: str, tests_passed):
+        def get_key(val, dictionary):
+                        for key, value in dictionary.items():
+                            if val == value:
+                                return key
+    
+        def subprocess_cmd(command):
+                    process = subprocess.Popen(
+                        command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+                    proc_stdout = process.communicate()[0].strip()
+                    decoded = proc_stdout.decode("utf-8")
+                    version_tag = decoded.split("\n")[1]
+                    # using [1:] might be useful in some scenario where the
+                    # version has multiple colons in it.
+                    cleaned_version = version_tag.split(": ")[1]
+                    return cleaned_version
+
+        def parse(string):
+            var1 = string.split(": ")
+            if len(var1[1]) >7:
+                var2 = var1[1].split(" ")
+                return var2[1]
+            else:
+                var2 = var1[1].split("\n")
+                return var2[0]
+
         if platform == 'linux':
             try:
                 installer_progress = Spinner(
@@ -85,22 +110,6 @@ class Installer:
                         f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n',
                         fg='green',
                         bold=True))
-
-                def get_key(val, dictionary):
-                        for key, value in dictionary.items():
-                            if val == value:
-                                return key
-
-                def subprocess_cmd(command):
-                    process = subprocess.Popen(
-                        command, stdout=PIPE, stdin=PIPE, stderr=PIPE)
-                    proc_stdout = process.communicate()[0].strip()
-                    decoded = proc_stdout.decode("utf-8")
-                    version_tag = decoded.split("\n")[1]
-                    # using [1:] might be useful in some scenario where the
-                    # version has multiple colons in it.
-                    cleaned_version = version_tag.split(": ")[1]
-                    return cleaned_version
 
                 package_type = None
                 
@@ -374,25 +383,11 @@ class Installer:
 
                 click.echo(
                     click.style(
-                        f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n',
+                        f'\n\n 🎉  Successfully Installed {package_name}! 🎉 \n',
                         fg='green',
                         bold=True))
 
-                def get_key(val, dictionary):
-                        for key, value in dictionary.items():
-                            if val == value:
-                                return key
-
-                def subprocess_cmd(command):
-                    process = subprocess.Popen(
-                        command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
-                    proc_stdout = process.communicate()[0].strip()
-                    decoded = proc_stdout.decode("utf-8")
-                    version_tag = decoded.split("\n")[1]
-                    # using [1:] might be useful in some scenario where the
-                    # version has multiple colons in it.
-                    cleaned_version = version_tag.split(": ")[1]
-                    return cleaned_version
+                
 
                 package_type = None
 
@@ -417,13 +412,14 @@ class Installer:
                             line_exists = False
 
                             for line in lines:
-                                if get_key(package_name, applications_linux) in line:
+                                if get_key(package_name, applications_macos) in line:
                                     line_exists = True
 
                             with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                                 if line_exists == False:
                                     file.write(
-                                        f'{get_key(package_name, applications_linux)} None {package_type} \n')
+                                        f'{get_key(package_name, applications_macos)} None {package_type} \n')
+                        
                         elif file_exists == False:
                             with open(f'/Users/{getuser()}/config.tcc', 'w+') as file:
                                 lines = file.readlines()
@@ -431,13 +427,13 @@ class Installer:
                             line_exists = False
 
                             for line in lines:
-                                if get_key(package_name, applications_linux) in line:
+                                if get_key(package_name, applications_macos) in line:
                                     line_exists = True
 
                             with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                                 if line_exists == False:
                                     file.write(
-                                        f'{get_key(package_name, applications_linux)} None {package_type} \n')
+                                        f'{get_key(package_name, applications_macos)} None {package_type} \n')
 
                     click.echo('\n')
                     click.echo(
@@ -472,9 +468,11 @@ class Installer:
                     if isfile(f'/Users/{getuser()}/config.tcc'):
                         file_exists = True
 
-                    package_version = subprocess_cmd(
-                        f'apt show {get_key(package_name, devpackages_linux)}'.split())
-
+                    proc = Popen(f'brew info {package_name}'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                    stdout = proc.communicate()
+                    parsing = stdout[0].decode('utf-8')
+                    
+                    package_version = parse(parsing)
 
                     if file_exists:
                         with open(f'/Users/{getuser()}/config.tcc', 'r') as file:
@@ -483,13 +481,13 @@ class Installer:
                         line_exists = False
 
                         for line in lines:
-                            if get_key(package_name, devpackages_linux) in line:
+                            if get_key(package_name, devpackages_macos) in line:
                                 line_exists = True
 
                         with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                             if line_exists == False:
                                 file.write(
-                                    f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} \n')
+                                    f'{get_key(package_name, devpackages_macos)} {package_version} {package_type} \n')
 
                     elif file_exists == False:
 
@@ -499,13 +497,13 @@ class Installer:
                         line_exists = False
 
                         for line in lines:
-                            if get_key(package_name, devpackages_linux) in line:
+                            if get_key(package_name, devpackages_macos) in line:
                                 line_exists = True
 
                         with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                             if line_exists == False:
                                 file.write(
-                                    f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} \n')
+                                    f'{get_key(package_name, devpackages_macos)} {package_version} {package_type} \n')
 
 
                 for _ in range(60, 101):

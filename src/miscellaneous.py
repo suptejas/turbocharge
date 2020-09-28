@@ -3,6 +3,7 @@ import time
 import click
 from sys import platform
 from constants import applications_linux, applications_macos, applications_windows, devpackages_linux, devpackages_macos, devpackages_windows
+import difflib
 
 def is_password_valid(password: str):
     proc = Popen(
@@ -28,29 +29,18 @@ def show_progress(finding_bar):
 def find(text):
     suggestions = []
     if platform == 'linux':
-        for app in applications_linux:
-            if text in app:
-                suggestions.append(app)
-
-        for package in devpackages_linux:
-            if text in package:
-                suggestions.append(package)
+        application_matches = difflib.get_close_matches(text, applications_linux)
+        package_matches = difflib.get_close_matches(text, devpackages_linux)
+        suggestions = application_matches + package_matches
 
     if platform == 'win32':
-        for app in applications_windows:
-            if text in app:
-                suggestions.append(app)
-
-        for package in devpackages_windows:
-            if text in package:
-                suggestions.append(package)
+        application_matches = difflib.get_close_matches(text, applications_windows)
+        package_matches = difflib.get_close_matches(text, devpackages_windows)
+        suggestions = application_matches + package_matches
 
     if platform == 'darwin':
-        for app in applications_macos:
-            if text in app:
-                suggestions.append(app)
+        application_matches = difflib.get_close_matches(text, applications_macos)
+        package_matches = difflib.get_close_matches(text, devpackages_macos)
+        suggestions = application_matches + package_matches
 
-        for package in devpackages_macos:
-            if text in package:
-                suggestions.append(package)
     return suggestions

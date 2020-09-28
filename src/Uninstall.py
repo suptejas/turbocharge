@@ -6,11 +6,17 @@ from progress.bar import IncrementalBar
 from os.path import isfile
 import click
 from getpass import getuser
-from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux
+from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, applications_macos, devpackages_macos
 import subprocess
 
 class Uninstaller:
     def uninstall(self, script: str, password: str, package_name: str):
+
+        def get_key(val, dictionary):
+            for key, value in dictionary.items():
+                if val == value:
+                    return key
+
         if platform == 'linux':
             try:
                 installer_progress = Spinner(
@@ -48,11 +54,6 @@ class Uninstaller:
                             f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n',
                             fg='green'))
                     return
-
-                def get_key(val, dictionary):
-                    for key, value in dictionary.items():
-                        if val == value:
-                            return key
 
                 package_type = None
                 if 'sudo -S apt-get' in script:
@@ -133,11 +134,11 @@ class Uninstaller:
                 proc.communicate(password.encode())
 
                 file_exists = False
-                if isfile(f'/home/{getuser()}/config.tcc'):
+                if isfile(f'/Users/{getuser()}/config.tcc'):
                     file_exists = True
 
                 if file_exists:
-                    with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+                    with open(f'/Users/{getuser()}/config.tcc', 'r') as file:
                         lines = file.readlines()
                 else:
                     for _ in range(1, 25):
@@ -146,29 +147,24 @@ class Uninstaller:
 
                     click.echo(
                         click.style(
-                            f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n',
+                            f'\n\n 🎉  Successfully Uninstalled {package_name}! 🎉 \n',
                             fg='green'))
                     return
 
-                def get_key(val, dictionary):
-                    for key, value in dictionary.items():
-                        if val == value:
-                            return key
-
                 package_type = None
-                if 'sudo -S apt-get' in script:
+                if 'brew uninstall' in script:
                     package_type = 'p'
-                elif 'sudo -S snap' in script:
+                elif 'brew cask uninstall' in script:
                     package_type = 'a'
 
                 dictionary = None
                 if package_type == 'p':
-                    dictionary = devpackages_linux
+                    dictionary = devpackages_macos
 
                 elif package_type == 'a':
-                    dictionary = applications_linux
+                    dictionary = applications_macos
 
-                with open(f'/home/{getuser()}/config.tcc', 'w+') as file:
+                with open(f'/Users/{getuser()}/config.tcc', 'w+') as file:
                     for line in lines:
                         if get_key(package_name, dictionary) in line:
                             continue
@@ -183,7 +179,7 @@ class Uninstaller:
 
                 click.echo(
                     click.style(
-                        f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n',
+                        f'\n\n 🎉  Successfully Uninstalled {package_name}! 🎉 \n',
                         fg='green'))
 
             except subprocess.CalledProcessError as e:
@@ -241,7 +237,7 @@ class Uninstaller:
                 click.echo('\n')
                 click.echo(
                     click.style(
-                        '🎉 Successfully Cleaned Turbocharge! 🎉',
+                        '🎉  Successfully Cleaned Turbocharge! 🎉',
                         fg='green'))
 
             except subprocess.CalledProcessError as e:

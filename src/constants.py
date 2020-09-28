@@ -101,6 +101,7 @@ applications_windows = {
     'flash-player-plugin': 'Flash Player Plugin',
     'gimp': 'GIMP',
     'goland': 'Go Land',
+    'googlechrome': 'Google Chrome',
     'itunes': 'iTunes',
     'kotlinc': 'Kotlin',
     'libreoffice-fresh': 'Libre Office',
@@ -407,6 +408,7 @@ display_list_windows = '''
 | flash-player-plugin         |
 | gimp                        |
 | goland                      |
+| googlechrome                |
 | itunes                      |
 | kotlinc                     |
 | libreoffice-fresh           |

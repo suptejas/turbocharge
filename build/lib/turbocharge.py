@@ -1,3 +1,19 @@
+#   Copyright 2020 Turbocharge
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+
+
 import click
 import os
 import subprocess
@@ -9,7 +25,7 @@ from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 from subprocess import Popen, PIPE, DEVNULL, run
 from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, apt_script, apt_remove, snap_script, snap_remove, display_list_linux, display_list_windows, display_list_macos, hyperpkgs, devpackages_macos, applications_macos
-from miscellaneous import show_progress, is_password_valid
+from miscellaneous import show_progress, is_password_valid, find
 from HyperPack import HyperPack
 from Debugger import Debugger
 from Install import Installer
@@ -61,7 +77,7 @@ def install(package_list):
                 show_progress(finding_bar)
                 turbocharge.install_task(
                     devpackages_linux[package_name],
-                    f'{constant.apt_script} {package_name}',
+                    f'{apt_script} {package_name}',
                     password,
                     f'{package_name} --version',
                     [f'{devpackages_linux[package_name]} Version'])
@@ -70,7 +86,7 @@ def install(package_list):
                 show_progress(finding_bar)
                 turbocharge.install_task(
                     applications_linux[package_name],
-                    f'{constant.snap_script} {package_name}',
+                    f'{snap_script} {package_name}',
                     password,
                     '',
                     [])
@@ -201,7 +217,14 @@ def install(package_list):
             elif package_name not in devpackages_linux and package_name not in applications_linux and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
-        
+                suggestions = find(package_name)
+                if suggestions != []:
+                    click.echo('\n')
+                    click.echo('Turbocharge found similar packages: \n')
+                    for suggestion in suggestions:
+                        click.echo(f'{suggestion} \n')
+                else:
+                    click.echo('Turbocharge couldn\'t find similar packages...')
 
         if platform == 'win32':
             click.echo('\n')
@@ -232,7 +255,16 @@ def install(package_list):
             elif package_name not in devpackages_windows and package_name not in applications_windows:
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
-        
+                
+                suggestions = find(package_name)
+                if suggestions != []:
+                    click.echo('\n')
+                    click.echo('Turbocharge found similar packages: \n')
+                    for suggestion in suggestions:
+                        click.echo(f'{suggestion} \n')
+                else:
+                    click.echo('Turbocharge couldn\'t find similar packages...')
+
         if platform == 'darwin':
             click.echo('\n')
             finding_bar = IncrementalBar(
@@ -262,8 +294,16 @@ def install(package_list):
 
             elif package_name not in devpackages_macos and package_name not in applications_macos:
                 click.echo('\n')
-                click.echo(click.style(':( Package Not Found! :(', fg='red'))
-
+                click.echo(click.style(':( Package Not Found! :( \n', fg='red'))
+                suggestions = find(package_name)
+                if suggestions != []:
+                    click.echo('\n')
+                    click.echo('Turbocharge found similar packages: \n')
+                    for suggestion in suggestions:
+                        click.echo(f'{suggestion} \n')
+                else:
+                    click.echo('Turbocharge couldn\'t find similar packages...')
+                    
 @cli.command()
 @click.argument('package_list', required=True)
 def remove(package_list):
@@ -565,6 +605,15 @@ def hyperpack(hyperpack_list):
             for app in apps:
                 updater.updateapp(app, password="")
 
+@cli.command()
+@click.argument('text', required=True)
+def search(text):
+    click.echo(f'Searching for packages...')
+    
+    suggestions = find(text)
+    
+    for suggestion in suggestions:
+        click.echo(f'{suggestion} \n') 
 
 @cli.command()
 def clean():
@@ -578,8 +627,11 @@ def clean():
     
     if platform == 'win32':
         arr = ['|', "/", "-", "\\"]
+        
         slen = len(arr)
+        
         print('Cleaning Your PC...')
+        
         for i in range(1, 60):
             time.sleep(0.04)
             print(arr[i%slen], end='\r')
@@ -603,3 +655,37 @@ def list():
     
     elif platform == 'darwin':
         click.echo(click.style(display_list_macos, fg='white'))
+
+
+@cli.command()
+def local():
+    '''
+    Lists all the installed packages.
+    '''
+
+    if platform == 'linux':
+        pass
+
+    elif platform == 'win32':
+        packages = []
+
+        cmd = run('choco list --local-only', stdout=PIPE, stderr=PIPE)
+
+        output = cmd.stdout.decode()
+
+        lines = output.split('\n')
+
+        for line in lines:
+            if not 'Chocolatey' in line and not 'chocolatey' in line and 'packages installed' not in line:
+                packages.append(line)
+        
+        result = "Packages installed:\n"
+
+        for p in packages:
+            result += p
+            result += "\n"
+        
+        click.echo(result)
+        
+    elif platform == 'darwin':
+        pass
