@@ -8,6 +8,16 @@ from getpass import getuser
 
 class Updater:
     def updatepack(self, package_name: str, password: str):
+        
+        def parse(string):
+            var1 = string.split(": ")
+            if len(var1[1]) >7:
+                var2 = var1[1].split(" ")
+                return var2[1]
+            else:
+                var2 = var1[1].split("\n")
+                return var2[0]
+            
         if platform == 'linux':
             try:
                 installer_progress = Spinner(
@@ -96,6 +106,7 @@ class Updater:
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occurred During Updating..', err=True)
+       
         if platform == 'darwin':
             try:
                 installer_progress = Spinner(
@@ -105,8 +116,23 @@ class Updater:
                     time.sleep(0.007)
                     installer_progress.next()
 
-                run(f'brew upgrade {package_name}',
+                run(f'brew upgrade {package_name}'.split(),
                     stdout=PIPE, stderr=PIPE)
+
+                package_type = 'p'
+
+                proc = Popen(f'brew info {package_name}'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                output = proc.communicate()
+                parsable = output[0].decode('utf-8')
+
+                package_version = parse(parsable)
+
+                with open(f'/Users/{getuser()}/config.tcc', 'r') as file:
+                    lines = file.readlines()
+
+                with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
+                    file.write(
+                            f'{package_name} {package_version} {package_type} \n')
 
                 for _ in range(1, 25):
                     time.sleep(0.007)
@@ -168,6 +194,7 @@ class Updater:
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occurred During Updating..', err=True)
+                
         if platform == 'darwin':
             try:
                 installer_progress = Spinner(
