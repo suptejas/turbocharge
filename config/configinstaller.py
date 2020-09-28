@@ -1,9 +1,10 @@
-from config.installer import install
-from config.Installable import Installable
+from installer import install
+from Installable import Installable
 
-with open('config.tcc') as file:
-    lines = file.readlines()
-    for line in lines:
-        line = line.strip('\n')
-        install(Installable(line.split()[0], line.split()[1], line.split()[2]))
+def configInstaller(file_address: str):
+    with open(file_address) as file:
+        lines = file.readlines()
+        for line in lines:
+            line = line.strip('\n')
+            install(Installable(line.split()[0], line.split()[1], line.split()[2]))
              

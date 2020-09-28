@@ -31,18 +31,29 @@ from Debugger import Debugger
 from Install import Installer
 from Uninstall import Uninstaller
 from Update import Updater
-from Setup import Setup
+from post_install_script import Setup
+from os.path import isfile
 
 
+the_setup = Setup()
 @click.group()
 def cli():
-    pass
+    if platform == 'linux':
+        if not isfile(f'/home/{getuser()}/config.tcc'):
+            the_setup.setup()
+    elif platform == 'win32':
+        if not isfile(os.path.join(os.path.abspath(os.getcwd()), "config.tcc")):
+            the_setup.setup()
+    elif platform == 'darwin':
+        if not isfile(f'/Users/{getuser()}/config.tcc'):
+            the_setup.setup()
 
 @cli.command()
 def version():
     '''
     Current Turbocharged Version You Have
     '''
+
     click.echo(f'Version: 3.0.6 \nDistribution: {platform} Stable x86-64')
 
 @cli.command()

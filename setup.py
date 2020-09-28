@@ -5,22 +5,25 @@ from getpass import getuser
 import os
 from sys import platform
 import subprocess
-from src.Setup import Setup
-import atexit
 
-user = getuser()
+user = getuser()        
 
-s = Setup()
-
-class PostDevelop(develop):
+class PostInstallCommand:
     def run(self):
-        develop.run(self)
-        s.setup()
-    
-class PostInstall(install):
-    def run(self):
-        install.run(self)
-        s.setup()
+        if platform == 'linux':
+            os.system(f'export PATH="/home/{user}/.local/bin:$PATH"')
+
+        if platform == 'win32':
+            subprocess.Popen(
+                [
+                    'powershell.exe',
+                    'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
+                ]
+            )
+
+postinstallcommand = PostInstallCommand()
+
+postinstallcommand.run()
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -41,17 +44,13 @@ setup(
         'Click',
         'progress',
     ],
-    cmdclass={
-        'develop': PostDevelop,
-        'install': PostInstall
-    },
     package_dir={'': 'src'},
     entry_points = 
     '''
         [console_scripts]
         turbo=turbocharge:cli
     ''',
-    classifiers=[
+classifiers=[
         "License :: OSI Approved :: Apache License 2.0",
         "Operating System :: OS Independent",
     ]

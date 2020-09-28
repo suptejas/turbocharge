@@ -9,15 +9,18 @@ from Debugger import Debugger
 import subprocess
 from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, applications_macos, devpackages_macos
 from os.path import isfile
+import os
 
 
 class Installer:
     def install_task(self, package_name: str, script: str,
                      password: str, test_script: str, tests_passed):
         def get_key(val, dictionary):
-                        for key, value in dictionary.items():
-                            if val == value:
-                                return key
+            for key, value in dictionary.items():
+                if val == value:
+                    return key
+            return -1
+                        
     
         def subprocess_cmd(command):
                     process = subprocess.Popen(
@@ -133,31 +136,19 @@ class Installer:
                             with open(f'/home/{getuser()}/config.tcc', 'r') as file:
                                 lines = file.readlines()
 
-                            line_exists = False
+                            package_exists = False
 
                             for line in lines:
                                 if get_key(package_name, applications_linux) in line:
-                                    line_exists = True
+                                    package_exists = True
 
-                            with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
-                                if line_exists == False:
+                            # The order for the package compatiblity numbers is
+                            # Linux, Windows, MacOS
+                            if package_exists == False:
+                                with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
                                     file.write(
-                                        f'{get_key(package_name, applications_linux)} None {package_type} \n')
-                        elif file_exists == False:
-                            with open(f'/home/{getuser()}/config.tcc', 'w+') as file:
-                                lines = file.readlines()
-
-                            line_exists = False
-
-                            for line in lines:
-                                if get_key(package_name, applications_linux) in line:
-                                    line_exists = True
-
-                            with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
-                                if line_exists == False:
-                                    file.write(
-                                        f'{get_key(package_name, applications_linux)} None {package_type} \n')
-
+                                        f'{get_key(package_name, applications_linux)} None {package_type} 1 {0 if get_key(package_name, applications_windows)==-1 else 1} {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
+                    
                     click.echo('\n')
                     click.echo(
                         click.style(
@@ -206,34 +197,18 @@ class Installer:
                         with open(f'/home/{getuser()}/config.tcc', 'r') as file:
                             lines = file.readlines()
 
-                        line_exists = False
+                        package_exists = False
 
                         for line in lines:
                             if get_key(package_name, devpackages_linux) in line:
-                                line_exists = True
+                                package_exists = True
 
-                        with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
-                            if line_exists == False:
+                        if package_exists == False:
+                            with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
                                 file.write(
-                                    f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} \n')
+                                    f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} 1 {0 if get_key(package_name, devpackages_windows)==-1 else 1} {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
                     
-                    elif file_exists == False:
-
-                        with open(f'/home/{getuser()}/config.tcc', 'w+') as file:
-                            lines = file.readlines()
-
-                        line_exists = False
-
-                        for line in lines:
-                            if get_key(package_name, devpackages_linux) in line:
-                                line_exists = True
-
-                        with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
-                            if line_exists == False:
-                                file.write(
-                                    f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} \n')
-
-
+                    
                 for _ in range(60, 101):
                     time.sleep(0.002)
                     testing_bar.next()
@@ -275,8 +250,6 @@ class Installer:
                         bold=True))
 
                 testing_bar = IncrementalBar('Testing package...', max=100)
-                # the order of these lines below doesn't make sense.
-                # even with that fake thing. 
 
                 # this condition will be true for all application package stuff
 
@@ -288,16 +261,27 @@ class Installer:
                             fg='green'))
 
                     return
-                # everything clear up to here..
-
+                
                 for _ in range(1, 64):
                     time.sleep(0.002)
                     testing_bar.next()
-                 #now this line below... takes a test_script...
+                 
                 
-                run(test_script, stdout=PIPE, stderr=PIPE) # this should either return emtpy stuff or some stuff.
-
-                for _ in range(1, 36):
+                run(test_script, stdout=PIPE, stderr=PIPE)
+                
+                inApp = get_key(package_name, applications_windows)
+                inDev = get_key(package_name, devpackages_windows)
+                w_version = subprocess.Popen("choco list --localonly", stdin= PIPE, stderr=PIPE, stdout=PIPE)
+                output = w_version.communicate()
+                #TODO Implement the version parsing to add in the config for the above lines..
+                if inApp != -1:
+                    with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'a+') as f:
+                        file.write(f'{inApp} None a {0 if get_key(package_name, applications_linux)==-1 else 1} 1 {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
+                elif inDev != -1:
+                    with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'a+') as f:
+                        file.write(f'{inDev} None p {0 if get_key(package_name, devpackages_linux)==-1 else 1} 1 {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
+                    
+                for _ in range(64, 101):
                     time.sleep(0.002)
                     testing_bar.next()
 
