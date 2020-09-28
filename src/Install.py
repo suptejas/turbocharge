@@ -433,7 +433,7 @@ class Installer:
                             with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                                 if line_exists == False:
                                     file.write(
-                                        f'{get_key(package_name, applications_linux)} None {package_type} \n')
+                                        f'{get_key(package_name, applications_macos)} None {package_type} \n')
 
                     click.echo('\n')
                     click.echo(
@@ -481,13 +481,13 @@ class Installer:
                         line_exists = False
 
                         for line in lines:
-                            if get_key(package_name, devpackages_linux) in line:
+                            if get_key(package_name, devpackages_macos) in line:
                                 line_exists = True
 
                         with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                             if line_exists == False:
                                 file.write(
-                                    f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} \n')
+                                    f'{get_key(package_name, devpackages_macos)} {package_version} {package_type} \n')
 
                     elif file_exists == False:
 
@@ -497,13 +497,13 @@ class Installer:
                         line_exists = False
 
                         for line in lines:
-                            if get_key(package_name, devpackages_linux) in line:
+                            if get_key(package_name, devpackages_macos) in line:
                                 line_exists = True
 
                         with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                             if line_exists == False:
                                 file.write(
-                                    f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} \n')
+                                    f'{get_key(package_name, devpackages_macos)} {package_version} {package_type} \n')
 
 
                 for _ in range(60, 101):
