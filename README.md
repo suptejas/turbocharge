@@ -24,22 +24,22 @@ echo "export PATH="/home/{username}/.local/bin:$PATH"" >> ~/.bashrc
 Install a package with TurboCharge using
 
 ```
-turbocharge install <package_name>
+turbo install <package_name>
 ```
 
 Install multiple packages with TurboCharge using
 ```
-turbocharge install <package1,package2,package3>
+turbo install <package1,package2,package3>
 ```
 
 Uninstall a package with TurboCharge using
 ```
-turbocharge remove <package_name>
+turbo remove <package_name>
 ```
 
 Uninstall multiple packages with TurboCharge using
 ```
-turbocharge remove <package1,package2,package3>
+turbo remove <package1,package2,package3>
 ```
 
 
@@ -47,12 +47,27 @@ Note: Make sure that there is no space between each of the package names after a
 
 List all installable packages with TurboCharge using
 ```
-turbocharge list
+turbo list
+```
+
+List all installed packages with TurboCharge using
+```
+turbo local
+```
+
+Update an installed package with TurboCharge using
+```
+turbocharge update <package_name>
+```
+
+Search for a package avaliable in TurboCharge using:
+```
+turbocharge search <keyword>
 ```
 
 Clean unnecesarry data from packages using TurboCharge with
 ```
-turbocharge clean
+turbo clean
 ```
 
 Work in progress...
