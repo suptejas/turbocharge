@@ -128,6 +128,7 @@ applications_windows = {
     'winrar': 'WinRAR',
     'wireshark': 'Wireshark',
     'zoom': 'Zoom',
+    'discord': 'Discord',
 }
 
 devpackages_windows = {
