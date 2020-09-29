@@ -55,8 +55,7 @@ class Updater:
                     installer_progress.next()
 
                 proc = Popen(
-                    f'sudo -S apt-get install --only-upgrade -y {package_name}'.split(
-                    ),
+                    f'sudo -S apt-get install --only-upgrade -y {package_name}'.split(),
                     stdin=PIPE,
                     stdout=PIPE,
                     stderr=PIPE
