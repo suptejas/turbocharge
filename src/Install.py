@@ -231,6 +231,7 @@ class Installer:
                         click.style(
                             f'Test Passed: {test} ✅\n',
                             fg='green'))
+                
 
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
@@ -408,21 +409,24 @@ class Installer:
                         file_exists = False
                         if isfile(f'/Users/{getuser()}/config.tcc'):
                             file_exists = True
-
+            
                         if file_exists:
                             with open(f'/Users/{getuser()}/config.tcc', 'r') as file:
                                 lines = file.readlines()
 
-                            line_exists = False
+                            package_exists = False
 
                             for line in lines:
                                 if get_key(package_name, applications_macos) in line:
-                                    line_exists = True
+                                    package_exists = True
 
-                            with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
-                                if line_exists == False:
+                            # The order for the package compatiblity numbers is
+                            # Linux, Windows, MacOS
+                            if package_exists == False:
+                                with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                                     file.write(
                                         f'{get_key(package_name, applications_macos)} None {package_type} {0 if get_key(package_name, applications_linux)==-1 else 1} {0 if get_key(package_name, applications_windows)==-1 else 1} 1\n')
+
                         
                     click.echo('\n')
                     click.echo(
