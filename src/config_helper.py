@@ -31,8 +31,6 @@ class Setup:
 
         elif platform == 'win32':
             # Install Chocolatey And Setup
-            click.echo('Here is the address................')
-            click.echo(os.path.join(os.path.abspath(os.getcwd())))
             setup_progress = Spinner('Setting up your Turbocharge config....')
             for _ in range(1, 41):
                 sleep(0.02)

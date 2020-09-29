@@ -20,6 +20,17 @@ class Installer:
                 if val == value:
                     return key
             return -1
+        
+        def getWinVer(output : str, name : str):
+            lines = output.split('\n')
+            for line in lines:
+                line = line.split()
+                version = line[1]
+                package_name = line[0]
+                if name == package_name:
+                    final = version
+                    break
+            return final
                         
     
         def subprocess_cmd(command):
@@ -271,16 +282,25 @@ class Installer:
                 
                 inApp = get_key(package_name, applications_windows)
                 inDev = get_key(package_name, devpackages_windows)
-                w_version = subprocess.Popen("choco list --localonly", stdin= PIPE, stderr=PIPE, stdout=PIPE)
-                output = w_version.communicate()
-                #TODO Implement the version parsing to add in the config for the above lines..
-                if inApp != -1:
-                    with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'a+') as f:
-                        file.write(f'{inApp} None a {0 if get_key(package_name, applications_linux)==-1 else 1} 1 {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
-                elif inDev != -1:
-                    with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'a+') as f:
-                        file.write(f'{inDev} None p {0 if get_key(package_name, devpackages_linux)==-1 else 1} 1 {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
-                    
+                w_version = subprocess.Popen("clist -l", stdin= PIPE, stderr=PIPE, stdout=PIPE)
+                output = w_version.communicate()[0].decode()
+                package_exists = False
+                with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'r') as f:
+                    lines = f.readlines()
+                for i in range(len(lines)):
+                    if (str(inApp) in lines[i]) or (str(inDev) in lines[i]):
+                        package_exists = True
+                        break
+                if not package_exists:
+                    if inApp != -1:
+                        version = getWinVer(output,inApp)
+                        with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'a+') as f:
+                            f.write(f'{inApp} {version} a {0 if get_key(package_name, applications_windows)==-1 else 1} 1 {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
+                    elif inDev != -1:
+                        version = getWinVer(output, inDev)
+                        with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'a+') as f:
+                            f.write(f'{inDev} {version} p {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1 {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
+                        
                 for _ in range(64, 101):
                     time.sleep(0.002)
                     testing_bar.next()
@@ -402,23 +422,8 @@ class Installer:
                             with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                                 if line_exists == False:
                                     file.write(
-                                        f'{get_key(package_name, applications_macos)} None {package_type} \n')
+                                        f'{get_key(package_name, applications_macos)} None {package_type} {0 if get_key(package_name, applications_linux)==-1 else 1} {0 if get_key(package_name, applications_windows)==-1 else 1} 1\n')
                         
-                        elif file_exists == False:
-                            with open(f'/Users/{getuser()}/config.tcc', 'w+') as file:
-                                lines = file.readlines()
-
-                            line_exists = False
-
-                            for line in lines:
-                                if get_key(package_name, applications_macos) in line:
-                                    line_exists = True
-
-                            with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
-                                if line_exists == False:
-                                    file.write(
-                                        f'{get_key(package_name, applications_macos)} None {package_type} \n')
-
                     click.echo('\n')
                     click.echo(
                         click.style(
@@ -467,28 +472,12 @@ class Installer:
                         for line in lines:
                             if get_key(package_name, devpackages_macos) in line:
                                 line_exists = True
-
+                        
+                        #TODO : Implement versioning for macOS
                         with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                             if line_exists == False:
                                 file.write(
-                                    f'{get_key(package_name, devpackages_macos)} {package_version} {package_type} \n')
-
-                    elif file_exists == False:
-
-                        with open(f'/Users/{getuser()}/config.tcc', 'w+') as file:
-                            lines = file.readlines()
-
-                        line_exists = False
-
-                        for line in lines:
-                            if get_key(package_name, devpackages_macos) in line:
-                                line_exists = True
-
-                        with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
-                            if line_exists == False:
-                                file.write(
-                                    f'{get_key(package_name, devpackages_macos)} {package_version} {package_type} \n')
-
+                                        f'{get_key(package_name, applications_macos)} None {package_type} {0 if get_key(package_name, devpackages_linux)==-1 else 1} {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1\n')
 
                 for _ in range(60, 101):
                     time.sleep(0.002)

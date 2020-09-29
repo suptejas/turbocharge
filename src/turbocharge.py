@@ -31,7 +31,7 @@ from Debugger import Debugger
 from Install import Installer
 from Uninstall import Uninstaller
 from Update import Updater
-from post_install_script import Setup
+from config_helper import Setup
 from os.path import isfile
 
 
@@ -281,7 +281,7 @@ def install(package_list):
             finding_bar = IncrementalBar(
                 'Finding Requested Packages...', max=1)
 
-            if package_name in devpackages_windows:
+            if package_name in devpackages_macos:
                 show_progress(finding_bar)
                 turbocharge.install_task(
                     package_name=devpackages_macos[package_name],
@@ -293,7 +293,7 @@ def install(package_list):
                 )
                 # test _scirpt is just a string here..
 
-            elif package_name in applications_windows:
+            elif package_name in applications_macos:
                 show_progress(finding_bar)
                 turbocharge.install_task(
                     package_name=applications_macos[package_name],
