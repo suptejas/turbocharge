@@ -11,7 +11,7 @@ user = getuser()
 class PostInstallCommand:
     def run(self):
         if platform == 'linux':
-            os.system(f'export PATH="/home/{user}/.local/bin:$PATH"')
+            os.system(f'echo "export PATH="/home/{user}/.local/bin:$PATH"" >> ~/.bashrc')
 
         if platform == 'win32':
             subprocess.Popen(
