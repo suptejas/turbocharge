@@ -619,6 +619,9 @@ def hyperpack(hyperpack_list):
 @cli.command()
 @click.argument('text', required=True)
 def search(text):
+    '''
+    Search For A Package To Install
+    '''
     click.echo(f'Searching for packages...')
     
     suggestions = find(text)
