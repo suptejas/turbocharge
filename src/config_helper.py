@@ -54,6 +54,7 @@ class Setup:
                 setup_progress.next()
 
         elif platform == 'darwin':
+            # Installing and setting up Homebrew
             click.echo(click.style('Setting Up Turbocharge on your Mac...', fg='green'))
             
             os.system('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" < /dev/null')
