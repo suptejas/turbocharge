@@ -2,6 +2,9 @@
 
 A turbocharged way of installing all the packages you would ever want! Turbocharge automatically tests if the installed packages work are working correctly for you!
 
+### Avaliability
+From the next update, TurboCharge will support Windows, MacOS And Debian-Based Operating Systems!
+
 ## Installation
 
 Turbocharge can be installed using PyPI:
