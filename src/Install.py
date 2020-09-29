@@ -192,7 +192,6 @@ class Installer:
                 elif 'sudo -S snap' in script:
                     package_type = 'a'
 
-                    return 'Key doesn\'t exist'
 
                 if package_type == 'p':
 
@@ -252,9 +251,6 @@ class Installer:
                     time.sleep(0.01)
                     installer_progress.next()
 
-                # Haven't implemented debug because .run() doesn't offer
-                # communicate() function
-
                 click.echo(
                     click.style(
                         f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n',
@@ -263,9 +259,11 @@ class Installer:
 
                 testing_bar = IncrementalBar('Testing package...', max=100)
 
-                # this condition will be true for all application package stuff
+                # this condition will be true for all applications
 
                 if tests_passed == [] and test_script == '':
+                    # Dont run any tests, just exit
+                    
                     click.echo('\n')
                     click.echo(
                         click.style(
