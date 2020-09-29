@@ -678,12 +678,47 @@ def local():
     '''
 
     if platform == 'linux':
-        pass
+        packages = []
+        applications = []
 
-    elif platform == 'win32':
+        lines = None
+
+        with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+            lines = file.readlines()
+
+        for line in lines:
+            line = line.strip()
+            line.split()
+            package_name = line.split()[0]
+            package_type = line.split()[2]
+            if package_type == 'p':
+                packages.append(package_name)
+
+            if package_name == 'a':
+                applications.append(package_name)
+
+        click.echo('Packages : \n')
+
+        if packages != []:
+            for package in packages:
+                click.echo(package)
+
+        elif packages == []:
+            click.echo('Turbocharge couldn\'t find any packages installed.')
+
+        click.echo('Applications : \n')
+
+        if applications != []:
+            for app in applications:
+                click.echo(app)
+
+        elif applications == []:
+            click.echo('Turbocharge couldn\'t find any applications installed.')
+
+    if platform == 'win32':
         packages = []
 
-        cmd = run('choco list --local-only', stdout=PIPE, stderr=PIPE)
+        cmd = run('clist -l', stdout=PIPE, stderr=PIPE)
 
         output = cmd.stdout.decode()
 
@@ -701,5 +736,40 @@ def local():
         
         click.echo(result)
         
-    elif platform == 'darwin':
-        pass
+    if platform == 'darwin':
+        packages = []
+        applications = []
+
+        lines = None
+
+        with open(f'/Users/{getuser()}/config.tcc', 'r') as file:
+            lines = file.readlines()
+
+        for line in lines:
+            line = line.strip()
+            line.split()
+            package_name = line.split()[0]
+            package_type = line.split()[2]
+            if package_type == 'p':
+                packages.append(package_name)
+
+            if package_name == 'a':
+                applications.append(package_name)
+
+        click.echo('Packages : \n')
+
+        if packages != []:
+            for package in packages:
+                click.echo(package)
+
+        elif packages == []:
+            click.echo('Turbocharge couldn\'t find any packages installed.')
+
+        click.echo('Applications : \n')
+
+        if applications != []:
+            for app in applications:
+                click.echo(app)
+
+        elif applications == []:
+            click.echo('Turbocharge couldn\'t find any applications installed.')
