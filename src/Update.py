@@ -250,7 +250,7 @@ class Updater:
                 click.echo(click.style(
                     f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n', fg='green'))
 
-                #TODO: possible bug here.
+                #TODO: possible bug here because the command gives a different output than what the function was designed to parse.
                 package_version = subprocess_cmd(
                     f'snap info {package_name}'.split())
 
