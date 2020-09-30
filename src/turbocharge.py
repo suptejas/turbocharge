@@ -12,8 +12,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-
-
 import click
 import os
 import subprocess
@@ -26,8 +24,6 @@ from progress.bar import IncrementalBar
 from subprocess import Popen, PIPE, DEVNULL, run
 from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, apt_script, apt_remove, snap_script, snap_remove, display_list_linux, display_list_windows, display_list_macos, hyperpkgs, devpackages_macos, applications_macos
 from miscellaneous import show_progress, is_password_valid, find
-from HyperPack import HyperPack
-from Debugger import Debugger
 from Install import Installer
 from Uninstall import Uninstaller
 from Update import Updater
