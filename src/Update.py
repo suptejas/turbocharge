@@ -296,11 +296,7 @@ class Updater:
                 for _ in range(1, 25):
                     time.sleep(0.007)
                     installer_progress.next()
-
-                click.echo(
-                    click.style(
-                        f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n',
-                        fg='green'))
+                    
                 with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'r') as file:
                     lines = file.readlines()
 
@@ -320,6 +316,12 @@ class Updater:
 
                 with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'w') as file:
                     file.writelines(lines)
+
+                click.echo(
+                    click.style(
+                        f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n',
+                        fg='green'))
+                
 
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
