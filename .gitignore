@@ -2,3 +2,5 @@
 testing
 src/__pycache__
 src/turbocharge.egg-info
+src/.DS_STORE
+.idea
