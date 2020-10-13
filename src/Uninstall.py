@@ -9,6 +9,7 @@ from getpass import getuser
 from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, applications_macos, devpackages_macos
 import subprocess
 
+
 class Uninstaller:
     def uninstall(self, script: str, password: str, package_name: str):
 
@@ -33,14 +34,13 @@ class Uninstaller:
                     stdout=PIPE,
                     stderr=PIPE)
 
-                
                 # Popen only accepts byte-arrays so you must encode the string
                 proc.communicate(password.encode())
 
                 file_exists = False
                 if isfile(f'/home/{getuser()}/config.tcc'):
                     file_exists = True
-                
+
                 if file_exists:
                     with open(f'/home/{getuser()}/config.tcc', 'r') as file:
                         lines = file.readlines()
@@ -60,11 +60,11 @@ class Uninstaller:
                     package_type = 'p'
                 elif 'sudo -S snap' in script:
                     package_type = 'a'
-                
+
                 dictionary = None
                 if package_type == 'p':
                     dictionary = devpackages_linux
-                
+
                 elif package_type == 'a':
                     dictionary = applications_linux
 
@@ -79,7 +79,6 @@ class Uninstaller:
                 for _ in range(1, 25):
                     time.sleep(0.01)
                     installer_progress.next()
-
 
                 click.echo(
                     click.style(
@@ -113,6 +112,7 @@ class Uninstaller:
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occured During Installation...', err=True)
+
         if platform == 'darwin':
             try:
                 installer_progress = Spinner(
@@ -128,7 +128,6 @@ class Uninstaller:
                     stdin=PIPE,
                     stdout=PIPE,
                     stderr=PIPE)
-
 
                 # Popen only accepts byte-arrays so you must encode the string
                 proc.communicate(password.encode())
@@ -176,7 +175,6 @@ class Uninstaller:
                     time.sleep(0.01)
                     installer_progress.next()
 
-
                 click.echo(
                     click.style(
                         f'\n\n 🎉  Successfully Uninstalled {package_name}! 🎉 \n',
@@ -216,7 +214,7 @@ class Uninstaller:
 
         elif platform == 'win32':
             pass  # chocolatey auto removes files
-        
+
         elif platform == 'darwin':
             try:
                 install_progress = Spinner(message='Cleaning Up Packages ')
