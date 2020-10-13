@@ -7,7 +7,7 @@ from subprocess import Popen, PIPE, DEVNULL, run
 from getpass import getuser
 from Debugger import Debugger
 import subprocess
-from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, applications_macos, devpackages_macos
+from constants import *
 from os.path import isfile
 import os
 
@@ -20,33 +20,35 @@ class Installer:
                 if val == value:
                     return key
             return -1
-        
-        def getWinVer(output : str, name : str):
+
+        def getWinVer(output: str, name: str):
             lines = output.split('\n')
             for line in lines:
                 line = line.split()
+
                 version = line[1]
                 package_name = line[0]
+
                 if name == package_name:
                     final = version
-                    break
-            return final
-                        
-    
+                    return final
+
+                return
+
         def subprocess_cmd(command):
-                    process = subprocess.Popen(
-                        command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
-                    proc_stdout = process.communicate()[0].strip()
-                    decoded = proc_stdout.decode("utf-8")
-                    version_tag = decoded.split("\n")[1]
-                    # using [1:] might be useful in some scenario where the
-                    # version has multiple colons in it.
-                    cleaned_version = version_tag.split(": ")[1]
-                    return cleaned_version
+            process = subprocess.Popen(
+                command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+            proc_stdout = process.communicate()[0].strip()
+            decoded = proc_stdout.decode("utf-8")
+            version_tag = decoded.split("\n")[1]
+            # using [1:] might be useful in some scenario where the
+            # version has multiple colons in it.
+            cleaned_version = version_tag.split(": ")[1]
+            return cleaned_version
 
         def parse(string):
             var1 = string.split(": ")
-            if len(var1[1]) >7:
+            if len(var1[1]) > 7:
                 var2 = var1[1].split(" ")
                 return var2[1]
             else:
@@ -126,24 +128,19 @@ class Installer:
                         bold=True))
 
                 package_type = None
-                
+
                 if 'sudo -S apt-get' in script:
                     package_type = 'p'
                 elif 'sudo -S snap' in script:
                     package_type = 'a'
-
-                
 
                 # Testing the successful installation of the package
                 testing_bar = IncrementalBar('Testing package...', max=100)
 
                 if tests_passed == [] and test_script == '':
                     if package_type == 'a':
-                        file_exists = False
+
                         if isfile(f'/home/{getuser()}/config.tcc'):
-                            file_exists = True
-            
-                        if file_exists:
                             with open(f'/home/{getuser()}/config.tcc', 'r') as file:
                                 lines = file.readlines()
 
@@ -159,7 +156,7 @@ class Installer:
                                 with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
                                     file.write(
                                         f'{get_key(package_name, applications_linux)} None {package_type} 1 {0 if get_key(package_name, applications_windows)==-1 else 1} {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
-                    
+
                     click.echo('\n')
                     click.echo(
                         click.style(
@@ -172,8 +169,6 @@ class Installer:
                     time.sleep(0.002)
                     testing_bar.next()
 
-                
-
                 for _ in range(21, 60):
                     time.sleep(0.002)
                     testing_bar.next()
@@ -184,24 +179,20 @@ class Installer:
                     stdout=PIPE,
                     stderr=PIPE)
 
-                
-
                 package_type = None
                 if 'sudo -S apt-get' in script:
                     package_type = 'p'
                 elif 'sudo -S snap' in script:
                     package_type = 'a'
 
-
                 if package_type == 'p':
 
                     file_exists = False
                     if isfile(f'/home/{getuser()}/config.tcc'):
                         file_exists = True
-                                        
+
                     package_version = subprocess_cmd(
                         f'apt show {get_key(package_name, devpackages_linux)}'.split())
-                    
 
                     if file_exists:
                         with open(f'/home/{getuser()}/config.tcc', 'r') as file:
@@ -217,8 +208,7 @@ class Installer:
                             with open(f'/home/{getuser()}/config.tcc', 'a+') as file:
                                 file.write(
                                     f'{get_key(package_name, devpackages_linux)} {package_version} {package_type} 1 {0 if get_key(package_name, devpackages_windows)==-1 else 1} {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
-                    
-                    
+
                 for _ in range(60, 101):
                     time.sleep(0.002)
                     testing_bar.next()
@@ -230,7 +220,6 @@ class Installer:
                         click.style(
                             f'Test Passed: {test} ✅\n',
                             fg='green'))
-                
 
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
@@ -245,7 +234,7 @@ class Installer:
                     time.sleep(0.01)
                     installer_progress.next()
 
-                run(script, stdout=PIPE, stderr=PIPE) # first time
+                run(script, stdout=PIPE, stderr=PIPE)  # first time
 
                 for _ in range(1, 25):
                     time.sleep(0.01)
@@ -263,7 +252,7 @@ class Installer:
 
                 if tests_passed == [] and test_script == '':
                     # Dont run any tests, just exit
-                    
+
                     click.echo('\n')
                     click.echo(
                         click.style(
@@ -271,35 +260,44 @@ class Installer:
                             fg='green'))
 
                     return
-                
+
                 for _ in range(1, 64):
                     time.sleep(0.002)
                     testing_bar.next()
-                 
-                
+
                 run(test_script, stdout=PIPE, stderr=PIPE)
-                
-                inApp = get_key(package_name, applications_windows)
-                inDev = get_key(package_name, devpackages_windows)
-                w_version = subprocess.Popen("clist -l", stdin= PIPE, stderr=PIPE, stdout=PIPE)
+
+                in_app = get_key(package_name, applications_windows)
+                in_dev = get_key(package_name, devpackages_windows)
+
+                w_version = subprocess.Popen(
+                    "clist -l", stdin=PIPE, stderr=PIPE, stdout=PIPE)
+
                 output = w_version.communicate()[0].decode()
+
                 package_exists = False
-                with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'r') as f:
+
+                with open(os.path.join("C:\\Turbocharge", "config.tcc"), 'r') as f:
                     lines = f.readlines()
+
                 for i in range(len(lines)):
-                    if (str(inApp) in lines[i]) or (str(inDev) in lines[i]):
+                    if (str(in_app) in lines[i]) or (str(in_dev) in lines[i]):
                         package_exists = True
                         break
+
                 if not package_exists:
-                    if inApp != -1:
-                        version = getWinVer(output,inApp)
-                        with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'a+') as f:
-                            f.write(f'{inApp} {version} a {0 if get_key(package_name, applications_windows)==-1 else 1} 1 {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
-                    elif inDev != -1:
-                        version = getWinVer(output, inDev)
-                        with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'a+') as f:
-                            f.write(f'{inDev} {version} p {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1 {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
-                        
+                    if in_app != -1:
+                        version = getWinVer(output, in_app)
+                        with open(os.path.join("C:", "Turbocharge", "config.tcc"), 'a+') as f:
+                            f.write(
+                                f'{in_app} {version} a {0 if get_key(package_name, applications_windows)==-1 else 1} 1 {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
+
+                    elif in_dev != -1:
+                        version = getWinVer(output, in_dev)
+                        with open(os.path.join("C:", "Turbocharge", "config.tcc"), 'a+') as f:
+                            f.write(
+                                f'{in_dev} {version} p {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1 {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
+
                 for _ in range(64, 101):
                     time.sleep(0.002)
                     testing_bar.next()
@@ -317,7 +315,7 @@ class Installer:
             except Exception as e:
                 click.echo(e)
                 click.echo('An Error Occured During Installation...', err=True)
-        
+
         if platform == 'darwin':
             try:
                 installer_progress = Spinner(
@@ -390,8 +388,6 @@ class Installer:
                         fg='green',
                         bold=True))
 
-                
-
                 package_type = None
 
                 if 'brew install' in script:
@@ -407,7 +403,7 @@ class Installer:
                         file_exists = False
                         if isfile(f'/Users/{getuser()}/config.tcc'):
                             file_exists = True
-            
+
                         if file_exists:
                             with open(f'/Users/{getuser()}/config.tcc', 'r') as file:
                                 lines = file.readlines()
@@ -425,7 +421,6 @@ class Installer:
                                     file.write(
                                         f'{get_key(package_name, applications_macos)} None {package_type} {0 if get_key(package_name, applications_linux)==-1 else 1} {0 if get_key(package_name, applications_windows)==-1 else 1} 1\n')
 
-                        
                     click.echo('\n')
                     click.echo(
                         click.style(
@@ -459,10 +454,11 @@ class Installer:
                     if isfile(f'/Users/{getuser()}/config.tcc'):
                         file_exists = True
 
-                    proc = Popen(f'brew info {package_name}'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                    proc = Popen(f'brew info {package_name}'.split(
+                    ), stdin=PIPE, stdout=PIPE, stderr=PIPE)
                     stdout = proc.communicate()
                     parsing = stdout[0].decode('utf-8')
-                    
+
                     package_version = parse(parsing)
 
                     if file_exists:
@@ -474,12 +470,12 @@ class Installer:
                         for line in lines:
                             if get_key(package_name, devpackages_macos) in line:
                                 line_exists = True
-                        
-                        #TODO : Implement versioning for macOS
+
+                        # TODO : Implement versioning for macOS
                         with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                             if line_exists == False:
                                 file.write(
-                                        f'{get_key(package_name, applications_macos)} None {package_type} {0 if get_key(package_name, devpackages_linux)==-1 else 1} {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1\n')
+                                    f'{get_key(package_name, applications_macos)} None {package_type} {0 if get_key(package_name, devpackages_linux)==-1 else 1} {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1\n')
 
                 for _ in range(60, 101):
                     time.sleep(0.002)

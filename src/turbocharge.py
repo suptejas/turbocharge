@@ -32,17 +32,22 @@ from os.path import isfile
 
 
 the_setup = Setup()
+
+
 @click.group()
 def cli():
     if platform == 'linux':
         if not isfile(f'/home/{getuser()}/config.tcc'):
             the_setup.setup()
+
     elif platform == 'win32':
-        if not isfile(os.path.join(os.path.abspath(os.getcwd()), "config.tcc")):
+        if not isfile(os.path.join("C:\\Turbocarge", "config.tcc")):
             the_setup.setup()
+
     elif platform == 'darwin':
         if not isfile(f'/Users/{getuser()}/config.tcc'):
             the_setup.setup()
+
 
 @cli.command()
 def version():
@@ -51,6 +56,7 @@ def version():
     '''
 
     click.echo(f'Version: 3.0.6 \nDistribution: {platform} Stable x86-64')
+
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -231,11 +237,13 @@ def install(package_list):
                     for suggestion in suggestions:
                         click.echo(f'{suggestion} \n')
                 else:
-                    click.echo('Turbocharge couldn\'t find similar packages...')
+                    click.echo(
+                        'Turbocharge couldn\'t find similar packages...')
 
         if platform == 'win32':
             click.echo('\n')
-            finding_bar = IncrementalBar('Finding Requested Packages...', max=1)
+            finding_bar = IncrementalBar(
+                'Finding Requested Packages...', max=1)
 
             if package_name in devpackages_windows:
                 show_progress(finding_bar)
@@ -245,9 +253,9 @@ def install(package_list):
                     script=f"choco install {package_name} -y --force",
                     password="",
                     test_script=f"{package_name} --version",
-                    tests_passed=[f'{devpackages_windows[package_name]} Version']
+                    tests_passed=[
+                        f'{devpackages_windows[package_name]} Version']
                 )
-
 
             elif package_name in applications_windows:
                 show_progress(finding_bar)
@@ -262,7 +270,7 @@ def install(package_list):
             elif package_name not in devpackages_windows and package_name not in applications_windows:
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
-                
+
                 suggestions = find(package_name)
                 if suggestions != []:
                     click.echo('\n')
@@ -270,7 +278,8 @@ def install(package_list):
                     for suggestion in suggestions:
                         click.echo(f'{suggestion} \n')
                 else:
-                    click.echo('Turbocharge couldn\'t find similar packages...')
+                    click.echo(
+                        'Turbocharge couldn\'t find similar packages...')
 
         if platform == 'darwin':
             click.echo('\n')
@@ -301,7 +310,8 @@ def install(package_list):
 
             elif package_name not in devpackages_macos and package_name not in applications_macos:
                 click.echo('\n')
-                click.echo(click.style(':( Package Not Found! :( \n', fg='red'))
+                click.echo(click.style(
+                    ':( Package Not Found! :( \n', fg='red'))
                 suggestions = find(package_name)
                 if suggestions != []:
                     click.echo('\n')
@@ -309,8 +319,10 @@ def install(package_list):
                     for suggestion in suggestions:
                         click.echo(f'{suggestion} \n')
                 else:
-                    click.echo('Turbocharge couldn\'t find similar packages...')
-                    
+                    click.echo(
+                        'Turbocharge couldn\'t find similar packages...')
+
+
 @cli.command()
 @click.argument('package_list', required=True)
 def remove(package_list):
@@ -371,7 +383,8 @@ def remove(package_list):
                         f'\n\n 🎉 Successfully Uninstalled Anaconda! 🎉 \n', fg='green'))
                 except subprocess.CalledProcessError as e:
                     click.echo(e.output)
-                    click.echo('An Error Occurred During Uninstallation...', err=True)
+                    click.echo(
+                        'An Error Occurred During Uninstallation...', err=True)
 
             if package == 'miniconda':
                 try:
@@ -407,7 +420,6 @@ def remove(package_list):
                     click.echo(e.output)
                     click.echo(
                         'An Error Occurred During Uninstallation...', err=True)
-            
 
         if platform == 'win32':
             if package in devpackages_windows:
@@ -416,15 +428,14 @@ def remove(package_list):
                     password="",
                     package_name=devpackages_windows[package]
                 )
-            
+
             elif package in applications_windows:
                 uninstaller.uninstall(
                     f'choco uninstall {package}',
                     password="",
                     package_name=applications_windows[package]
                 )
-        
-        
+
         if platform == 'darwin':
             if package in devpackages_windows:
                 uninstaller.uninstall(
@@ -438,6 +449,7 @@ def remove(package_list):
                     password="",
                     package_name=applications_macos[package]
                 )
+
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -514,7 +526,6 @@ def hyperpack(hyperpack_list):
             return
 
         password_bar.next()
-
 
     click.echo('\n')
     if platform == 'linux':
@@ -612,6 +623,7 @@ def hyperpack(hyperpack_list):
             for app in apps:
                 updater.updateapp(app, password="")
 
+
 @cli.command()
 @click.argument('text', required=True)
 def search(text):
@@ -619,11 +631,12 @@ def search(text):
     Search For A Package To Install
     '''
     click.echo(f'Searching for packages...')
-    
+
     suggestions = find(text)
-    
+
     for suggestion in suggestions:
-        click.echo(f'{suggestion} \n') 
+        click.echo(f'{suggestion} \n')
+
 
 @cli.command()
 def clean():
@@ -634,18 +647,18 @@ def clean():
         uninstaller = Uninstaller()
         password = getpass('Enter your password: ')
         uninstaller.clean(password)
-    
+
     if platform == 'win32':
         arr = ['|', "/", "-", "\\"]
-        
+
         slen = len(arr)
-        
+
         print('Cleaning Your PC...')
-        
+
         for i in range(1, 60):
             time.sleep(0.04)
-            print(arr[i%slen], end='\r')
-    
+            print(arr[i % slen], end='\r')
+
     elif platform == 'darwin':
         uninstaller = Uninstaller()
         password = getpass('Enter your password: ')
@@ -659,10 +672,10 @@ def list():
     '''
     if platform == 'linux':
         click.echo(click.style(display_list_linux, fg='white'))
-    
+
     elif platform == 'win32':
         click.echo(click.style(display_list_windows, fg='white'))
-    
+
     elif platform == 'darwin':
         click.echo(click.style(display_list_macos, fg='white'))
 
@@ -723,15 +736,15 @@ def local():
         for line in lines:
             if not 'Chocolatey' in line and not 'chocolatey' in line and 'packages installed' not in line:
                 packages.append(line)
-        
+
         result = "Packages installed:\n"
 
         for p in packages:
             result += p
             result += "\n"
-        
+
         click.echo(result)
-        
+
     if platform == 'darwin':
         packages = []
         applications = []

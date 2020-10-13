@@ -13,7 +13,7 @@ from constants import applications_windows, devpackages_windows, applications_li
 class Updater:
     # the pacakage name here is directly as typed by user, hence like the keys of
     # dictionaries we have in constants.py . So no need on using getKey() here.
-    
+
     def updatepack(self, package_name: str, password: str):
         def subprocess_cmd(command):
             process = subprocess.Popen(
@@ -28,13 +28,14 @@ class Updater:
 
         def parse(string):
             var1 = string.split(": ")
-            if len(var1[1]) >7:
+            if len(var1[1]) > 7:
                 var2 = var1[1].split(" ")
                 return var2[1]
             else:
                 var2 = var1[1].split("\n")
                 return var2[0]
-        def getWinVer(output : str, name : str):
+
+        def getWinVer(output: str, name: str):
             lines = output.split('\n')
             for line in lines:
                 line = line.split()
@@ -42,9 +43,10 @@ class Updater:
                 package_name = line[0]
                 if name == package_name:
                     final = version
-                    break
-            return final
-            
+                    return final
+
+                return
+
         if platform == 'linux':
             try:
                 installer_progress = Spinner(
@@ -55,7 +57,8 @@ class Updater:
                     installer_progress.next()
 
                 proc = Popen(
-                    f'sudo -S apt-get install --only-upgrade -y {package_name}'.split(),
+                    f'sudo -S apt-get install --only-upgrade -y {package_name}'.split(
+                    ),
                     stdin=PIPE,
                     stdout=PIPE,
                     stderr=PIPE
@@ -64,18 +67,12 @@ class Updater:
                 # Popen only accepts byte-arrays so you must encode the string
                 proc.communicate(password.encode())
 
-
-
                 package_type = 'p'
 
                 package_version = subprocess_cmd(
                     f'apt show {package_name}'.split())
 
-
                 if isfile(f'/home/{getuser()}/config.tcc'):
-                    file_exists = True
-            
-                if file_exists:
                     with open(f'/home/{getuser()}/config.tcc', 'r') as file:
                         lines = file.readlines()
 
@@ -127,15 +124,16 @@ class Updater:
                     click.style(
                         f'\n\n 🎉 Successfully Updated {devpackages_windows[package_name]}! 🎉 \n',
                         fg='green'))
-                
-                with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'r') as file:
+
+                with open(os.path.join("C:\\Turbocharge", "config.tcc"), 'r') as file:
                     lines = file.readlines()
 
                 package_exists = False
 
-                w_version = subprocess.Popen("clist -l", stdin= PIPE, stderr=PIPE, stdout=PIPE)
+                w_version = subprocess.Popen(
+                    "clist -l", stdin=PIPE, stderr=PIPE, stdout=PIPE)
                 output = w_version.communicate()
-                version = getWinVer(output,package_name)
+                version = getWinVer(output, package_name)
                 package_exists = False
                 package_idx = -1
                 for i in range(len(lines)):
@@ -145,13 +143,13 @@ class Updater:
                         break
                 lines[package_idx] = f'{package_name} {version} p {1 if package_name in devpackages_linux.keys() else 0} 1 {1 if package_name in devpackages_macos.keys() else 0}\n'
 
-                with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'w') as file:
+                with open(os.path.join("C:\\Turbocharge", "config.tcc"), 'w') as file:
                     file.writelines(lines)
 
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occurred During Updating..', err=True)
-        
+
         if platform == 'darwin':
             try:
                 installer_progress = Spinner(
@@ -166,7 +164,8 @@ class Updater:
 
                 package_type = 'p'
 
-                proc = Popen(f'brew info {package_name}'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                proc = Popen(f'brew info {package_name}'.split(
+                ), stdin=PIPE, stdout=PIPE, stderr=PIPE)
                 output = proc.communicate()
                 parsable = output[0].decode('utf-8')
 
@@ -211,8 +210,8 @@ class Updater:
             # version has multiple colons in it.
             cleaned_version = version_tag.split(": ")[1]
             return cleaned_version
-        
-        def getWinVer(output : str, name : str):
+
+        def getWinVer(output: str, name: str):
             lines = output.split('\n')
             for line in lines:
                 line = line.split()
@@ -220,12 +219,13 @@ class Updater:
                 package_name = line[0]
                 if name == package_name:
                     final = version
-                    break
-            return final
-            
+                    return final
+
+                return
+
         def parse(string):
             var1 = string.split(": ")
-            if len(var1[1]) >7:
+            if len(var1[1]) > 7:
                 var2 = var1[1].split(" ")
                 return var2[1]
             else:
@@ -250,15 +250,11 @@ class Updater:
                 click.echo(click.style(
                     f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n', fg='green'))
 
-                #TODO: possible bug here because the command gives a different output than what the function was designed to parse.
+                # TODO: possible bug here because the command gives a different output than what the function was designed to parse.
                 package_version = subprocess_cmd(
                     f'snap info {package_name}'.split())
 
-
                 if isfile(f'/home/{getuser()}/config.tcc'):
-                    file_exists = True
-            
-                if file_exists:
                     with open(f'/home/{getuser()}/config.tcc', 'r') as file:
                         lines = file.readlines()
 
@@ -296,15 +292,16 @@ class Updater:
                 for _ in range(1, 25):
                     time.sleep(0.007)
                     installer_progress.next()
-                    
+
                 with open(os.path.join(os.path.abspath(os.getcwd()), "config.tcc"), 'r') as file:
                     lines = file.readlines()
 
                 package_exists = False
 
-                w_version = subprocess.Popen("clist -l", stdin= PIPE, stderr=PIPE, stdout=PIPE)
+                w_version = subprocess.Popen(
+                    "clist -l", stdin=PIPE, stderr=PIPE, stdout=PIPE)
                 output = w_version.communicate()
-                version = getWinVer(output,package_name)
+                version = getWinVer(output, package_name)
                 package_exists = False
                 package_idx = -1
                 for i in range(len(lines)):
@@ -321,12 +318,11 @@ class Updater:
                     click.style(
                         f'\n\n 🎉 Successfully Updated {package_name}! 🎉 \n',
                         fg='green'))
-                
 
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occurred During Updating..', err=True)
-                
+
         if platform == 'darwin':
             try:
                 installer_progress = Spinner(
@@ -343,10 +339,11 @@ class Updater:
                     time.sleep(0.007)
                     installer_progress.next()
 
-                proc = Popen(f'brew info {package_name}'.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                proc = Popen(f'brew info {package_name}'.split(
+                ), stdin=PIPE, stdout=PIPE, stderr=PIPE)
                 output = proc.communicate()
                 parsable = output[0].decode('utf-8')
-                
+
                 package_version = parse(parsable)
 
                 with open(f'/Users/{getuser()}/config.tcc', 'r') as file:
