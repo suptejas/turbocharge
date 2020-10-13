@@ -242,7 +242,7 @@ def install(package_list):
 
                 turbocharge.install_task(
                     package_name=devpackages_windows[package_name],
-                    script=f"choco install {package_name} -y",
+                    script=f"choco install {package_name} -y --force",
                     password="",
                     test_script=f"{package_name} --version",
                     tests_passed=[f'{devpackages_windows[package_name]} Version']
@@ -253,7 +253,7 @@ def install(package_list):
                 show_progress(finding_bar)
                 turbocharge.install_task(
                     package_name=applications_windows[package_name],
-                    script=f"choco install {package_name} -y",
+                    script=f"choco install {package_name} -y --force",
                     password="",
                     test_script="",
                     tests_passed=[]
