@@ -17,11 +17,6 @@ Warning: The below line of code is deprecated, and is not recommended:
 pip install turbocharge
 ```
 
-Then, run this command:
-```
-echo "export PATH="/home/{username}/.local/bin:$PATH"" >> ~/.bashrc
-```
-
 ## Documentation
 
 Install a package with TurboCharge using
@@ -60,17 +55,15 @@ turbo local
 
 Update an installed package with TurboCharge using
 ```
-turbocharge update <package_name>
+turbo update <package_name>
 ```
 
 Search for a package avaliable in TurboCharge using:
 ```
-turbocharge search <keyword>
+turbo search <keyword>
 ```
 
 Clean unnecesarry data from packages using TurboCharge with
 ```
 turbo clean
 ```
-
-Work in progress...
