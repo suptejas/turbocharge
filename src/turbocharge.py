@@ -22,12 +22,12 @@ from getpass import getpass, getuser
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 from subprocess import Popen, PIPE, DEVNULL, run
-from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, apt_script, apt_remove, snap_script, snap_remove, display_list_linux, display_list_windows, display_list_macos, hyperpkgs, devpackages_macos, applications_macos
-from miscellaneous import show_progress, is_password_valid, find
-from Install import Installer
-from Uninstall import Uninstaller
-from Update import Updater
-from config_helper import Setup
+from src.constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, apt_script, apt_remove, snap_script, snap_remove, display_list_linux, display_list_windows, display_list_macos, hyperpkgs, devpackages_macos, applications_macos
+from src.miscellaneous import show_progress, is_password_valid, find
+from src.Install import Installer
+from src.Uninstall import Uninstaller
+from src.Update import Updater
+from src.config_helper import Setup
 from os.path import isfile
 
 
