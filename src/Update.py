@@ -7,7 +7,7 @@ from progress.spinner import Spinner
 from getpass import getuser
 import os
 from os.path import isfile
-from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, applications_macos, devpackages_macos
+from src.constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, applications_macos, devpackages_macos
 
 
 class Updater:
