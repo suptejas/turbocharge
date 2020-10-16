@@ -15,11 +15,18 @@ import os
 class Installer:
     def install_task(self, package_name: str, script: str,
                      password: str, test_script: str, tests_passed):
+        
         def get_key(val, dictionary):
+            final = ''
             for key, value in dictionary.items():
                 if val == value:
-                    return key
-            return -1
+                    final = key
+                    break
+                
+            if final != '':
+                return final
+            else:
+                return -1
 
         def getWinVer(output: str, name: str):
             lines = output.split('\n')
@@ -475,7 +482,7 @@ class Installer:
                         with open(f'/Users/{getuser()}/config.tcc', 'a+') as file:
                             if line_exists == False:
                                 file.write(
-                                    f'{get_key(package_name, applications_macos)} None {package_type} {0 if get_key(package_name, devpackages_linux)==-1 else 1} {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1\n')
+                                    f'{get_key(package_name, devpackages_macos)} {package_version} {package_type} {0 if get_key(package_name, devpackages_linux)==-1 else 1} {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1\n')
 
                 for _ in range(60, 101):
                     time.sleep(0.002)
