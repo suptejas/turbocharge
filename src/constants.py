@@ -1,5 +1,5 @@
 from getpass import getuser
-from HyperPack import HyperPack
+from src.HyperPack import HyperPack
 
 applications_linux = {
     '1password-linux': '1Password',
