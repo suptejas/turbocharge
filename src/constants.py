@@ -128,6 +128,7 @@ applications_windows = {
     'winrar': 'WinRAR',
     'wireshark': 'Wireshark',
     'zoom': 'Zoom',
+    'discord': 'Discord',
 }
 
 devpackages_windows = {
@@ -281,7 +282,7 @@ snap_remove = 'sudo -S snap remove'
 
 chrome_link = 'wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb'
 chrome_move = f'mv google-chrome-stable_current_amd64.deb /home/{getuser()}'
-chrome_setup = 'sudo -S apt-get install -y ./google-chrome-stable_current_amd64.deb'
+chrome_setup = 'sudo -S apt-get install -y /home/{getuser()}/google-chrome-stable_current_amd64.deb'
 
 anaconda_download = 'wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh -O ~/anaconda.sh'
 anaconda_setup = 'bash ~/anaconda.sh -b -p $HOME/anaconda3'

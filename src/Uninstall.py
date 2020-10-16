@@ -6,16 +6,17 @@ from progress.bar import IncrementalBar
 from os.path import isfile
 import click
 from getpass import getuser
-from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux
+from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, applications_macos, devpackages_macos
 import subprocess
+
 
 class Uninstaller:
     def uninstall(self, script: str, password: str, package_name: str):
 
         def get_key(val, dictionary):
-                    for key, value in dictionary.items():
-                        if val == value:
-                            return key
+            for key, value in dictionary.items():
+                if val == value:
+                    return key
 
         if platform == 'linux':
             try:
@@ -33,14 +34,13 @@ class Uninstaller:
                     stdout=PIPE,
                     stderr=PIPE)
 
-                
                 # Popen only accepts byte-arrays so you must encode the string
                 proc.communicate(password.encode())
 
                 file_exists = False
                 if isfile(f'/home/{getuser()}/config.tcc'):
                     file_exists = True
-                
+
                 if file_exists:
                     with open(f'/home/{getuser()}/config.tcc', 'r') as file:
                         lines = file.readlines()
@@ -60,11 +60,11 @@ class Uninstaller:
                     package_type = 'p'
                 elif 'sudo -S snap' in script:
                     package_type = 'a'
-                
+
                 dictionary = None
                 if package_type == 'p':
                     dictionary = devpackages_linux
-                
+
                 elif package_type == 'a':
                     dictionary = applications_linux
 
@@ -80,7 +80,6 @@ class Uninstaller:
                     time.sleep(0.01)
                     installer_progress.next()
 
-
                 click.echo(
                     click.style(
                         f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n',
@@ -89,7 +88,8 @@ class Uninstaller:
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occured During Installation...', err=True)
-        if platform == 'win32':
+
+        elif platform == 'win32':
             try:
                 installer_progress = Spinner(
                     message=f'Uninstalling {package_name}...', max=100)
@@ -112,6 +112,7 @@ class Uninstaller:
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
                 click.echo('An Error Occured During Installation...', err=True)
+
         if platform == 'darwin':
             try:
                 installer_progress = Spinner(
@@ -128,16 +129,15 @@ class Uninstaller:
                     stdout=PIPE,
                     stderr=PIPE)
 
-
                 # Popen only accepts byte-arrays so you must encode the string
                 proc.communicate(password.encode())
 
                 file_exists = False
-                if isfile(f'/home/{getuser()}/config.tcc'):
+                if isfile(f'/Users/{getuser()}/config.tcc'):
                     file_exists = True
 
                 if file_exists:
-                    with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+                    with open(f'/Users/{getuser()}/config.tcc', 'r') as file:
                         lines = file.readlines()
                 else:
                     for _ in range(1, 25):
@@ -146,26 +146,24 @@ class Uninstaller:
 
                     click.echo(
                         click.style(
-                            f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n',
+                            f'\n\n 🎉  Successfully Uninstalled {package_name}! 🎉 \n',
                             fg='green'))
                     return
 
-                
-
                 package_type = None
-                if 'sudo -S apt-get' in script:
+                if 'brew uninstall' in script:
                     package_type = 'p'
-                elif 'sudo -S snap' in script:
+                elif 'brew cask uninstall' in script:
                     package_type = 'a'
 
                 dictionary = None
                 if package_type == 'p':
-                    dictionary = devpackages_linux
+                    dictionary = devpackages_macos
 
                 elif package_type == 'a':
-                    dictionary = applications_linux
+                    dictionary = applications_macos
 
-                with open(f'/home/{getuser()}/config.tcc', 'w+') as file:
+                with open(f'/Users/{getuser()}/config.tcc', 'w+') as file:
                     for line in lines:
                         if get_key(package_name, dictionary) in line:
                             continue
@@ -177,10 +175,9 @@ class Uninstaller:
                     time.sleep(0.01)
                     installer_progress.next()
 
-
                 click.echo(
                     click.style(
-                        f'\n\n 🎉 Successfully Uninstalled {package_name}! 🎉 \n',
+                        f'\n\n 🎉  Successfully Uninstalled {package_name}! 🎉 \n',
                         fg='green'))
 
             except subprocess.CalledProcessError as e:
@@ -217,7 +214,7 @@ class Uninstaller:
 
         elif platform == 'win32':
             pass  # chocolatey auto removes files
-        
+
         elif platform == 'darwin':
             try:
                 install_progress = Spinner(message='Cleaning Up Packages ')
@@ -238,7 +235,7 @@ class Uninstaller:
                 click.echo('\n')
                 click.echo(
                     click.style(
-                        '🎉 Successfully Cleaned Turbocharge! 🎉',
+                        '🎉  Successfully Cleaned Turbocharge! 🎉',
                         fg='green'))
 
             except subprocess.CalledProcessError as e:
