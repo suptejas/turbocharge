@@ -33,7 +33,8 @@ from os.path import isfile
 
 __version__ = '1.0.0b'
 
-the_setup = Setup()
+setup = Setup()
+
 
 @click.group()
 @click.version_option(__version__)
@@ -41,15 +42,15 @@ the_setup = Setup()
 def cli(ctx):
     if platform == 'linux':
         if not isfile(f'/home/{getuser()}/config.tcc'):
-            the_setup.setup()
+            setup.setup()
 
     elif platform == 'win32':
         if not isfile(os.path.join("C:\\Turbocarge", "config.tcc")):
-            the_setup.setup()
+            setup.setup()
 
     elif platform == 'darwin':
         if not isfile(f'/Users/{getuser()}/config.tcc'):
-            the_setup.setup()
+            setup.setup()
 
 
 @cli.command()
@@ -724,7 +725,8 @@ def local():
                 click.echo(app + '\n')
 
         elif applications == []:
-            click.echo('Turbocharge couldn\'t find any applications installed. \n')
+            click.echo(
+                'Turbocharge couldn\'t find any applications installed. \n')
 
     if platform == 'win32':
         packages = []

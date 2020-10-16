@@ -11,14 +11,10 @@ From the next update, TurboCharge will support Windows, MacOS And Debian-Based O
 Turbocharge can be installed using PyPI:
 
 ```
-pip3 install turbocharge==4.0.0
+pip3 install turbocharge==1.0.0
 ```
 
 Warning: The below line of code is deprecated, and is not recommended:
-
-```
-pip install turbocharge
-```
 
 ## Documentation
 

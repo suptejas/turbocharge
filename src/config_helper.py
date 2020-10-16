@@ -7,7 +7,6 @@ import click
 from progress.bar import IncrementalBar
 from progress.spinner import Spinner
 from time import sleep
-import subprocess
 
 
 class Setup:
