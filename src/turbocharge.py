@@ -16,7 +16,7 @@ import click
 import os
 import subprocess
 import time
-import constants as constant
+import src.constants as constant
 from sys import platform, stderr
 from getpass import getpass, getuser
 from progress.spinner import Spinner
