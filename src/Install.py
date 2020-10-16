@@ -5,9 +5,9 @@ from progress.bar import IncrementalBar
 import time
 from subprocess import Popen, PIPE, DEVNULL, run
 from getpass import getuser
-from Debugger import Debugger
+from src.Debugger import Debugger
 import subprocess
-from constants import *
+from src.constants import *
 from os.path import isfile
 import os
 
