@@ -6,31 +6,14 @@ import os
 from sys import platform
 import subprocess
 
-user = getuser()        
-
-class PostInstallCommand:
-    def run(self):
-        if platform == 'linux':
-            os.system(f'echo "export PATH="/home/{user}/.local/bin:$PATH"" >> ~/.bashrc')
-
-        if platform == 'win32':
-            subprocess.Popen(
-                [
-                    'powershell.exe',
-                    'Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
-                ]
-            )
-
-postinstallcommand = PostInstallCommand()
-
-postinstallcommand.run()
+user = getuser()
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name = 'turbocharge',
-    version = '3.0.6',
+    version = '0.0.1',
     description= 'Turbocharged Way To Install All The Packages You Love!',
     url="https://github.com/TheBossProSniper/TurboCharge",
     author = 'TheBossProSniper',
@@ -39,19 +22,19 @@ setup(
     long_description_content_type="text/markdown",
     py_modules=['turbocharge'],
     packages=find_packages(),
-    scripts=[os.path.join(os.path.abspath(os.getcwd()), 'src', 'turbocharge.py')],
     install_requires = [
         'Click',
         'progress',
     ],
-    package_dir={'': 'src'},
-    entry_points = 
+    entry_points =
     '''
         [console_scripts]
         turbo=turbocharge:cli
     ''',
 classifiers=[
-        "License :: OSI Approved :: Apache License 2.0",
-        "Operating System :: OS Independent",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: MacOS",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX :: Linux",
     ]
 )
