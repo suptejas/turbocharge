@@ -4,7 +4,7 @@ A turbocharged way of installing all the packages you would ever want! Turbochar
 
 ### Avaliability
 
-From the next update, TurboCharge will support Windows, MacOS And Debian-Based Operating Systems. It uses a backend of apt, snap, brew and chocolatey, giving you a seamless and enjoyable experience!
+TurboCharge currently supports Windows, MacOS And Debian-Based Operating Systems. It uses a backend of apt, snap, brew and chocolatey, giving you a seamless and enjoyable experience!
 
 ## Installation
 
