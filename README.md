@@ -1,17 +1,22 @@
+
+
 # TurboCharge
+
+Official Website : www.turbocharge.dev
 
 A turbocharged way of installing all the packages you would ever want! Turbocharge automatically tests if the installed packages are working correctly for you!
 
 ### Avaliability
 
-TurboCharge currently supports Windows, MacOS And Debian-Based Operating Systems. It uses a backend of apt, snap, brew and chocolatey, giving you a seamless and enjoyable experience!
+TurboCharge currently supports Windows, MacOS And Debian-Based Operating Systems. 
+It uses a backend of apt, snap, brew and chocolatey, giving you a seamless and enjoyable experience!
 
 ## Installation
 
 Turbocharge can be installed using PyPI:
 
 ```
-pip3 install turbocharge==1.0.0
+pip3 install turbocharge
 ```
 
 Warning: The below line of code is deprecated, and is not recommended:
