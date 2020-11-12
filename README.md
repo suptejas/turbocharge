@@ -4,7 +4,7 @@
 
 Official Website : www.turbocharge.dev
 
-A turbocharged way of installing all the packages you would ever want! Turbocharge automatically tests if the installed packages are working correctly for you!
+A turbocharged way of installing all the packages you would ever want! Turbocharge automatically tests if the installed packages are working correctly for you on MacOS, Linux And Windows!
 
 ### Avaliability
 
