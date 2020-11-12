@@ -14,6 +14,11 @@ It uses a backend of apt, snap, brew and chocolatey, giving you a seamless and e
 ## Installation
 
 Turbocharge can be installed using PyPI:
+On Windows:
+```
+pip install turbocharge
+```
+On MacOS And Linux:
 
 ```
 pip3 install turbocharge
