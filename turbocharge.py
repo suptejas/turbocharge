@@ -471,7 +471,6 @@ _______________________________
 | wireshark                   |
 | zoom                        |
 -------------------------------
-
 ____________________
 | Package           |
 ---------------------
@@ -508,7 +507,6 @@ ____________________
 | wget              |
 | yarn              |
 ---------------------
-
 _______________________________________________________________________
 | HyperPacks  |  Content                                              |
 -----------------------------------------------------------------------
@@ -1111,8 +1109,14 @@ class Installer:
                 return
 
         def subprocess_cmd(command):
-            process = subprocess.Popen(
-                command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+            try:
+                process = subprocess.Popen(
+                    command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+            except (OSError, PermissionError):
+                if platform == 'win32':
+                    click.echo('Please run electric as administrator!')
+                    os._exit(1)
+            
             proc_stdout = process.communicate()[0].strip()
             decoded = proc_stdout.decode("utf-8")
             version_tag = decoded.split("\n")[1]
@@ -1152,7 +1156,7 @@ class Installer:
                 if proc.returncode != 0:
                     click.echo(
                         click.style(
-                            '❎ Installation Failed... ❎',
+                            '❎ Installation Failed ❎',
                             fg='red',
                             blink=True,
                             bold=True))
@@ -1303,7 +1307,7 @@ class Installer:
         elif platform == 'win32':
             try:
                 installer_progress = Spinner(
-                    message=f'Installing {package_name}...', max=100)
+                    message=f'Installing {package_name}', max=100)
 
                 for _ in range(1, 75):
                     time.sleep(0.01)
