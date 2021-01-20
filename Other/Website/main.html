@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Turbocharge</title>
+        <style type='text/css'>
+
+            @font-face {
+            font-family: Karla;
+            src: url(Fonts/Karla-Regular.ttf);
+            }
+
+            @font-face {
+            font-family: Inconsolata;
+            src: url(Fonts/Inconsolata-Regular.ttf);
+            }
+
+            html, body {
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+
+            body {
+                background-color: black;
+            }
+            
+            .code {
+                color: white;
+                background-color: #3b3a37;
+                border-radius: 5px;
+                padding-right: 15px;
+                padding-left: 15px;
+                padding-top: 7px;
+                padding-bottom: 7px;
+                font-family: Inconsolata;
+                font-size: 21px;
+            }
+
+            .copy {
+                color: white;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                border-radius: 7px;
+                font-family: Karla;
+                margin-left: 1px;
+                font-size: 20px;
+                background-color: #3b3a37;
+            }
+
+            .docs {
+                background: #3b3a37;
+                width: 50%;
+                padding: 40px;
+                margin: 100px auto;
+                border-radius: 10px;
+            }
+
+            .heading {
+                font-family: Karla;
+                color: white;
+            }
+
+            .content {
+                color: white;
+                font-family: Karla;
+                font-size: 17px;
+            }
+
+            .codeconfig {
+                font-family: Inconsolata;
+                color: white;
+                font-size: 20px;
+            }
+
+            .ribbon  {
+                width: 150px;
+                height: 150px;
+                background: black;
+                position: absolute;
+                top: -0px;
+                right: -10px;
+            }
+
+            .ribbon a {
+                width: 250px;
+                padding: 9px 0px;
+                background: grey;
+                display: block;
+                position: absolute;
+                top: 35px;
+                left: -50px;
+                transform: rotate(40deg);
+                text-align: center;
+                color: white;
+                font-weight: bold;
+                font-family: Karla;
+                text-decoration: none;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class='ribbon'>
+            <a href='https://github.com/TheBossProSniper/TurboCharge'>Fork Me On Github</a>
+        </div>
+        <center>
+            <div style="width: 100%;">
+                <img src="back.png">
+            </div>
+            <span class='code' id='textcopy'>pip install turbocharge</span>
+            <button class='copy' onclick="copy()">Copy</button>
+            <script>
+                function copy() {
+                    var command = 'pip install turbocharge';
+                    navigator.clipboard.writeText(command)
+                }
+            </script>
+            <div class='docs'>
+                <p >
+                <h1 id="turbocharge" class='heading'>TurboCharge</h1>
+                <p class='content'>A turbocharged way of installing all the packages you would ever want! Turbocharge <b style='color: greenyellow;'>automatically tests</b> if the installed packages are working correctly for you!</p>
+                <h3 id="avaliability" class='heading'>Avaliability</h3>
+                <p class='content'>TurboCharge currently supports <b style='color: greenyellow;'>Windows, MacOS And Debian-Based</b> Operating Systems.<p class='content'> It uses a backend of <b>apt, snap, homebrew and chocolatey</b>, giving you a seamless and enjoyable experience!</p>
+                <h2 id="installation" class='heading'>Installation</h2>
+                <p class='content'>Turbocharge can be installed using PyPI:</p>
+                <pre><code class='codeconfig'>pip3 install turbocharge
+                </code></pre>
+                <h2 id="documentation" class='heading'>Documentation</h2>
+                </code></pre><p class='content'>Get the <b style='color: greenyellow;'>current version</b> of TurboCharge with</p>
+                <pre><code class='codeconfig'>turbo <span class="hljs-comment">--version</span>
+                </code></pre>
+                <p class='content'><b style='color: greenyellow;'>Install</b> a package with TurboCharge using</p>
+                <pre><code class='codeconfig'>turbo install <span class="hljs-tag">&lt;<span class="hljs-name">package_name</span>&gt;</span>
+                </code></pre><p class='content'>Install <b style='color: greenyellow;'>multiple packages</b> with TurboCharge using</p>
+                <pre><code class='codeconfig'>turbo install &lt;<span class="hljs-keyword">package</span><span class="hljs-number">1</span>,<span class="hljs-keyword">package</span><span class="hljs-number">2</span>,<span class="hljs-keyword">package</span><span class="hljs-number">3</span>&gt;
+                </code></pre><p class='content'><b style='color: greenyellow;'>Uninstall</b> a package with TurboCharge using</p>
+                <pre><code class='codeconfig'>turbo <span class="hljs-built_in">remove</span> <span class="hljs-symbol">&lt;package_name&gt;</span>
+                </code></pre><p class='content'>Uninstall <b style='color: greenyellow;'>multiple packages</b> with TurboCharge using</p>
+                <pre><code class='codeconfig'>turbo remove &lt;<span class="hljs-keyword">package</span><span class="hljs-number">1</span>,<span class="hljs-keyword">package</span><span class="hljs-number">2</span>,<span class="hljs-keyword">package</span><span class="hljs-number">3</span>&gt;
+                </code></pre><p class='content' style='color:yellow'>Note: Make sure that there is no space between each of the package names after and before the comma.</p>
+                <p class='content'><b style='color: greenyellow;'>List</b> all installable packages with TurboCharge using</p>
+                <pre><code class='codeconfig'>turbo <span class="hljs-built_in">list</span>
+                </code></pre><p class='content'>List all <b style='color: greenyellow;'>installed packages</b> with TurboCharge using</p>
+                <pre><code class='codeconfig'>turbo <span class="hljs-keyword">local</span>
+                </code></pre><p class='content'><b style='color: greenyellow;'>Update</b> an installed package with TurboCharge using</p>
+                <pre><code class='codeconfig'>turbo <span class="hljs-keyword">update</span> <span class="hljs-symbol">&lt;package_name&gt;</span>
+                </code></pre><p class='content'><b style='color: greenyellow;'>Search</b> for a package avaliable in TurboCharge using:</p>
+                <pre><code class='codeconfig'>turbo <span class="hljs-built_in">search</span> <span class="hljs-symbol">&lt;keyword&gt;</span>
+                </code></pre><p class='content'><b style='color: greenyellow;'>Clean</b> unnecesarry data from packages using TurboCharge with</p>
+                <pre><code class='codeconfig'><span class="hljs-attribute">turbo clean</span>
+                </p>
+            </div>
+        </center>
+    </body>
+</html>
