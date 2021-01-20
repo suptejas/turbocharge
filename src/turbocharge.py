@@ -276,7 +276,7 @@ def install(package_list):
         if platform == 'darwin':
             click.echo('\n')
             finding_bar = IncrementalBar(
-                'Finding Requested Packages...', max=1)
+                'Finding Requested Packages', max=1)
 
             if package_name in devpackages_macos:
                 show_progress(finding_bar)

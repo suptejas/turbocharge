@@ -1,12 +1,11 @@
 from sys import platform
-from subprocess import Popen, PIPE, DEVNULL, run
+from subprocess import Popen, PIPE, run
 import time
 from progress.spinner import Spinner
-from progress.bar import IncrementalBar
 from os.path import isfile
 import click
 from getpass import getuser
-from constants import applications_windows, devpackages_windows, applications_linux, devpackages_linux, applications_macos, devpackages_macos
+from constants import applications_linux, devpackages_linux, applications_macos, devpackages_macos
 import subprocess
 
 class Uninstaller:
