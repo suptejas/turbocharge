@@ -288,7 +288,7 @@ def install(package_list):
                     tests_passed=[
                         f'{devpackages_macos[package_name]} Version']
                 )
-                # test _scirpt is just a string here..
+                # test _script is just a string here..
 
             elif package_name in applications_macos:
                 show_progress(finding_bar)
