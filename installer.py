@@ -80,35 +80,30 @@ class Debugger:
             click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
             click.echo(click.style(f'Cause: Wrong Password Entered. Code: 001', fg='yellow', bold=True, blink=True))
 
-            return
-        
         elif platform == 'darwin':
             click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
             click.echo(click.style(f'Cause: Incompatible Platform. Turbocharge doesn\'t support debugging in macOS yet. Code: 005', fg='yellow', bold=True, blink=True))
-            
-            return
 
         elif platform == 'win32':
             click.echo(click.style('✅ Successful Debugging! ✅ \n', fg='green', bold=True))
             click.echo(click.style(f'Cause: Incompatible Platform. Turbocharge doesn\'t support debugging in Windows 10/8/7/XP yet. Code: 010', fg='yellow', bold=True, blink=True))
-            
-            return
 
         else:
             click.echo(click.style(':( Failed To Debug... :(', fg='red'))
-            
-            return
+
+
+        return
 
 class Installer:
     def install_task(self, package_name : str, script : str, password : str, test_script : str, tests_passed):
-        try:    
+        try:
             installer_progress = Spinner(message=f'Installing {package_name}...', max=100)
 
             # sudo requires the flag '-S' in order to take input from stdin
             for _ in range(1, 75):
                 time.sleep(0.01)
                 installer_progress.next()
-            
+
             proc = Popen(script.split(), stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
             # Popen only accepts byte-arrays so you must encode the string
@@ -116,9 +111,9 @@ class Installer:
 
             if proc.returncode != 0:
                 click.echo(click.style('❎ Installation Failed... ❎', fg='red', blink=True, bold=True))
-                
+
                 debug = click.prompt('Would you like us to debug the failed installation?[y/n]')
-                
+
                 if debug == 'y':
                     debugger = Debugger()
                     debugger.debug(password, error)
@@ -131,12 +126,10 @@ class Installer:
                         if final_output == '':
                             click.echo('There were no logs found...')
 
-                            return
                         else:
                             click.echo(final_output)
 
-                            return
-                    return
+                        return
                 else:
                     logs = click.prompt('Would you like to see the logs?[y/n]', type=str)
 
@@ -145,16 +138,14 @@ class Installer:
 
                         if final_output == '':
                             click.echo('There were no logs found...')
-                            
-                            return
+
                         else:
                             click.echo(final_output)
 
-                            return
-                    return
-
+                        return
+                return
             click.echo(click.style(f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n', fg='green', bold=True))
-            
+
             # Testing the successful installation of the package
             testing_bar = IncrementalBar('Testing package...', max = 100)
 
