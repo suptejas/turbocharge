@@ -658,8 +658,7 @@ class Updater:
                 version = line[1]
                 package_name = line[0]
                 if name == package_name:
-                    final = version
-                    return final
+                    return version
 
                 return
 
@@ -834,8 +833,7 @@ class Updater:
                 version = line[1]
                 package_name = line[0]
                 if name == package_name:
-                    final = version
-                    return final
+                    return version
 
                 return
 
@@ -990,7 +988,20 @@ class Updater:
 class Setup:
     def setup(self):
         user = getuser()
-        if platform == 'linux':
+        if platform == 'darwin':
+            # Installing and setting up Homebrew
+            click.echo(click.style(
+                'Setting Up Turbocharge on your Mac...', fg='green'))
+
+            os.system(
+                '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" < /dev/null')
+
+            file_exists = bool(isfile(f'/Users/{getuser()}/config.tcc'))
+            if not file_exists:
+                with open(f'/Users/{getuser()}/config.tcc', 'w+') as f:
+                    f.write(f'darwin\n{user}\n')
+
+        elif platform == 'linux':
             # Creating the config file
             setup_progress = IncrementalBar(
                 message='Setting Up Your Turbocharge Config...', max=100)
@@ -999,11 +1010,7 @@ class Setup:
                 setup_progress.next()
 
             file_exists = None
-            if isfile(f'/home/{getuser()}/config.tcc'):
-                file_exists = True
-            else:
-                file_exists = False
-
+            file_exists = bool(isfile(f'/home/{getuser()}/config.tcc'))
             if not file_exists:
                 with open(f'/home/{getuser()}/config.tcc', 'w+') as f:
                     f.write(f'linux\n{user}\n')
@@ -1035,22 +1042,6 @@ class Setup:
                 sleep(0.02)
                 setup_progress.next()
 
-        elif platform == 'darwin':
-            # Installing and setting up Homebrew
-            click.echo(click.style(
-                'Setting Up Turbocharge on your Mac...', fg='green'))
-
-            os.system(
-                '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" < /dev/null')
-
-            if isfile(f'/Users/{getuser()}/config.tcc'):
-                file_exists = True
-            else:
-                file_exists = False
-            if not file_exists:
-                with open(f'/Users/{getuser()}/config.tcc', 'w+') as f:
-                    f.write(f'darwin\n{user}\n')
-
         click.echo('\n')
         click.echo('Succesfully Setup Turbocharge!')
 
@@ -1072,12 +1063,11 @@ class Debugger:
                     bold=True,
                     blink=True))
 
-            return
-
         else:
             click.echo(click.style(':( Failed To Debug... :(', fg='red'))
 
-            return
+
+        return
 
 
 class Installer:
@@ -1105,8 +1095,7 @@ class Installer:
                 package_name = line[0]
 
                 if name == package_name:
-                    final = version
-                    return final
+                    return version
 
                 return
 
@@ -1592,19 +1581,19 @@ def show_progress(finding_bar):
 
 def find(text):
     suggestions = []
-    if platform == 'linux':
+    if platform == 'darwin':
+        application_matches = difflib.get_close_matches(text, applications_macos)
+        package_matches = difflib.get_close_matches(text, devpackages_macos)
+        suggestions = application_matches + package_matches
+
+    elif platform == 'linux':
         application_matches = difflib.get_close_matches(text, applications_linux)
         package_matches = difflib.get_close_matches(text, devpackages_linux)
         suggestions = application_matches + package_matches
 
-    if platform == 'win32':
+    elif platform == 'win32':
         application_matches = difflib.get_close_matches(text, applications_windows)
         package_matches = difflib.get_close_matches(text, devpackages_windows)
-        suggestions = application_matches + package_matches
-
-    if platform == 'darwin':
-        application_matches = difflib.get_close_matches(text, applications_macos)
-        package_matches = difflib.get_close_matches(text, devpackages_macos)
         suggestions = application_matches + package_matches
 
     return suggestions
@@ -1868,7 +1857,7 @@ def install(package_list):
     '''
     Install A Specified Package(s)
     '''
-    if platform == 'linux' or platform == 'darwin':
+    if platform in ['linux', 'darwin']:
         password = getpass('Enter your password: ')
     else:
         password = ''
@@ -1885,7 +1874,48 @@ def install(package_list):
     for package_name in packages:
         package_name = package_name.strip(' ')
 
-        if platform == 'linux':
+        if platform == 'darwin':
+            click.echo('\n')
+            finding_bar = IncrementalBar(
+                'Finding Requested Packages...', max=1)
+
+            if package_name in devpackages_macos:
+                show_progress(finding_bar)
+                turbocharge.install_task(
+                    package_name=devpackages_macos[package_name],
+                    script=f"brew install {package_name}",
+                    password="",
+                    test_script=f"{package_name} --version",
+                    tests_passed=[
+                        f'{devpackages_macos[package_name]} Version']
+                )
+                # test _scirpt is just a string here..
+
+            elif package_name in applications_macos:
+                show_progress(finding_bar)
+                turbocharge.install_task(
+                    package_name=applications_macos[package_name],
+                    script=f"brew cask install {package_name}",
+                    password="",
+                    test_script="",
+                    tests_passed=[]
+                )
+
+            else:
+                click.echo('\n')
+                click.echo(click.style(
+                    ':( Package Not Found! :( \n', fg='red'))
+                suggestions = find(package_name)
+                if suggestions != []:
+                    click.echo('\n')
+                    click.echo('Turbocharge found similar packages: \n')
+                    for suggestion in suggestions:
+                        click.echo(f'{suggestion} \n')
+                else:
+                    click.echo(
+                        'Turbocharge couldn\'t find similar packages...')
+
+        elif platform == 'linux':
             click.echo('\n')
             finding_bar = IncrementalBar(
                 'Finding Requested Packages...', max=1)
@@ -2031,7 +2061,12 @@ def install(package_list):
                     click.echo(
                         'An Error Occurred During Installation...', err=True)
 
-            elif package_name not in devpackages_linux and package_name not in applications_linux and package_name != 'chrome' and package_name != 'anaconda' and package_name != 'miniconda':
+            elif (
+                package_name not in devpackages_linux
+                and package_name not in applications_linux
+                and package_name != 'chrome'
+                and package_name != 'anaconda'
+            ):
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
                 suggestions = find(package_name)
@@ -2044,7 +2079,7 @@ def install(package_list):
                     click.echo(
                         'Turbocharge couldn\'t find similar packages...')
 
-        if platform == 'win32':
+        elif platform == 'win32':
             click.echo('\n')
             finding_bar = IncrementalBar(
                 'Finding Requested Packages...', max=1)
@@ -2071,51 +2106,10 @@ def install(package_list):
                     tests_passed=[]
                 )
 
-            elif package_name not in devpackages_windows and package_name not in applications_windows:
+            else:
                 click.echo('\n')
                 click.echo(click.style(':( Package Not Found! :(', fg='red'))
 
-                suggestions = find(package_name)
-                if suggestions != []:
-                    click.echo('\n')
-                    click.echo('Turbocharge found similar packages: \n')
-                    for suggestion in suggestions:
-                        click.echo(f'{suggestion} \n')
-                else:
-                    click.echo(
-                        'Turbocharge couldn\'t find similar packages...')
-
-        if platform == 'darwin':
-            click.echo('\n')
-            finding_bar = IncrementalBar(
-                'Finding Requested Packages...', max=1)
-
-            if package_name in devpackages_macos:
-                show_progress(finding_bar)
-                turbocharge.install_task(
-                    package_name=devpackages_macos[package_name],
-                    script=f"brew install {package_name}",
-                    password="",
-                    test_script=f"{package_name} --version",
-                    tests_passed=[
-                        f'{devpackages_macos[package_name]} Version']
-                )
-                # test _scirpt is just a string here..
-
-            elif package_name in applications_macos:
-                show_progress(finding_bar)
-                turbocharge.install_task(
-                    package_name=applications_macos[package_name],
-                    script=f"brew cask install {package_name}",
-                    password="",
-                    test_script="",
-                    tests_passed=[]
-                )
-
-            elif package_name not in devpackages_macos and package_name not in applications_macos:
-                click.echo('\n')
-                click.echo(click.style(
-                    ':( Package Not Found! :( \n', fg='red'))
                 suggestions = find(package_name)
                 if suggestions != []:
                     click.echo('\n')
@@ -2135,7 +2129,7 @@ def remove(package_list):
     '''
     uninstaller = Uninstaller()
 
-    if platform == 'linux' or platform == 'darwin':
+    if platform in ['linux', 'darwin']:
         password = getpass('Enter your password: ')
     else:
         password = ''
@@ -2143,7 +2137,21 @@ def remove(package_list):
     packages = package_list.split(',')
 
     for package in packages:
-        if platform == 'linux':
+        if platform == 'darwin':
+            if package in devpackages_windows:
+                uninstaller.uninstall(
+                    f'brew uninstall {package}',
+                    password="",
+                    package_name=devpackages_macos[package]
+                )
+            elif package in applications_windows:
+                uninstaller.uninstall(
+                    f'brew cask uninstall {package}',
+                    password="",
+                    package_name=applications_macos[package]
+                )
+
+        elif platform == 'linux':
             if package in devpackages_linux:
                 uninstaller.uninstall(
                     f'{apt_remove} {package}',
@@ -2225,7 +2233,7 @@ def remove(package_list):
                     click.echo(
                         'An Error Occurred During Uninstallation...', err=True)
 
-        if platform == 'win32':
+        elif platform == 'win32':
             if package in devpackages_windows:
                 uninstaller.uninstall(
                     f'choco uninstall {package} --force -y',
@@ -2240,20 +2248,6 @@ def remove(package_list):
                     package_name=applications_windows[package]
                 )
 
-        if platform == 'darwin':
-            if package in devpackages_windows:
-                uninstaller.uninstall(
-                    f'brew uninstall {package}',
-                    password="",
-                    package_name=devpackages_macos[package]
-                )
-            elif package in applications_windows:
-                uninstaller.uninstall(
-                    f'brew cask uninstall {package}',
-                    password="",
-                    package_name=applications_macos[package]
-                )
-
 
 @cli.command()
 @click.argument('package_list', required=True)
@@ -2263,7 +2257,7 @@ def update(package_list):
     '''
     updater = Updater()
 
-    if platform == 'linux' or platform == 'darwin':
+    if platform in ['linux', 'darwin']:
         password = getpass('Enter your password: ')
     else:
         password = ''
@@ -2271,7 +2265,17 @@ def update(package_list):
     packages = package_list.split(',')
 
     for package in packages:
-        if platform == "linux":
+        if platform == "darwin":
+            if package in devpackages_macos:
+                updater.updatepack(package, password)
+
+            if package in applications_macos:
+                updater.updateapp(package, password)
+
+            else:
+                return
+
+        elif platform == "linux":
             if package in devpackages_linux:
                 updater.updatepack(package, password)
 
@@ -2280,21 +2284,12 @@ def update(package_list):
 
             else:
                 return
-        if platform == "win32":
+        elif platform == "win32":
             if package in devpackages_windows:
                 updater.updatepack(package, "")
 
             if package in applications_windows:
                 updater.updateapp(package, "")
-
-            else:
-                return
-        if platform == "darwin":
-            if package in devpackages_macos:
-                updater.updatepack(package, password)
-
-            if package in applications_macos:
-                updater.updateapp(package, password)
 
             else:
                 return
@@ -2317,7 +2312,7 @@ def hyperpack(hyperpack_list):
 
     password = ""
 
-    if platform == 'linux' or platform == 'darwin':
+    if platform in ['linux', 'darwin']:
         password = getpass('Enter your password: ')
         click.echo('\n')
 
@@ -2332,8 +2327,8 @@ def hyperpack(hyperpack_list):
         password_bar.next()
 
     click.echo('\n')
-    if platform == 'linux':
-        for hyperpack in hyperpacks:
+    for hyperpack in hyperpacks:
+        if platform == 'linux':
             hyper_pack = hyperpkgs[hyperpack]
 
             packages = hyper_pack.packages.split(',')
@@ -2366,8 +2361,7 @@ def hyperpack(hyperpack_list):
 
             cleaner.clean(password)
 
-    elif platform == 'win32':
-        for hyperpack in hyperpacks:
+        elif platform == 'win32':
             hyper_pack = hyperpkgs[hyperpack]
 
             packages = hyper_pack.packages.split(',')
@@ -2396,8 +2390,7 @@ def hyperpack(hyperpack_list):
 
             for app in apps:
                 updater.updateapp(app, password="")
-    elif platform == 'darwin':
-        for hyperpack in hyperpacks:
+        elif platform == 'darwin':
             hyper_pack = hyperpkgs[hyperpack]
 
             packages = hyper_pack.packages.split(',')
@@ -2447,12 +2440,12 @@ def clean():
     '''
     Remove Junk Packages Which Are Not Needed
     '''
-    if platform == 'linux':
+    if platform in ['linux', 'darwin']:
         uninstaller = Uninstaller()
         password = getpass('Enter your password: ')
         uninstaller.clean(password)
 
-    if platform == 'win32':
+    elif platform == 'win32':
         arr = ['|', "/", "-", "\\"]
 
         slen = len(arr)
@@ -2462,11 +2455,6 @@ def clean():
         for i in range(1, 60):
             time.sleep(0.04)
             print(arr[i % slen], end='\r')
-
-    elif platform == 'darwin':
-        uninstaller = Uninstaller()
-        password = getpass('Enter your password: ')
-        uninstaller.clean(password)
 
 
 @cli.command()
@@ -2489,74 +2477,6 @@ def local():
     '''
     Lists all the installed packages.
     '''
-
-    if platform == 'linux':
-        packages = []
-        applications = []
-
-        lines = None
-
-        with open(f'/home/{getuser()}/config.tcc', 'r') as file:
-            lines = file.readlines()
-
-        for line in lines:
-            line = line.strip()
-            line.split()
-            try:
-                package_name = line.split()[0]
-            except IndexError:
-                continue
-            try:
-                package_type = line.split()[2]
-            except IndexError:
-                continue
-
-            if package_type == 'p':
-                packages.append(package_name)
-
-            if package_type == 'a':
-                applications.append(package_name)
-
-        click.clear()
-        click.echo('Packages : \n')
-
-        if packages != []:
-            for package in packages:
-                click.echo(package + '\n')
-
-        elif packages == []:
-            click.echo('Turbocharge couldn\'t find any packages installed.')
-
-        click.echo('Applications : \n')
-
-        if applications != []:
-            for app in applications:
-                click.echo(app + '\n')
-
-        elif applications == []:
-            click.echo(
-                'Turbocharge couldn\'t find any applications installed. \n')
-
-    if platform == 'win32':
-        packages = []
-
-        cmd = run('clist -l', stdout=PIPE, stderr=PIPE)
-
-        output = cmd.stdout.decode()
-
-        lines = output.split('\n')
-
-        for line in lines:
-            if not 'Chocolatey' in line and not 'chocolatey' in line and 'packages installed' not in line:
-                packages.append(line)
-
-        result = "Packages installed:\n"
-
-        for p in packages:
-            result += p
-            result += "\n"
-
-        click.echo(result)
 
     if platform == 'darwin':
         packages = []
@@ -2586,18 +2506,88 @@ def local():
 
         click.echo('Packages : \n')
 
-        if packages != []:
+        if packages == []:
+            click.echo('Turbocharge couldn\'t find any packages installed.')
+
+        else:
             for package in packages:
                 click.echo(package)
 
-        elif packages == []:
+        click.echo('Applications : \n')
+
+        if applications == []:
+            click.echo('Turbocharge couldn\'t find any applications installed.')
+        else:
+            for app in applications:
+                click.echo(app)
+
+    elif platform == 'linux':
+        packages = []
+        applications = []
+
+        lines = None
+
+        with open(f'/home/{getuser()}/config.tcc', 'r') as file:
+            lines = file.readlines()
+
+        for line in lines:
+            line = line.strip()
+            line.split()
+            try:
+                package_name = line.split()[0]
+            except IndexError:
+                continue
+            try:
+                package_type = line.split()[2]
+            except IndexError:
+                continue
+
+            if package_type == 'a':
+                applications.append(package_name)
+
+            elif package_type == 'p':
+                packages.append(package_name)
+
+        click.clear()
+        click.echo('Packages : \n')
+
+        if packages != []:
+            for package in packages:
+                click.echo(package + '\n')
+
+        else:
             click.echo('Turbocharge couldn\'t find any packages installed.')
 
         click.echo('Applications : \n')
 
-        if applications != []:
-            for app in applications:
-                click.echo(app)
+        if applications == []:
+            click.echo(
+                'Turbocharge couldn\'t find any applications installed. \n')
 
-        elif applications == []:
-            click.echo('Turbocharge couldn\'t find any applications installed.')
+        else:
+            for app in applications:
+                click.echo(app + '\n')
+
+    elif platform == 'win32':
+        cmd = run('clist -l', stdout=PIPE, stderr=PIPE)
+
+        output = cmd.stdout.decode()
+
+        lines = output.split('\n')
+
+        packages = [
+            line
+            for line in lines
+            if 'Chocolatey' not in line
+            and 'chocolatey' not in line
+            and 'packages installed' not in line
+        ]
+
+
+        result = "Packages installed:\n"
+
+        for p in packages:
+            result += p
+            result += "\n"
+
+        click.echo(result)
