@@ -18,12 +18,12 @@ import subprocess
 import difflib
 import time
 import click
-from sys import platform, stderr
+from sys import platform
 from getpass import getpass, getuser
+from halo import Halo
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 from subprocess import Popen, PIPE, DEVNULL, run
-from os import system
 from os.path import isfile
 from sys import platform
 from getpass import getuser
@@ -1015,33 +1015,31 @@ class Setup:
 
         elif platform == 'win32':
             # Install Chocolatey And Setup
-            setup_progress = Spinner(
-                'Setting up your Turbocharge config file...')
-            click.echo('\n')
-            for _ in range(1, 41):
-                sleep(0.02)
-                setup_progress.next()
+            home = os.path.expanduser('~')
+            with Halo(text='Setting Up Turbocharge Configuration ') as h:
+                file_exists = None
+                os.system(rf'mkdir {home}\Turbocharge')
+                if isfile(os.path.join(rf"{home}\Turbocharge\config.tcc")):
+                    file_exists = True
+                else:
+                    file_exists = False
 
-            file_exists = None
-            os.system(f'mkdir C:\\Users\\{getuser()}\Turbocharge')
-            if isfile(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc")):
-                file_exists = True
-            else:
-                file_exists = False
+                if not file_exists:
+                    with open(os.path.join(rf"{home}\Turbocharge", "config.tcc"), 'w+') as f:
+                        f.write(f'win32\n{user}\n')
 
-            for _ in range(41, 61):
-                sleep(0.02)
-                setup_progress.next()
 
-            if not file_exists:
-                with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'w+') as f:
-                    f.write(f'win32\n{user}\n')
-            for _ in range(61, 100):
-                sleep(0.02)
-                setup_progress.next()
 
         click.echo('\n')
         click.echo('Succesfully Setup Turbocharge!')
+
+
+
+
+
+def install_chocolatey():
+    if not is_admin():
+
 
 
 class Debugger:
@@ -1291,94 +1289,84 @@ class Installer:
 
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
-                click.echo('An Error Occured During Installation...', err=True)
+                click.echo('An Error Occured During Installation', err=True)
 
         elif platform == 'win32':
             try:
-                installer_progress = Spinner(
-                    message=f'Installing {package_name}', max=100)
+                with Halo(text=f'Installing {package_name} ') as h:
+                    run(script, stdout=PIPE, stderr=PIPE)  # first time
 
-                for _ in range(1, 75):
-                    time.sleep(0.01)
-                    installer_progress.next()
+                    click.echo(
+                        click.style(
+                            f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n',
+                            fg='green',
+                            bold=True))
 
-                run(script, stdout=PIPE, stderr=PIPE)  # first time
+                    testing_bar = IncrementalBar('Testing package...', max=100)
 
-                for _ in range(1, 25):
-                    time.sleep(0.01)
-                    installer_progress.next()
+                    # this condition will be true for all applications
 
-                click.echo(
-                    click.style(
-                        f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n',
-                        fg='green',
-                        bold=True))
+                    if tests_passed == [] and test_script == '':
+                        # Dont run any tests, just exit
 
-                testing_bar = IncrementalBar('Testing package...', max=100)
+                        click.echo('\n')
+                        click.echo(
+                            click.style(
+                                f'Test Passed: {package_name} Launch ✅\n',
+                                fg='green'))
 
-                # this condition will be true for all applications
+                        return
 
-                if tests_passed == [] and test_script == '':
-                    # Dont run any tests, just exit
+                    for _ in range(1, 64):
+                        time.sleep(0.002)
+                        testing_bar.next()
+
+                    run(test_script, stdout=PIPE, stderr=PIPE)
+
+                    in_app = get_key(package_name, applications_windows)
+                    in_dev = get_key(package_name, devpackages_windows)
+
+                    w_version = subprocess.Popen(
+                        "clist -l", stdin=PIPE, stderr=PIPE, stdout=PIPE)
+
+                    output = w_version.communicate()[0].decode()
+
+                    package_exists = False
+
+                    with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'r') as f:
+                        lines = f.readlines()
+
+                    for i in range(len(lines)):
+                        if (str(in_app) in lines[i]) or (str(in_dev) in lines[i]):
+                            package_exists = True
+                            break
+
+                    if not package_exists:
+                        if in_app != -1:
+                            version = getWinVer(output, in_app)
+                            with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'a+') as f:
+                                f.write(
+                                    f'{in_app} {version} a {0 if get_key(package_name, applications_windows)==-1 else 1} 1 {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
+
+                        elif in_dev != -1:
+                            version = getWinVer(output, in_dev)
+                            with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'a+') as f:
+                                f.write(
+                                    f'{in_dev} {version} p {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1 {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
+
+                    for _ in range(64, 101):
+                        time.sleep(0.002)
+                        testing_bar.next()
 
                     click.echo('\n')
-                    click.echo(
-                        click.style(
-                            f'Test Passed: {package_name} Launch ✅\n',
-                            fg='green'))
+
+                    for test in tests_passed:
+                        click.echo(
+                            click.style(
+                                f'Test Passed: {test} ✅\n',
+                                fg='green'))
 
                     return
-
-                for _ in range(1, 64):
-                    time.sleep(0.002)
-                    testing_bar.next()
-
-                run(test_script, stdout=PIPE, stderr=PIPE)
-
-                in_app = get_key(package_name, applications_windows)
-                in_dev = get_key(package_name, devpackages_windows)
-
-                w_version = subprocess.Popen(
-                    "clist -l", stdin=PIPE, stderr=PIPE, stdout=PIPE)
-
-                output = w_version.communicate()[0].decode()
-
-                package_exists = False
-
-                with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'r') as f:
-                    lines = f.readlines()
-
-                for i in range(len(lines)):
-                    if (str(in_app) in lines[i]) or (str(in_dev) in lines[i]):
-                        package_exists = True
-                        break
-
-                if not package_exists:
-                    if in_app != -1:
-                        version = getWinVer(output, in_app)
-                        with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'a+') as f:
-                            f.write(
-                                f'{in_app} {version} a {0 if get_key(package_name, applications_windows)==-1 else 1} 1 {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
-
-                    elif in_dev != -1:
-                        version = getWinVer(output, in_dev)
-                        with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'a+') as f:
-                            f.write(
-                                f'{in_dev} {version} p {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1 {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
-
-                for _ in range(64, 101):
-                    time.sleep(0.002)
-                    testing_bar.next()
-
-                click.echo('\n')
-
-                for test in tests_passed:
-                    click.echo(
-                        click.style(
-                            f'Test Passed: {test} ✅\n',
-                            fg='green'))
-
-                return
 
             except Exception as e:
                 click.echo(e)

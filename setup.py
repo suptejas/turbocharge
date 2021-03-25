@@ -25,6 +25,7 @@ setup(
     install_requires = [
         'Click',
         'progress',
+        'halo'
     ],
     entry_points =
     '''

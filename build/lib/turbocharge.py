@@ -18,12 +18,11 @@ import subprocess
 import difflib
 import time
 import click
-from sys import platform, stderr
+from halo import Halo
 from getpass import getpass, getuser
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 from subprocess import Popen, PIPE, DEVNULL, run
-from os import system
 from os.path import isfile
 from sys import platform
 from getpass import getuser
@@ -1017,33 +1016,21 @@ class Setup:
 
         elif platform == 'win32':
             # Install Chocolatey And Setup
-            setup_progress = Spinner(
-                'Setting up your Turbocharge config file...')
-            click.echo('\n')
-            for _ in range(1, 41):
-                sleep(0.02)
-                setup_progress.next()
+            home = os.path.expanduser('~')
+            with Halo(text='Setting Up Turbocharge Configuration ') as h:
+                file_exists = None
+                os.system(rf'mkdir {home}\Turbocharge')
+                if isfile(os.path.join(rf"{home}\Turbocharge\config.tcc")):
+                    file_exists = True
+                else:
+                    file_exists = False
 
-            file_exists = None
-            os.system(f'mkdir C:\\Users\\{getuser()}\Turbocharge')
-            if isfile(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc")):
-                file_exists = True
-            else:
-                file_exists = False
-
-            for _ in range(41, 61):
-                sleep(0.02)
-                setup_progress.next()
-
-            if not file_exists:
-                with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'w+') as f:
-                    f.write(f'win32\n{user}\n')
-            for _ in range(61, 100):
-                sleep(0.02)
-                setup_progress.next()
+                if not file_exists:
+                    with open(os.path.join(rf"{home}\Turbocharge", "config.tcc"), 'w+') as f:
+                        f.write(f'win32\n{user}\n')
 
         click.echo('\n')
-        click.echo('Succesfully Setup Turbocharge!')
+        click.echo(click.style('Succesfully Setup Turbocharge!', 'green'))
 
 
 class Debugger:
