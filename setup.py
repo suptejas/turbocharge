@@ -13,11 +13,11 @@ with open("README.md", "r") as fh:
 
 setup(
     name = 'turbocharge',
-    version = '0.0.1',
+    version = '0.0.2',
     description= 'Turbocharged Way To Install All The Packages You Love!',
-    url="https://github.com/TheBossProSniper/TurboCharge",
-    author = 'TheBossProSniper',
-    author_email = 'thebossprosniper@gmail.com',
+    url="https://github.com/XtremeDevX/turbocharge",
+    author = 'xtremedevx',
+    author_email = 'xtremedevx@gmail.com',
     long_description=long_description,
     long_description_content_type="text/markdown",
     py_modules=['turbocharge'],

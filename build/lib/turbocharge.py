@@ -16,10 +16,14 @@
 import os
 import subprocess
 import difflib
+import sys
 import time
+import ctypes
 import click
-from halo import Halo
+from colorama import Fore
+from sys import platform
 from getpass import getpass, getuser
+from halo import Halo
 from progress.spinner import Spinner
 from progress.bar import IncrementalBar
 from subprocess import Popen, PIPE, DEVNULL, run
@@ -470,7 +474,6 @@ _______________________________
 | wireshark                   |
 | zoom                        |
 -------------------------------
-
 ____________________
 | Package           |
 ---------------------
@@ -507,7 +510,6 @@ ____________________
 | wget              |
 | yarn              |
 ---------------------
-
 _______________________________________________________________________
 | HyperPacks  |  Content                                              |
 -----------------------------------------------------------------------
@@ -1017,20 +1019,49 @@ class Setup:
         elif platform == 'win32':
             # Install Chocolatey And Setup
             home = os.path.expanduser('~')
-            with Halo(text='Setting Up Turbocharge Configuration ') as h:
-                file_exists = None
-                os.system(rf'mkdir {home}\Turbocharge')
-                if isfile(os.path.join(rf"{home}\Turbocharge\config.tcc")):
-                    file_exists = True
-                else:
-                    file_exists = False
+            
+            click.echo(click.style('Installing Chocolatey', 'green'))
+            if install_chocolatey():
+                click.echo('Successfully Installed Chocolatey')
+                with Halo(text='Setting Up Turbocharge Configuration ') as h:
+                    file_exists = None
+                    try:
+                        os.system(rf'mkdir {home}\Turbocharge')
+                    except:
+                        pass
+                    if isfile(os.path.join(rf"{home}\Turbocharge\config.tcc")):
+                        file_exists = True
+                    else:
+                        file_exists = False
 
-                if not file_exists:
-                    with open(os.path.join(rf"{home}\Turbocharge", "config.tcc"), 'w+') as f:
-                        f.write(f'win32\n{user}\n')
+                    if not file_exists:
+                        with open(os.path.join(rf"{home}\Turbocharge", "config.tcc"), 'w+') as f:
+                            f.write(f'win32\n{user}\n')
+                click.echo('Succesfully Setup Turbocharge!')
 
-        click.echo('\n')
-        click.echo(click.style('Succesfully Setup Turbocharge!', 'green'))
+
+ 
+def is_admin():
+    try:
+        is_admin = (os.getuid() == 0)
+    except AttributeError:
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+    return is_admin
+
+
+def install_chocolatey():
+    home = os.path.expanduser('~')
+    if not is_admin():
+        click.echo(click.style('You Must Have Administrator Permissions To Install Chocolatey', 'red'), err=True)
+        sys.exit()
+    else:
+        os.system('powershell.exe -noprofile Set-ExecutionPolicy RemoteSigned -Scope CurrentUser')
+        with open(rf'{home}\temp.ps1', 'w+') as f:
+            f.write("Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))")
+        
+        ec = os.system(rf'powershell.exe -noprofile {home}\temp.ps1')
+
+    return ec == 0
 
 
 class Debugger:
@@ -1087,8 +1118,14 @@ class Installer:
                 return
 
         def subprocess_cmd(command):
-            process = subprocess.Popen(
-                command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+            try:
+                process = subprocess.Popen(
+                    command, stdout=subprocess.PIPE, stdin=PIPE, stderr=PIPE)
+            except (OSError, PermissionError):
+                if platform == 'win32':
+                    click.echo('Please run electric as administrator!')
+                    os._exit(1)
+            
             proc_stdout = process.communicate()[0].strip()
             decoded = proc_stdout.decode("utf-8")
             version_tag = decoded.split("\n")[1]
@@ -1128,7 +1165,7 @@ class Installer:
                 if proc.returncode != 0:
                     click.echo(
                         click.style(
-                            '❎ Installation Failed... ❎',
+                            '❎ Installation Failed ❎',
                             fg='red',
                             blink=True,
                             bold=True))
@@ -1274,94 +1311,88 @@ class Installer:
 
             except subprocess.CalledProcessError as e:
                 click.echo(e.output)
-                click.echo('An Error Occured During Installation...', err=True)
+                click.echo('An Error Occured During Installation', err=True)
 
         elif platform == 'win32':
             try:
-                installer_progress = Spinner(
-                    message=f'Installing {package_name}...', max=100)
+                with Halo(text=f'Installing {package_name} ') as h:
+                    proc = Popen(script, stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)  # first time
 
-                for _ in range(1, 75):
-                    time.sleep(0.01)
-                    installer_progress.next()
+                    proc.communicate()
+                    h.stop()
 
-                run(script, stdout=PIPE, stderr=PIPE)  # first time
+                    click.echo(
+                        click.style(
+                            f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n',
+                            fg='green',
+                            bold=True))
 
-                for _ in range(1, 25):
-                    time.sleep(0.01)
-                    installer_progress.next()
 
-                click.echo(
-                    click.style(
-                        f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n',
-                        fg='green',
-                        bold=True))
+                    testing_bar = IncrementalBar('Testing package...', max=100)
 
-                testing_bar = IncrementalBar('Testing package...', max=100)
+                    # this condition will be true for all applications
 
-                # this condition will be true for all applications
+                    if tests_passed == [] and test_script == '':
+                        # Dont run any tests, just exit
 
-                if tests_passed == [] and test_script == '':
-                    # Dont run any tests, just exit
+                        click.echo('\n')
+                        click.echo(
+                            click.style(
+                                f'Test Passed: {package_name} Launch ✅\n',
+                                fg='green'))
+
+                        return
+
+                    for _ in range(1, 64):
+                        time.sleep(0.002)
+                        testing_bar.next()
+
+                    run(test_script, stdout=PIPE, stderr=PIPE)
+
+                    in_app = get_key(package_name, applications_windows)
+                    in_dev = get_key(package_name, devpackages_windows)
+
+                    w_version = subprocess.Popen(
+                        "clist -l", stdin=PIPE, stderr=PIPE, stdout=PIPE)
+
+                    output = w_version.communicate()[0].decode()
+
+                    package_exists = False
+
+                    with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'r') as f:
+                        lines = f.readlines()
+
+                    for i in range(len(lines)):
+                        if (str(in_app) in lines[i]) or (str(in_dev) in lines[i]):
+                            package_exists = True
+                            break
+
+                    if not package_exists:
+                        if in_app != -1:
+                            version = getWinVer(output, in_app)
+                            with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'a+') as f:
+                                f.write(
+                                    f'{in_app} {version} a {0 if get_key(package_name, applications_windows)==-1 else 1} 1 {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
+
+                        elif in_dev != -1:
+                            version = getWinVer(output, in_dev)
+                            with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'a+') as f:
+                                f.write(
+                                    f'{in_dev} {version} p {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1 {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
+
+                    for _ in range(64, 101):
+                        time.sleep(0.002)
+                        testing_bar.next()
 
                     click.echo('\n')
-                    click.echo(
-                        click.style(
-                            f'Test Passed: {package_name} Launch ✅\n',
-                            fg='green'))
+
+                    for test in tests_passed:
+                        click.echo(
+                            click.style(
+                                f'Test Passed: {test} ✅\n',
+                                fg='green'))
 
                     return
-
-                for _ in range(1, 64):
-                    time.sleep(0.002)
-                    testing_bar.next()
-
-                run(test_script, stdout=PIPE, stderr=PIPE)
-
-                in_app = get_key(package_name, applications_windows)
-                in_dev = get_key(package_name, devpackages_windows)
-
-                w_version = subprocess.Popen(
-                    "clist -l", stdin=PIPE, stderr=PIPE, stdout=PIPE)
-
-                output = w_version.communicate()[0].decode()
-
-                package_exists = False
-
-                with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'r') as f:
-                    lines = f.readlines()
-
-                for i in range(len(lines)):
-                    if (str(in_app) in lines[i]) or (str(in_dev) in lines[i]):
-                        package_exists = True
-                        break
-
-                if not package_exists:
-                    if in_app != -1:
-                        version = getWinVer(output, in_app)
-                        with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'a+') as f:
-                            f.write(
-                                f'{in_app} {version} a {0 if get_key(package_name, applications_windows)==-1 else 1} 1 {0 if get_key(package_name, applications_macos)==-1 else 1}\n')
-
-                    elif in_dev != -1:
-                        version = getWinVer(output, in_dev)
-                        with open(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc"), 'a+') as f:
-                            f.write(
-                                f'{in_dev} {version} p {0 if get_key(package_name, devpackages_windows)==-1 else 1} 1 {0 if get_key(package_name, devpackages_macos)==-1 else 1}\n')
-
-                for _ in range(64, 101):
-                    time.sleep(0.002)
-                    testing_bar.next()
-
-                click.echo('\n')
-
-                for test in tests_passed:
-                    click.echo(
-                        click.style(
-                            f'Test Passed: {test} ✅\n',
-                            fg='green'))
-
-                return
 
             except Exception as e:
                 click.echo(e)
@@ -1830,7 +1861,8 @@ def cli(ctx):
             setup.setup()
 
     elif platform == 'win32':
-        if not isfile(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc")):
+        home = os.path.expanduser('~')
+        if not isfile(os.path.join(f"{home}\Turbocharge", "config.tcc")):
             setup.setup()
 
     elif platform == 'darwin':
@@ -1944,12 +1976,12 @@ def install(package_list):
                             '\n Chrome Will Take 2 to 4 Minutes To Download... \n',
                             fg='yellow'))
 
-                    os.system(constant.chrome_link)
+                    os.system(chrome_link)
 
-                    os.system(constant.chrome_move)
+                    os.system(chrome_move)
 
                     second = Popen(
-                        constant.chrome_setup.split(),
+                        chrome_setup.split(),
                         stdin=PIPE,
                         stdout=PIPE,
                         stderr=PIPE
@@ -1994,18 +2026,18 @@ def install(package_list):
                     for _ in range(1, 35):
                         time.sleep(0.01)
                         installer_progress.next()
-                    os.system(constant.anaconda_download)
+                    os.system(anaconda_download)
                     for _ in range(35, 61):
                         time.sleep(0.01)
                         installer_progress.next()
 
-                    os.system(constant.anaconda_setup)
+                    os.system(anaconda_setup)
 
                     for _ in range(61, 91):
                         time.sleep(0.01)
                         installer_progress.next()
 
-                    os.system(constant.anaconda_PATH)
+                    os.system(anaconda_PATH)
 
                     for _ in range(90, 101):
                         time.sleep(0.01)
@@ -2028,15 +2060,15 @@ def install(package_list):
                     for _ in range(1, 35):
                         time.sleep(0.01)
                         installer_progress.next()
-                    os.system(constant.miniconda_download)
+                    os.system(miniconda_download)
                     for _ in range(35, 61):
                         time.sleep(0.01)
                         installer_progress.next()
-                    os.system(constant.miniconda_setup)
+                    os.system(miniconda_setup)
                     for _ in range(61, 91):
                         time.sleep(0.01)
                         installer_progress.next()
-                    os.system(constant.miniconda_PATH)
+                    os.system(miniconda_PATH)
                     for _ in range(90, 101):
                         time.sleep(0.01)
                         installer_progress.next()
@@ -2161,8 +2193,8 @@ def remove(package_list):
                         time.sleep(0.007)
                         installer_progress.next()
 
-                    os.system(constant.anaconda_remove_folder)
-                    os.system(constant.anaconda_remove_file)
+                    os.system(anaconda_remove_folder)
+                    os.system(anaconda_remove_file)
 
                     with open('.bashrc', 'r') as file:
                         lines = file.read()
@@ -2196,8 +2228,8 @@ def remove(package_list):
                         time.sleep(0.007)
                         installer_progress.next()
 
-                    os.system(constant.miniconda_remove_folder)
-                    os.system(constant.miniconda_remove_file)
+                    os.system(miniconda_remove_folder)
+                    os.system(miniconda_remove_file)
 
                     with open('.bashrc', 'r') as file:
                         lines = file.read()

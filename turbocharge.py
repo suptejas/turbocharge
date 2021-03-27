@@ -16,8 +16,11 @@
 import os
 import subprocess
 import difflib
+import sys
 import time
+import ctypes
 import click
+from colorama import Fore
 from sys import platform
 from getpass import getpass, getuser
 from halo import Halo
@@ -1016,30 +1019,49 @@ class Setup:
         elif platform == 'win32':
             # Install Chocolatey And Setup
             home = os.path.expanduser('~')
-            with Halo(text='Setting Up Turbocharge Configuration ') as h:
-                file_exists = None
-                os.system(rf'mkdir {home}\Turbocharge')
-                if isfile(os.path.join(rf"{home}\Turbocharge\config.tcc")):
-                    file_exists = True
-                else:
-                    file_exists = False
+            
+            click.echo(click.style('Installing Chocolatey', 'green'))
+            if install_chocolatey():
+                click.echo('Successfully Installed Chocolatey')
+                with Halo(text='Setting Up Turbocharge Configuration ') as h:
+                    file_exists = None
+                    try:
+                        os.system(rf'mkdir {home}\Turbocharge')
+                    except:
+                        pass
+                    if isfile(os.path.join(rf"{home}\Turbocharge\config.tcc")):
+                        file_exists = True
+                    else:
+                        file_exists = False
 
-                if not file_exists:
-                    with open(os.path.join(rf"{home}\Turbocharge", "config.tcc"), 'w+') as f:
-                        f.write(f'win32\n{user}\n')
+                    if not file_exists:
+                        with open(os.path.join(rf"{home}\Turbocharge", "config.tcc"), 'w+') as f:
+                            f.write(f'win32\n{user}\n')
+                click.echo('Succesfully Setup Turbocharge!')
 
 
-
-        click.echo('\n')
-        click.echo('Succesfully Setup Turbocharge!')
-
-
-
+ 
+def is_admin():
+    try:
+        is_admin = (os.getuid() == 0)
+    except AttributeError:
+        is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+    return is_admin
 
 
 def install_chocolatey():
+    home = os.path.expanduser('~')
     if not is_admin():
+        click.echo(click.style('You Must Have Administrator Permissions To Install Chocolatey', 'red'), err=True)
+        sys.exit()
+    else:
+        os.system('powershell.exe -noprofile Set-ExecutionPolicy RemoteSigned -Scope CurrentUser')
+        with open(rf'{home}\temp.ps1', 'w+') as f:
+            f.write("Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))")
+        
+        ec = os.system(rf'powershell.exe -noprofile {home}\temp.ps1')
 
+    return ec == 0
 
 
 class Debugger:
@@ -1294,13 +1316,17 @@ class Installer:
         elif platform == 'win32':
             try:
                 with Halo(text=f'Installing {package_name} ') as h:
-                    run(script, stdout=PIPE, stderr=PIPE)  # first time
+                    proc = Popen(script, stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)  # first time
+
+                    proc.communicate()
+                    h.stop()
 
                     click.echo(
                         click.style(
                             f'\n\n 🎉 Successfully Installed {package_name}! 🎉 \n',
                             fg='green',
                             bold=True))
+
 
                     testing_bar = IncrementalBar('Testing package...', max=100)
 
@@ -1835,7 +1861,8 @@ def cli(ctx):
             setup.setup()
 
     elif platform == 'win32':
-        if not isfile(os.path.join(f"C:\\Users\\{getuser()}\Turbocharge", "config.tcc")):
+        home = os.path.expanduser('~')
+        if not isfile(os.path.join(f"{home}\Turbocharge", "config.tcc")):
             setup.setup()
 
     elif platform == 'darwin':
@@ -1949,12 +1976,12 @@ def install(package_list):
                             '\n Chrome Will Take 2 to 4 Minutes To Download... \n',
                             fg='yellow'))
 
-                    os.system(constant.chrome_link)
+                    os.system(chrome_link)
 
-                    os.system(constant.chrome_move)
+                    os.system(chrome_move)
 
                     second = Popen(
-                        constant.chrome_setup.split(),
+                        chrome_setup.split(),
                         stdin=PIPE,
                         stdout=PIPE,
                         stderr=PIPE
@@ -1999,18 +2026,18 @@ def install(package_list):
                     for _ in range(1, 35):
                         time.sleep(0.01)
                         installer_progress.next()
-                    os.system(constant.anaconda_download)
+                    os.system(anaconda_download)
                     for _ in range(35, 61):
                         time.sleep(0.01)
                         installer_progress.next()
 
-                    os.system(constant.anaconda_setup)
+                    os.system(anaconda_setup)
 
                     for _ in range(61, 91):
                         time.sleep(0.01)
                         installer_progress.next()
 
-                    os.system(constant.anaconda_PATH)
+                    os.system(anaconda_PATH)
 
                     for _ in range(90, 101):
                         time.sleep(0.01)
@@ -2033,15 +2060,15 @@ def install(package_list):
                     for _ in range(1, 35):
                         time.sleep(0.01)
                         installer_progress.next()
-                    os.system(constant.miniconda_download)
+                    os.system(miniconda_download)
                     for _ in range(35, 61):
                         time.sleep(0.01)
                         installer_progress.next()
-                    os.system(constant.miniconda_setup)
+                    os.system(miniconda_setup)
                     for _ in range(61, 91):
                         time.sleep(0.01)
                         installer_progress.next()
-                    os.system(constant.miniconda_PATH)
+                    os.system(miniconda_PATH)
                     for _ in range(90, 101):
                         time.sleep(0.01)
                         installer_progress.next()
@@ -2166,8 +2193,8 @@ def remove(package_list):
                         time.sleep(0.007)
                         installer_progress.next()
 
-                    os.system(constant.anaconda_remove_folder)
-                    os.system(constant.anaconda_remove_file)
+                    os.system(anaconda_remove_folder)
+                    os.system(anaconda_remove_file)
 
                     with open('.bashrc', 'r') as file:
                         lines = file.read()
@@ -2201,8 +2228,8 @@ def remove(package_list):
                         time.sleep(0.007)
                         installer_progress.next()
 
-                    os.system(constant.miniconda_remove_folder)
-                    os.system(constant.miniconda_remove_file)
+                    os.system(miniconda_remove_folder)
+                    os.system(miniconda_remove_file)
 
                     with open('.bashrc', 'r') as file:
                         lines = file.read()

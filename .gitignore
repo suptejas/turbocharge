@@ -1,6 +1,7 @@
 .vscode
 testing
-src/__pycache__
-src/turbocharge.egg-info
-src/.DS_STORE
+__pycache__
+turbocharge.egg-info
+.DS_STORE
 .idea
+build/
